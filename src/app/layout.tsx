@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Plus_Jakarta_Sans } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "@/components/ui/toaster";
+import { ThemeProvider } from "@/components/theme-provider";
 
 const jakarta = Plus_Jakarta_Sans({
   variable: "--font-jakarta",
@@ -31,8 +32,10 @@ export default function RootLayout({
       <body
         className={`${jakarta.variable} font-sans antialiased bg-background text-foreground`}
       >
-        {children}
-        <Toaster />
+        <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
+          {children}
+          <Toaster />
+        </ThemeProvider>
       </body>
     </html>
   );

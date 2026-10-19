@@ -30,3 +30,26 @@ Stage Summary:
 - Semua konten dokumentasi GitHub user telah terstruktur menjadi aplikasi interaktif: Hulu (diisi sekali) → 5 Mesin (dirawat mingguan) → Hilir (dijalankan harian) + Arsenal
 - Verifikasi end-to-end browser lulus: CRUD multi-modul, sinkronisasi MIT dashboard↔harian, kalkulasi sisa hutang otomatis, copy prompt agents
 - Preview: gunakan Preview Panel / link preview IM, hanya route /
+
+---
+Task ID: 2
+Agent: Main Agent (Z.ai)
+Task: Fix hydration error (tanggal server ≠ klien) + full animasi + standar internasional atas permintaan user ("tolong full animasi nya sayang, terus buatkan program dengan sistem berstandard internasional")
+
+Work Log:
+- ROOT CAUSE hydration: `const now = new Date()` di dashboard.tsx dirender saat SSR (UTC → "Senin, 19 Okt") vs klien (WIB → "Selasa, 20 Okt")
+- Fix: pustaka motion.tsx berisi hook `useMounted()` + `useNow(intervalMs)` — semua data waktu dirender CLIENT-ONLY (null sampai mount → server & klien identik), pola kompliant react-hooks/set-state-in-effect via setTimeout(0)
+- Pustaka animasi bersama src/components/app/motion.tsx: EASE cubic-bezier, FadeUp, Stagger/StaggerItem, PageTransition (AnimatePresence mode=wait), CountUp (animasi dari nilai sebelumnya), FloatingOrbs (3 orb melayang + grid), ProgressRing SVG, PulseDot, HoverLift, ShimmerBlock — semua useReducedMotion-aware
+- Dashboard v2: hero + FloatingOrbs + jam live WIB (interval 30s) + badge SISTEM AKTIF, progress ring MIT x/3, checklist MIT dengan check bounce spring + AnimatePresence, energi number pop + warning tinggi-animasi, 4 stat card CountUp + HoverLift stagger, skeleton shimmer saat loading, card FadeUp bertingkat
+- AppShell v2: transisi antar-section (fade+slide+scale), sidebar pill aktif layoutId (desktop) dengan entrance stagger, header judul beranimasi + jam live + tombol ⌘K + ThemeToggle (sun/moon rotate), scroll progress bar gradient, tombol palette mobile, sidebar dibersihkan ke nav.ts (NAV/ALL_ITEMS/COMMAND_CENTER)
+- Fitur baru standar internasional: Command Palette ⌘K/Ctrl+K (cmdk) lompat 15 section dengan filter, dark/light mode via next-themes (ThemeProvider di layout, default system, persist), skeleton shimmer di RecordTable (4 baris) + empty state ikon
+- RecordTable: row stagger fade-in motion.tr, tombol Tambah whileTap spring, RecordFormDialog anti-pattern useMemo-setState diganti useEffect
+- Bug WIB correctness: finance.tsx & crm.tsx `new Date().toISOString()` (UTC) → `todayISO()` (lokal) — memperbaiki omzet bulan ini & flag follow-up telat antara jam 00.00–07.00 WIB
+- globals.css: smooth scroll, ::selection emerald, focus-visible ring, keyframes gunara-shimmer + .dark variant, prefers-reduced-motion (CSS + Framer)
+- Lint: 0 error, 13 warning pre-existing (unused eslint-disable saja)
+- Verifikasi agent-browser: hydration error HILANG total (rg dev.log = 0 match), jam live update 19.29→19.31 WIB, navigasi + pill berpindah, palette filter "ritual" → Ritual Harian, dark mode persist setelah reload, mobile 390px (2 FAB + drawer + pill statis), dropdown Ubah → dialog terisi data benar (useEffect sync), sticky footer OK
+
+Stage Summary:
+- GUNARA OS v2.0: bebas hydration error, animasi full di seluruh aplikasi (reduced-motion safe), fitur standar internasional (⌘K palette, dark mode, skeleton, focus ring, jam live WIB)
+- File baru: motion.tsx, nav.ts, command-palette.tsx, theme-provider.tsx; File direvisi: dashboard, app-shell, record-table, finance, crm, gunara.tsx (isoFrom), layout.tsx, globals.css
+- Screenshot verifikasi tersimpan di /home/z/my-project/download/gunara-v2-*.png (8 buah)

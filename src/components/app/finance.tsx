@@ -50,7 +50,7 @@ export function FinanceSection() {
     () => receivable.items.filter((r) => r.status !== "LUNAS").reduce((a, r) => a + (r.nilaiKontrak - r.dpDiterima), 0),
     [receivable.items]
   );
-  const bulanIni = new Date().toISOString().slice(0, 7);
+  const bulanIni = todayISO().slice(0, 7); // WIB-safe (lokal, bukan UTC)
   const omzetBulan = useMemo(
     () => cashflow.items.filter((c) => c.jenis === "MASUK" && (c.tanggal || "").startsWith(bulanIni)).reduce((a, c) => a + c.nilai, 0),
     [cashflow.items, bulanIni]

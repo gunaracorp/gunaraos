@@ -1,10 +1,17 @@
 "use client";
 
+// ═══════════════════════════════════════════════════
+// GUNARA OS — AppShell
+// Standar internasional: transisi antar-section, indikator
+// navigasi beranimasi (layoutId), command palette ⌘K,
+// dark/light theme, scroll progress, jam live WIB.
+// ═══════════════════════════════════════════════════
+
 import { useState } from "react";
+import { motion, useScroll, useSpring, useReducedMotion, AnimatePresence } from "framer-motion";
+import { useTheme } from "next-themes";
 import {
-  LayoutDashboard, Waves, Wallet, Users, Handshake, BookOpen, Trophy,
-  Sun, CalendarCheck, Inbox, Scale, Globe, Bot, ShieldCheck, Target,
-  Menu, X, Landmark,
+  Menu, X, Search, Sun, Moon, Landmark, Clock, Command,
 } from "lucide-react";
 import { Dashboard } from "@/components/app/dashboard";
 import { HuluSection } from "@/components/app/hulu";
@@ -16,103 +23,72 @@ import { DomainsSection, AgentsSection, SystemSection, RoadmapSection } from "@/
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
+import { NAV, ALL_ITEMS, COMMAND_CENTER, type NavItem, type SectionId } from "./nav";
+import { PageTransition, useNow, useMounted, EASE } from "./motion";
+import { CommandPalette } from "./command-palette";
 
-type SectionId =
-  | "dashboard" | "hulu"
-  | "keuangan" | "klien" | "relasi" | "belajar" | "dokumentasi"
-  | "harian" | "mingguan" | "backlog" | "keputusan"
-  | "domain" | "agents" | "sistem" | "roadmap";
-
-interface NavItem { id: SectionId; label: string; icon: React.ElementType; desc?: string }
-interface NavGroup { title: string; items: NavItem[] }
-
-const NAV: NavGroup[] = [
-  {
-    title: "🌊 HULU — Diisi Sekali", items: [
-      { id: "hulu", label: "Piagam · Visi · OKR", icon: Waves, desc: "Mata air segalanya" },
-    ],
-  },
-  {
-    title: "⚙️ MESIN — Dirawat Mingguan", items: [
-      { id: "keuangan", label: "Keuangan", icon: Wallet, desc: "Hutang · Piutang · Kas · Anak" },
-      { id: "klien", label: "Klien / CRM", icon: Users, desc: "Master + Follow-up" },
-      { id: "relasi", label: "Relasi & Politik", icon: Handshake, desc: "Ledger kepercayaan" },
-      { id: "belajar", label: "Belajar", icon: BookOpen, desc: "Jurnal — mesin ganda" },
-      { id: "dokumentasi", label: "Dokumentasi", icon: Trophy, desc: "Win Log + Studi Kasus" },
-    ],
-  },
-  {
-    title: "🏃 HILIR — Dijalankan Harian", items: [
-      { id: "harian", label: "Ritual Harian", icon: Sun, desc: "3 MIT pagi & malam" },
-      { id: "mingguan", label: "Review Mingguan", icon: CalendarCheck, desc: "Minggu malam 30 menit" },
-      { id: "backlog", label: "Backlog", icon: Inbox, desc: "Penjara ide" },
-      { id: "keputusan", label: "Decisions Log", icon: Scale, desc: "Sejarah keputusan" },
-    ],
-  },
-  {
-    title: "🛡️ ARSENAL — Senjata", items: [
-      { id: "domain", label: "43 Domain", icon: Globe, desc: "Portfolio & misi" },
-      { id: "agents", label: "15 AI Agents", icon: Bot, desc: "Role activation siap copy" },
-      { id: "sistem", label: "Sistem", icon: ShieldCheck, desc: "Aturan · Ritual · Stack" },
-      { id: "roadmap", label: "Roadmap 90 Hari", icon: Target, desc: "Grand Build" },
-    ],
-  },
-];
-
-const ALL_ITEMS: Record<SectionId, NavItem> = Object.fromEntries(
-  NAV.flatMap((g) => g.items.map((i) => [i.id, i]))
-) as Record<SectionId, NavItem>;
-
-function SidebarContent({ active, onNavigate }: { active: SectionId; onNavigate: (id: SectionId) => void }) {
+function SidebarContent({
+  active,
+  onNavigate,
+  animated = false,
+}: {
+  active: SectionId;
+  onNavigate: (id: SectionId) => void;
+  animated?: boolean;
+}) {
+  const reduce = useReducedMotion();
   return (
     <div className="h-full flex flex-col">
       <div className="px-4 py-5 border-b border-sidebar-border">
-        <div className="flex items-center gap-2.5">
-          <div className="size-9 rounded-xl bg-gradient-to-br from-amber-400 to-amber-600 flex items-center justify-center text-emerald-950 font-black text-lg shadow-lg">G</div>
+        <motion.div
+          initial={reduce || !animated ? false : { opacity: 0, x: -12 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.5, ease: EASE }}
+          className="flex items-center gap-2.5"
+        >
+          <motion.div
+            whileHover={reduce ? {} : { rotate: -6, scale: 1.06 }}
+            transition={{ type: "spring", stiffness: 300, damping: 18 }}
+            className="size-9 rounded-xl bg-gradient-to-br from-amber-400 to-amber-600 flex items-center justify-center text-emerald-950 font-black text-lg shadow-lg"
+          >
+            G
+          </motion.div>
           <div>
             <p className="font-extrabold tracking-tight text-amber-50 leading-none">GUNARA OS</p>
-            <p className="text-[11px] text-emerald-200/70 mt-1">Sistem Operasi Hidup · v1.0</p>
+            <p className="text-[11px] text-emerald-200/70 mt-1">Sistem Operasi Hidup · v2.0</p>
           </div>
-        </div>
+        </motion.div>
       </div>
 
-      <nav className="flex-1 overflow-y-auto nice-scroll px-2 py-3 space-y-4">
-        <button
-          onClick={() => onNavigate("dashboard")}
-          className={cn(
-            "w-full flex items-center gap-2.5 rounded-lg px-3 py-2.5 text-sm font-semibold transition-colors text-left",
-            active === "dashboard"
-              ? "bg-amber-400 text-emerald-950 shadow"
-              : "text-emerald-100/80 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
-          )}
+      <nav className="flex-1 overflow-y-auto nice-scroll px-2 py-3 space-y-4" aria-label="Navigasi utama">
+        <motion.div
+          initial={reduce || !animated ? false : { opacity: 0, x: -10 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.45, delay: 0.08, ease: EASE }}
         >
-          <LayoutDashboard className="size-4 flex-none" /> Command Center
-        </button>
+          <NavButton item={COMMAND_CENTER} active={active === "dashboard"} onClick={() => onNavigate("dashboard")} animated={animated} bold />
+        </motion.div>
 
-        {NAV.map((group) => (
-          <div key={group.title}>
+        {NAV.map((group, gi) => (
+          <motion.div
+            key={group.title}
+            initial={reduce || !animated ? false : { opacity: 0, x: -10 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.45, delay: 0.12 + gi * 0.06, ease: EASE }}
+          >
             <p className="px-3 mb-1 text-[10px] font-bold uppercase tracking-widest text-emerald-200/50">{group.title}</p>
             <div className="space-y-0.5">
-              {group.items.map((item) => {
-                const Icon = item.icon;
-                return (
-                  <button
-                    key={item.id}
-                    onClick={() => onNavigate(item.id)}
-                    className={cn(
-                      "w-full flex items-center gap-2.5 rounded-lg px-3 py-2 text-sm transition-colors text-left",
-                      active === item.id
-                        ? "bg-amber-400 text-emerald-950 font-bold shadow"
-                        : "text-emerald-100/75 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
-                    )}
-                  >
-                    <Icon className="size-4 flex-none" />
-                    <span className="flex-1 truncate">{item.label}</span>
-                  </button>
-                );
-              })}
+              {group.items.map((item) => (
+                <NavButton
+                  key={item.id}
+                  item={item}
+                  active={active === item.id}
+                  onClick={() => onNavigate(item.id)}
+                  animated={animated}
+                />
+              ))}
             </div>
-          </div>
+          </motion.div>
         ))}
       </nav>
 
@@ -126,9 +102,79 @@ function SidebarContent({ active, onNavigate }: { active: SectionId; onNavigate:
   );
 }
 
+function NavButton({
+  item, active, onClick, animated, bold,
+}: {
+  item: NavItem; active: boolean; onClick: () => void; animated: boolean; bold?: boolean;
+}) {
+  const reduce = useReducedMotion();
+  const Icon = item.icon;
+  return (
+    <button
+      onClick={onClick}
+      aria-current={active ? "page" : undefined}
+      className={cn(
+        "relative w-full flex items-center gap-2.5 rounded-lg px-3 py-2 text-sm transition-colors text-left group",
+        active ? "text-emerald-950 font-bold" : bold ? "font-semibold text-emerald-100/85" : "text-emerald-100/75",
+        !active && "hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
+      )}
+    >
+      {active && (
+        <motion.span
+          layoutId={animated ? "gunara-nav-pill" : undefined}
+          className="absolute inset-0 rounded-lg bg-amber-400 shadow"
+          transition={reduce ? { duration: 0 } : { type: "spring", stiffness: 380, damping: 32 }}
+        />
+      )}
+      <Icon className={cn(
+        "size-4 flex-none relative z-10 transition-transform",
+        !active && !reduce && "group-hover:translate-x-0.5"
+      )} />
+      <span className="flex-1 truncate relative z-10">{item.label}</span>
+    </button>
+  );
+}
+
+function ThemeToggle() {
+  const { resolvedTheme, setTheme } = useTheme();
+  const reduce = useReducedMotion();
+  // Guard hydration: render placeholder hingga tema terbaca di klien
+  const mounted = useMounted();
+  if (!mounted) return <Button variant="ghost" size="icon" className="size-8 opacity-0 pointer-events-none" aria-hidden />;
+  const dark = resolvedTheme === "dark";
+  return (
+    <Button
+      variant="ghost"
+      size="icon"
+      className="size-8"
+      onClick={() => setTheme(dark ? "light" : "dark")}
+      aria-label={dark ? "Aktifkan mode terang" : "Aktifkan mode gelap"}
+    >
+      <AnimatePresence mode="wait" initial={false}>
+        <motion.span
+          key={dark ? "moon" : "sun"}
+          initial={reduce ? false : { rotate: -90, opacity: 0, scale: 0.6 }}
+          animate={{ rotate: 0, opacity: 1, scale: 1 }}
+          exit={reduce ? { opacity: 0 } : { rotate: 90, opacity: 0, scale: 0.6 }}
+          transition={{ duration: 0.25, ease: EASE }}
+          className="flex"
+        >
+          {dark ? <Moon className="size-4" /> : <Sun className="size-4" />}
+        </motion.span>
+      </AnimatePresence>
+    </Button>
+  );
+}
+
 export function AppShell() {
   const [active, setActive] = useState<SectionId>("dashboard");
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [paletteOpen, setPaletteOpen] = useState(false);
+  const now = useNow(30_000);
+  const reduce = useReducedMotion();
+
+  const { scrollYProgress } = useScroll();
+  const progress = useSpring(scrollYProgress, { stiffness: 120, damping: 26, mass: 0.4 });
 
   const go = (id: string) => {
     setActive(id as SectionId);
@@ -136,10 +182,10 @@ export function AppShell() {
     window.scrollTo({ top: 0 });
   };
 
-  const item: NavItem | undefined =
+  const item: NavItem =
     active === "dashboard"
-      ? { id: "dashboard", label: "Command Center", icon: LayoutDashboard, desc: "Beranda sistem" }
-      : ALL_ITEMS[active];
+      ? COMMAND_CENTER
+      : ALL_ITEMS[active] || COMMAND_CENTER;
 
   const content = () => {
     switch (active) {
@@ -164,9 +210,16 @@ export function AppShell() {
 
   return (
     <div className="min-h-screen flex bg-background">
+      {/* Scroll progress — standar aplikasi kelas dunia */}
+      <motion.div
+        className="fixed top-0 left-0 right-0 h-[3px] z-[60] origin-left bg-gradient-to-r from-emerald-600 via-emerald-500 to-amber-400"
+        style={{ scaleX: progress }}
+        aria-hidden
+      />
+
       {/* Sidebar desktop */}
       <aside className="hidden lg:block w-72 flex-none bg-sidebar text-sidebar-foreground border-r border-sidebar-border sticky top-0 h-screen">
-        <SidebarContent active={active} onNavigate={setActive} />
+        <SidebarContent active={active} onNavigate={setActive} animated />
       </aside>
 
       {/* Sidebar mobile */}
@@ -186,15 +239,58 @@ export function AppShell() {
         </SheetContent>
       </Sheet>
 
+      {/* Tombol command palette — mobile */}
+      <Button
+        size="icon"
+        className="lg:hidden fixed top-3 left-14 z-50 size-9 bg-emerald-950/90 text-amber-200 shadow-lg hover:bg-emerald-900"
+        onClick={() => setPaletteOpen(true)}
+        aria-label="Buka pencarian cepat"
+      >
+        <Search className="size-4" />
+      </Button>
+
       {/* Konten */}
       <main className="flex-1 min-w-0">
         <header className="hidden lg:flex items-center justify-between px-8 py-4 border-b bg-card/60 backdrop-blur sticky top-0 z-40">
-          <div className="flex items-center gap-2 text-sm">
-            <Landmark className="size-4 text-emerald-800 dark:text-emerald-400" />
-            <span className="font-bold tracking-tight">{item?.label}</span>
-            {item?.desc && <span className="text-muted-foreground">— {item.desc}</span>}
-          </div>
+          <AnimatePresence mode="wait" initial={false}>
+            <motion.div
+              key={item.label}
+              initial={reduce ? false : { opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={reduce ? { opacity: 0 } : { opacity: 0, y: -8 }}
+              transition={{ duration: 0.28, ease: EASE }}
+              className="flex items-center gap-2 text-sm"
+            >
+              <Landmark className="size-4 text-emerald-800 dark:text-emerald-400" />
+              <span className="font-bold tracking-tight">{item.label}</span>
+              {item.desc && <span className="text-muted-foreground">— {item.desc}</span>}
+            </motion.div>
+          </AnimatePresence>
+
           <div className="flex items-center gap-2 text-xs text-muted-foreground">
+            <AnimatePresence>
+              {now && (
+                <motion.span
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0 }}
+                  className="hidden xl:inline-flex items-center gap-1.5 rounded-full border bg-muted/50 px-2.5 py-1 font-semibold tabular-nums"
+                >
+                  <Clock className="size-3" /> {String(now.getHours()).padStart(2, "0")}.{String(now.getMinutes()).padStart(2, "0")} WIB
+                </motion.span>
+              )}
+            </AnimatePresence>
+            <button
+              onClick={() => setPaletteOpen(true)}
+              className="inline-flex items-center gap-2 rounded-lg border bg-muted/40 hover:bg-muted px-2.5 py-1.5 font-medium transition-colors"
+              aria-label="Buka command palette"
+            >
+              <Search className="size-3.5" /> Cari…
+              <kbd className="pointer-events-none inline-flex h-4.5 items-center gap-0.5 rounded border bg-background px-1.5 font-mono text-[10px] font-semibold text-muted-foreground">
+                <Command className="size-2.5" />K
+              </kbd>
+            </button>
+            <ThemeToggle />
             <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-950 text-amber-200 px-3 py-1.5 font-semibold">
               Gunara Group · 2 PT · 43 Domain
             </span>
@@ -202,16 +298,18 @@ export function AppShell() {
         </header>
 
         <div className="px-4 sm:px-6 lg:px-8 py-6 lg:py-8 max-w-6xl mx-auto pb-16">
-          {content()}
+          <PageTransition sectionKey={active}>{content()}</PageTransition>
         </div>
 
         <footer className="border-t bg-card/60 mt-auto">
           <div className="max-w-6xl mx-auto px-6 py-4 flex flex-wrap items-center justify-between gap-2 text-xs text-muted-foreground">
-            <p><strong className="text-emerald-800 dark:text-emerald-400">GUNARA OS v1.0</strong> — Dibangun dari doc-gunaracorp: Hulu → Mesin → Hilir.</p>
+            <p><strong className="text-emerald-800 dark:text-emerald-400">GUNARA OS v2.0</strong> — Dibangun dari doc-gunaracorp: Hulu → Mesin → Hilir.</p>
             <p>Untuk 3 wajah yang setiap pagi masih memanggil &ldquo;Ayah&rdquo;. 🏛️</p>
           </div>
         </footer>
       </main>
+
+      <CommandPalette open={paletteOpen} onOpenChange={setPaletteOpen} onNavigate={go} />
     </div>
   );
 }

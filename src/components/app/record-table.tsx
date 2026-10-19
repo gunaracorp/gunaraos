@@ -1,9 +1,16 @@
 "use client";
 
-import { useMemo, useState } from "react";
+// ═══════════════════════════════════════════════════
+// GUNARA OS — RecordTable generik (config-driven)
+// Standar internasional: skeleton shimmer, row stagger,
+// empty state bermakna, form dialog bebas anti-pattern.
+// ═══════════════════════════════════════════════════
+
+import { useEffect, useState } from "react";
+import { motion, useReducedMotion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import {
-  Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger,
+  Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -12,7 +19,7 @@ import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Plus, Pencil, Trash2, MoreHorizontal } from "lucide-react";
+import { Plus, Pencil, Trash2, MoreHorizontal, Inbox } from "lucide-react";
 import {
   DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
@@ -37,6 +44,7 @@ interface RecordTableProps {
 export function RecordTable({ config, rows, loading, onCreate, onUpdate, onDelete, extraRowActions, hideAdd, addLabel }: RecordTableProps) {
   const [editing, setEditing] = useState<Row | null>(null);
   const [open, setOpen] = useState(false);
+  const reduce = useReducedMotion();
 
   const startAdd = () => { setEditing(null); setOpen(true); };
   const startEdit = (row: Row) => { setEditing(row); setOpen(true); };
@@ -49,9 +57,11 @@ export function RecordTable({ config, rows, loading, onCreate, onUpdate, onDelet
           {config.subtitle && <p className="text-xs text-muted-foreground max-w-2xl mt-0.5">{config.subtitle}</p>}
         </div>
         {!hideAdd && (
-          <Button size="sm" onClick={startAdd} className="gap-1.5">
-            <Plus className="size-4" /> {addLabel || "Tambah"}
-          </Button>
+          <motion.div whileTap={reduce ? {} : { scale: 0.95 }} transition={{ type: "spring", stiffness: 400, damping: 20 }}>
+            <Button size="sm" onClick={startAdd} className="gap-1.5">
+              <Plus className="size-4" /> {addLabel || "Tambah"}
+            </Button>
+          </motion.div>
         )}
       </div>
 
@@ -65,18 +75,34 @@ export function RecordTable({ config, rows, loading, onCreate, onUpdate, onDelet
                     {c.label}
                   </th>
                 ))}
-                <th className="w-12" />
+                <th className="w-12"><span className="sr-only">Aksi</span></th>
               </tr>
             </thead>
             <tbody>
-              {loading && (
-                <tr><td colSpan={config.columns.length + 1} className="px-3 py-8 text-center text-muted-foreground">Memuat…</td></tr>
-              )}
+              {loading && <SkeletonRows cols={config.columns.length + 1} />}
               {!loading && rows.length === 0 && (
-                <tr><td colSpan={config.columns.length + 1} className="px-3 py-8 text-center text-muted-foreground">{config.emptyText || "Belum ada data. Data menakutkan hanya sebelum ditulis — tulis dulu."}</td></tr>
+                <tr>
+                  <td colSpan={config.columns.length + 1} className="px-3 py-10">
+                    <motion.div
+                      initial={reduce ? { opacity: 0 } : { opacity: 0, scale: 0.97 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      transition={{ duration: 0.4 }}
+                      className="flex flex-col items-center gap-2 text-center"
+                    >
+                      <Inbox className="size-8 text-muted-foreground/40" />
+                      <p className="text-sm text-muted-foreground max-w-md">{config.emptyText || "Belum ada data. Data menakutkan hanya sebelum ditulis — tulis dulu."}</p>
+                    </motion.div>
+                  </td>
+                </tr>
               )}
-              {rows.map((row) => (
-                <tr key={row.id} className="border-b last:border-0 hover:bg-muted/40 transition-colors">
+              {rows.map((row, i) => (
+                <motion.tr
+                  key={row.id}
+                  initial={reduce ? { opacity: 0 } : { opacity: 0, y: 6 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.35, delay: Math.min(i * 0.03, 0.3), ease: "easeOut" }}
+                  className="border-b last:border-0 hover:bg-muted/40 transition-colors"
+                >
                   {config.columns.map((c) => (
                     <td key={c.name} className={cn("px-3 py-2.5 align-top", c.hideOnMobile && "hidden md:table-cell")}>
                       {c.render ? c.render(row) : <span className="line-clamp-2">{String(row[c.name] ?? "—")}</span>}
@@ -87,7 +113,7 @@ export function RecordTable({ config, rows, loading, onCreate, onUpdate, onDelet
                       {extraRowActions?.(row)}
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild>
-                          <Button variant="ghost" size="icon" className="size-7"><MoreHorizontal className="size-4" /></Button>
+                          <Button variant="ghost" size="icon" className="size-7" aria-label="Aksi baris"><MoreHorizontal className="size-4" /></Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end">
                           <DropdownMenuItem onClick={() => startEdit(row)}><Pencil className="size-4 mr-2" /> Ubah</DropdownMenuItem>
@@ -101,7 +127,7 @@ export function RecordTable({ config, rows, loading, onCreate, onUpdate, onDelet
                       </DropdownMenu>
                     </div>
                   </td>
-                </tr>
+                </motion.tr>
               ))}
             </tbody>
           </table>
@@ -122,6 +148,22 @@ export function RecordTable({ config, rows, loading, onCreate, onUpdate, onDelet
   );
 }
 
+function SkeletonRows({ cols }: { cols: number }) {
+  return (
+    <>
+      {Array.from({ length: 4 }).map((_, i) => (
+        <tr key={`sk-${i}`} className="border-b last:border-0">
+          {Array.from({ length: cols }).map((__, j) => (
+            <td key={j} className="px-3 py-3">
+              <div className="shimmer h-4 rounded bg-muted" style={{ width: j === 0 ? "70%" : `${45 + ((i + j) % 3) * 15}%` }} />
+            </td>
+          ))}
+        </tr>
+      ))}
+    </>
+  );
+}
+
 export function RecordFormDialog({ config, open, onOpenChange, initial, onSubmit }: {
   config: ResourceConfig;
   open: boolean;
@@ -132,17 +174,15 @@ export function RecordFormDialog({ config, open, onOpenChange, initial, onSubmit
   const [saving, setSaving] = useState(false);
   const [form, setForm] = useState<Row>({});
 
-  useMemo(() => {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  // Sinkron form saat dialog dibuka / sumber data berubah (useEffect, bukan setState-saat-render)
+  useEffect(() => {
     const base: Row = {};
     for (const f of config.fields) base[f.name] = f.type === "checkbox" ? false : f.type === "number" || f.type === "money" ? 0 : "";
     if (config.defaults) Object.assign(base, config.defaults);
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const merged: Row = { ...base };
     if (initial) {
       for (const f of config.fields) {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const v = (initial as any)[f.name];
+        const v = initial[f.name];
         if (v !== undefined && v !== null) merged[f.name] = v;
       }
     }

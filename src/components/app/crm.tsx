@@ -17,7 +17,7 @@ import { RecordTable } from "./record-table";
 import { useRecords } from "./use-records";
 import {
   CLIENT_CONFIG, RELATION_CONFIG, POLITICAL_CONFIG,
-  BadgeStatus, fmtDate,
+  BadgeStatus, fmtDate, todayISO,
 } from "@/lib/gunara";
 import { cn } from "@/lib/utils";
 
@@ -34,7 +34,7 @@ export function CrmSection() {
     return m;
   }, [client.items]);
 
-  const today = new Date().toISOString().slice(0, 10);
+  const today = todayISO(); // WIB-safe (lokal, bukan UTC)
   const fuRows = useMemo(
     () => followUp.items.map((f) => ({
       ...f,
