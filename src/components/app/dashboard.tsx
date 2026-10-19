@@ -51,6 +51,8 @@ export function Dashboard({ onNavigate }: { onNavigate: (section: string) => voi
   const win = useRecords("winLog");
   const backlog = useRecords("backlogItem");
   const followUp = useRecords("followUp");
+  const bizCustomer = useRecords("customer");
+  const bizPermit = useRecords("permitApplication");
   const { values } = useSettings(["piagam", "aturanMutlak", "faseAktif"]);
   const { toast } = useToast();
   const reduce = useReducedMotion();
@@ -93,6 +95,16 @@ export function Dashboard({ onNavigate }: { onNavigate: (section: string) => voi
   const aturanHariIni = now && aturan.length > 0 ? aturan[now.getDate() % aturan.length] : "";
   const pola = now ? POLA[now.getDay()] : null;
   const statsLoading = debt.loading || receivable.loading || client.loading || followUp.loading;
+
+  // ── Bisnis Hub: pipeline izin + pelanggan (metadata terlengkap) ──
+  const bizPipeline = useMemo(
+    () => bizPermit.items
+      .filter((p) => !["TERBIT", "GAGAL", "BATAL"].includes(p.status))
+      .reduce((a, p) => a + (p.harga || 0), 0),
+    [bizPermit.items]
+  );
+  const bizProses = bizPermit.items.filter((p) => p.tahap === 4 && p.status === "PROSES").length;
+  const bizPelanggan = bizCustomer.items.length;
 
   const mitDone = todayLog ? [todayLog.done1, todayLog.done2, todayLog.done3].filter(Boolean).length : 0;
   const mitFilled = todayLog ? [todayLog.mit1, todayLog.mit2, todayLog.mit3].filter(Boolean).length : 0;
@@ -332,6 +344,28 @@ export function Dashboard({ onNavigate }: { onNavigate: (section: string) => voi
         <StatMini loading={statsLoading} icon={<Users className="size-4" />} label="Klien Aktif + Retainer" value={klienAktif} format={(v) => String(Math.round(v))} onClick={() => onNavigate("klien")} hint="Uang berulang = mesin" />
         <StatMini loading={statsLoading} icon={<HandCoins className="size-4" />} label="Follow-Up Telat" value={fuTelat} format={(v) => String(Math.round(v))} tone={fuTelat > 0 ? "red" : "green"} onClick={() => onNavigate("klien")} hint={fuTelat > 0 ? "Tindak sekarang!" : "Rapi — bagus"} />
       </Stagger>
+
+      {/* ═══ Bisnis Hub strip — mesin konsultan perizinan ═══ */}
+      <FadeUp delay={0.05}>
+        <button
+          onClick={() => onNavigate("perizinan")}
+          className="w-full text-left rounded-xl border-2 border-emerald-800/20 bg-gradient-to-r from-emerald-50 via-amber-50 to-emerald-50 dark:from-emerald-950/40 dark:via-amber-950/20 dark:to-emerald-950/40 p-4 flex flex-wrap items-center gap-x-6 gap-y-2 hover:shadow-md transition-shadow group"
+        >
+          <div className="flex items-center gap-2.5 min-w-0">
+            <span className="size-9 rounded-lg bg-emerald-700 text-amber-200 flex items-center justify-center font-black text-sm flex-none">G</span>
+            <div>
+              <p className="text-xs font-black tracking-wide text-emerald-900 dark:text-emerald-300">BISNIS HUB — GUNARA GROUP</p>
+              <p className="text-[11px] text-muted-foreground">pusatperizinan.com · gunara.web.id — mesin konsultan perizinan</p>
+            </div>
+          </div>
+          <div className="flex flex-wrap gap-x-5 gap-y-1 text-xs ml-auto">
+            <span className="text-muted-foreground">Pelanggan: <strong className="text-foreground tabular-nums">{bizPelanggan}</strong></span>
+            <span className="text-muted-foreground">Izin diproses: <strong className="text-foreground tabular-nums">{bizProses}</strong></span>
+            <span className="text-muted-foreground">Pipeline aktif: <strong className="text-emerald-700 dark:text-emerald-400 tabular-nums">{rupiah(bizPipeline)}</strong></span>
+            <span className="text-emerald-700 dark:text-emerald-400 font-bold opacity-0 group-hover:opacity-100 transition-opacity">Buka →</span>
+          </div>
+        </button>
+      </FadeUp>
 
       {/* ═══ Win terakhir + aturan hari ini + quote ═══ */}
       <div className="grid lg:grid-cols-3 gap-4">

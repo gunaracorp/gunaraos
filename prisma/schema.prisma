@@ -252,3 +252,190 @@ model Agent {
   tupoksi   String   @default("")
   prompt    String   @default("")
 }
+
+// ═══════════════════════════════════════════════════════
+// 💼 BISNIS HUB — Metadata Terlengkap Gunara Group
+// (pelanggan · perusahaan · izin · sosmed · kredensial)
+// ═══════════════════════════════════════════════════════
+
+// ── 1. AKUN PENGGUNA (user id · email · password · Google) ──
+model AppUser {
+  id                String    @id @default(cuid())
+  nama              String
+  email             String    @unique
+  googleEmail       String    @default("") // akun Google terhubung (SSO/Gmail)
+  googleId          String    @default("")
+  phone             String    @default("")
+  avatar            String    @default("")
+  passwordHash      String    @default("") // scrypt "iterations:salt:hash" — TIDAK pernah dikirim ke klien
+  passwordHint      String    @default("") // pengingat non-sensitif (bukan password!)
+  passwordStrength  String    @default("") // LEMAH | SEDANG | KUAT | SANGAT KUAT
+  passwordChangedAt String    @default("")
+  role              String    @default("OWNER") // OWNER | ADMIN | STAFF | KONSULTAN | VIEWER
+  status            String    @default("AKTIF") // AKTIF | DINONAKTIFKAN | TERKUNCI | UNDANGAN
+  twoFactorType     String    @default("NONE") // NONE | APP | SMS | EMAIL | HARDWARE
+  lastLoginAt       String    @default("")
+  failedAttempts    Int       @default(0)
+  companyId         String    @default("") // perusahaan tempat user bekerja
+  jabatan           String    @default("")
+  notes             String    @default("")
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+}
+
+// ── 2. DATABASE PELANGGAN (metadata 360°) ──
+model Customer {
+  id           String   @id @default(cuid())
+  nama         String
+  jenis        String   @default("INDIVIDU") // INDIVIDU | BADAN_USAHA
+  email        String   @default("")
+  googleEmail  String   @default("")
+  phone        String   @default("")
+  waPhone      String   @default("")
+  ktpNo        String   @default("")
+  npwpNo       String   @default("")
+  birthDate    String   @default("")
+  gender       String   @default("") // L | P | -
+  pekerjaan    String   @default("")
+  address      String   @default("")
+  city         String   @default("")
+  province     String   @default("")
+  postalCode   String   @default("")
+  sumber       String   @default("") // WA | IG | FB | TIKTOK | WEB | SEO | REFERRAL | OFFLINE
+  referralBy   String   @default("")
+  status       String   @default("LEAD") // LEAD | PROSPEK | KLIEN | RETAINER | LAPSED | CHURN
+  tags         String   @default("")
+  preferensi   String   @default("WA") // WA | EMAIL | TELEPON | KUNJUNGAN
+  waktuKontak  String   @default("") // pagi / siang / sore / malam
+  totalBelanja Float    @default(0)
+  lastDealAt   String   @default("")
+  companyId    String   @default("") // perusahaan miliknya (jika badan usaha)
+  notes        String   @default("")
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+// ── 3. DATABASE PERUSAHAAN (badan usaha klien & grup sendiri) ──
+model Company {
+  id             String   @id @default(cuid())
+  nama           String
+  legalName      String   @default("") // nama resmi di akta
+  entityType     String   @default("PT") // PT | CV | PMA | PO-UPTA | FIRMA | KOPERASI | YAYASAN | PERSEORANGAN
+  nib            String   @default("")
+  npwp           String   @default("")
+  skAhu          String   @default("") // SK Kemenkumham, contoh AHU-038293.AH.01.30.Tahun 2024
+  sbuNo          String   @default("")
+  kblis          String   @default("") // daftar KBLI, pisah koma
+  bidangUsaha    String   @default("")
+  deskripsi      String   @default("")
+  directorName   String   @default("") // direktur/pemilik
+  shareholders   String   @default("")
+  modalDasar     Float    @default(0)
+  modalDisetor   Float    @default(0)
+  omzetTahunan   Float    @default(0)
+  employeeCount  Int      @default(0)
+  address        String   @default("")
+  city           String   @default("")
+  province       String   @default("")
+  website        String   @default("")
+  email          String   @default("")
+  phone          String   @default("")
+  establishedAt  String   @default("") // tanggal berdiri
+  customerId     String   @default("") // pemilik (link pelanggan)
+  isGrupSendiri  Boolean  @default(false) // true = perusahaan grup Gunara sendiri
+  status         String   @default("AKTIF") // PROSPEK | AKTIF | SELESAI | NONAKTIF
+  notes          String   @default("")
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+}
+
+// ── 4. DATABASE SOSIAL MEDIA (aset digital + kredensial terenkripsi) ──
+model SocialAccount {
+  id             String   @id @default(cuid())
+  platform       String   @default("INSTAGRAM") // INSTAGRAM | FACEBOOK | TIKTOK | YOUTUBE | X | LINKEDIN | WA_BUSINESS | GOOGLE_BISNIS | SHOPEE | TOKOPEDIA | TELEGRAM | LAINNYA
+  handle         String   @default("") // @username
+  displayName    String   @default("")
+  url            String   @default("")
+  kategori       String   @default("BISNIS") // BISNIS | PRIBADI | PORTFOLIO | KOMUNITAS | LAINNYA
+  emailUsed      String   @default("") // email login
+  phoneUsed      String   @default("")
+  passwordEnc    String   @default("") // AES-256-GCM — TIDAK dikirim saat list
+  recoveryEmail  String   @default("")
+  recoveryPhone  String   @default("")
+  twoFactor      Boolean  @default(false)
+  followers      Int      @default(0)
+  following      Int      @default(0)
+  postCount      Int      @default(0)
+  engagementPct  Float    @default(0)
+  niche          String   @default("")
+  cadencePerWeek Int      @default(0) // target posting per minggu
+  lastPostAt     String   @default("")
+  linkedCompanyId String  @default("")
+  status         String   @default("AKTIF") // AKTIF | DORMAN | DITANGGUHKAN | DIJUAL | KOMPROMI | DITUTUP
+  tags           String   @default("")
+  notes          String   @default("")
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+}
+
+// ── 5. BRANKAS KREDENSIAL UNIVERSAL (email Google & semua akun) ──
+model VaultEntry {
+  id             String   @id @default(cuid())
+  label          String   // nama akun, contoh "Google Workspace — pusatperizinan.com"
+  category       String   @default("EMAIL_GOOGLE") // EMAIL_GOOGLE | EMAIL_LAIN | SOSMED | MARKETPLACE | BANK | PAYMENT | OSS | PAJAK | HOSTING | AI_TOOLS | LAINNYA
+  identifier     String   @default("") // email / username
+  passwordEnc    String   @default("") // AES-256-GCM
+  pinEnc         String   @default("") // PIN banking, AES-256-GCM
+  backupCodesEnc String   @default("") // kode cadangan 2FA, AES-256-GCM
+  url            String   @default("")
+  recoveryEmail  String   @default("")
+  recoveryPhone  String   @default("")
+  twoFactorType  String   @default("NONE") // NONE | APP | SMS | EMAIL | HARDWARE
+  ownerName      String   @default("") // a.n. siapa
+  linkedCompanyId String  @default("")
+  strength       String   @default("") // LEMAH | SEDANG | KUAT | SANGAT KUAT (dihitung server saat simpan)
+  lastRotatedAt  String   @default("") // terakhir ganti password
+  status         String   @default("AKTIF") // AKTIF | DINONAKTIFKAN | KOMPROMI
+  notes          String   @default("") // catatan aman (bukan password)
+  tags           String   @default("")
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+}
+
+// ── 6. TRACKER PERIZINAN (alur 5 langkah ISO gunara.web.id) ──
+model PermitApplication {
+  id            String   @id @default(cuid())
+  layananKode   String   @default("") // kode ServiceCatalog (NIB, PT, AMDAL…)
+  namaLayanan   String
+  kategori      String   @default("")
+  customerId    String   @default("")
+  customerName  String   @default("")
+  companyId     String   @default("")
+  companyName   String   @default("")
+  tahap         Int      @default(1) // 1-KONSULTASI 2-PENAWARAN 3-KONTRAK 4-PROSES 5-GARANSI
+  status        String   @default("PENAWARAN") // PENAWARAN | KONTRAK | PROSES | TERBIT | GAGAL | BATAL
+  instansi      String   @default("") // OSS RBA | Kemenkumham | BPOM | BSN | BPJPH | BKPM | Kemenaker | DLH | …
+  harga         Float    @default(0)  // nilai deal ke klien
+  biayaPemerintah Float  @default(0)  // biaya resmi (PNBP dll)
+  dpDiterima    Float    @default(0)
+  tanggalMasuk  String   @default("")
+  targetSelesai String   @default("")
+  tanggalTerbit String   @default("")
+  dokumenUrl    String   @default("")
+  notes         String   @default("")
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
+
+// ── 7. KATALOG LAYANAN (46 layanan gunara.web.id — seeded) ──
+model ServiceCatalog {
+  kode       String  @id // NIB, PT, AMDAL, …
+  nama       String
+  kategori   String
+  deskripsi  String  @default("")
+  instansi   String  @default("")
+  durasiMin  Int     @default(1)   // hari kerja (approx)
+  durasiMaks Int     @default(1)
+  hargaMulai Float   @default(0)
+  aktif      Boolean @default(true)
+}

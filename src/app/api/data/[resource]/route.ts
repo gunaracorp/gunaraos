@@ -1,10 +1,11 @@
 import { NextResponse } from "next/server";
 import { db } from "@/lib/db";
+import { encryptSecretsFor, stripSecretsFor } from "@/lib/crypto";
 
 /**
  * Generic CRUD API untuk semua resource GUNARA OS.
- * GET    /api/data/[resource]          → list
- * POST   /api/data/[resource]          → create (dailyLog: upsert by tanggal)
+ * GET    /api/data/[resource]          → list (field rahasia di-strip otomatis)
+ * POST   /api/data/[resource]          → create (dailyLog: upsert by tanggal; field rahasia dienkripsi)
  */
 
 const MODELS: Record<string, string> = {
@@ -27,6 +28,13 @@ const MODELS: Record<string, string> = {
   domain: "domain",
   agent: "agent",
   setting: "setting",
+  appUser: "appUser",
+  customer: "customer",
+  company: "company",
+  socialAccount: "socialAccount",
+  vaultEntry: "vaultEntry",
+  permitApplication: "permitApplication",
+  serviceCatalog: "serviceCatalog",
 };
 
 // Model dengan urutan custom (setting tidak punya createdAt)
@@ -36,6 +44,8 @@ const ORDERED: Record<string, Record<string, string>> = {
   dailyLog: { tanggal: "desc" },
   weeklyReview: { createdAt: "desc" },
   setting: { key: "asc" },
+  serviceCatalog: { kode: "asc" },
+  permitApplication: { tahap: "asc" },
 };
 
  
@@ -57,7 +67,7 @@ export async function GET(req: Request, ctx: { params: Promise<{ resource: strin
     resource === "debt" ? { payments: true } : resource === "client" ? { followUps: true } : undefined;
   const orderBy = ORDERED[resource] || { createdAt: "desc" };
   const items = await model.findMany({ where, include, orderBy });
-  return NextResponse.json({ items });
+  return NextResponse.json({ items: stripSecretsFor(resource, items) });
 }
 
 export async function POST(req: Request, ctx: { params: Promise<{ resource: string }> }) {
@@ -76,8 +86,10 @@ export async function POST(req: Request, ctx: { params: Promise<{ resource: stri
       }
     }
     if (body.id) delete body.id;
-    const item = await model.create({ data: body });
-    return NextResponse.json({ item });
+    const { data, error } = encryptSecretsFor(resource, body);
+    if (error) return NextResponse.json({ error }, { status: 400 });
+    const item = await model.create({ data });
+    return NextResponse.json({ item: stripSecretsFor(resource, [item])[0] });
   } catch (e) {
     console.error("POST error", resource, e);
     return NextResponse.json({ error: String(e) }, { status: 400 });

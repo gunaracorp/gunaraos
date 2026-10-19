@@ -72,3 +72,28 @@ Work Log:
 Stage Summary:
 - GUNARA OS v2.1: kebal penuh terhadap kelas error hydration Radix/React 19.2 — CommandPalette tak lagi ikut hydration, semua trigger/title/description Radix ber-suppressHydrationWarning, lint 100% bersih, aksesibilitas dialog lengkap (title+description)
 - Jika user masih melihat error lama: hard refresh (Ctrl+Shift+R) — error tersebut bersifat recoverable (console-only, tidak merusak fungsionalitas) dan hanya muncul saat HTML lama ter-hydrate
+
+---
+Task ID: 4
+Agent: Main Agent (Z.ai)
+Task: Bisnis Hub v3.0 — metadata terlengkap (user/email/password, pelanggan, perusahaan, sosial media), tools konsultan dari audit pusatperizinan.com & gunara.web.id, tutorial semua fitur
+
+Work Log:
+- Audit 2 website user: pusatperizinan.com (#1 business licensing consultant, 1.247+ klien, AI license finder) + gunara.web.id (46 kategori layanan lengkap harga/durasi/instansi, alur 5 langkah ISO 9001:2015, 38 provinsi, BCA 0860742187, AHU-038293.AH.01.30.Tahun 2024)
+- Prisma +7 model: AppUser (scrypt, role, 2FA, failedAttempts), Customer (25 field metadata 360°: KTP/NPWP/sumber/preferensi), Company (NIB/NPWP/SK AHU/KBLI/modal/isGrupSendiri), SocialAccount (passwordEnc AES-256-GCM, metrik, cadence), VaultEntry (11 kategori: EMAIL_GOOGLE/OSS/PAJAK/BANK…, password+PIN+backupCodes terenkripsi), PermitApplication (tahap 1-5 ISO, harga/biaya/DP), ServiceCatalog (46 layanan seeded)
+- src/lib/crypto.ts (standar NIST/OWASP): AES-256-GCM (encrypt/decrypt), scrypt hashPassword/verifyPassword timing-safe, passwordStrength NIST SP 800-63B, encryptSecretsFor/stripSecretsFor/REVEALABLE
+- API generik upgrade: MODELS +7 resource, enkripsi otomatis POST/PATCH, strip rahasia GET, endpoint reveal ?reveal=password|pin|backupCodes pada [id]/route.ts (GET baru)
+- Katalog 46 layanan: src/lib/service-catalog.ts + Pencari Izin rules engine src/lib/license-finder.ts (10 sektor × skala × 9 flag → prioritas WAJIB→OPSIONAL + estimasi biaya)
+- gunara.tsx: 6 config baru (CUSTOMER/COMPANY/PERMIT/SOCIAL/VAULT/APPUSER) + statusTone diperluas + PERMIT_STAGE_META
+- 4 section UI baru (semua beranimasi FadeUp/spring/reduced-motion-safe): bisnis.tsx (Database: Pelanggan+Perusahaan + 4 stat), perizinan.tsx (Kanban 5 tahap dengan pindah tahap otomatis-status ISO + Katalog searchable + Pencari Izin + PermitFormDialog), aset-digital.tsx (Sosmed + Brankas + Pengguna, SecretRowActions reveal/copy, VaultHealth OWASP), guide.tsx (Tutorial 18 panduan searchable + accordion + tombol lompat section)
+- nav.ts: grup BISNIS HUB (3) + PANDUAN (1) → total 19 section; app-shell wired + badge BISNIS HUB AKTIF + v3.0
+- Dashboard: strip Bisnis Hub (pelanggan/izin/pipeline Rp) klik → perizinan
+- seed-bisnis.ts: 46 layanan + 2 perusahaan grup (Gunara Consultant & PusatPerizinan.com lengkap data audit) + OWNER Gugun Gunara + 2 brankas + 3 sosmed + 5 pelanggan (dari testimoni asli) + 4 pengurusan — idempoten
+- Insiden ops: dev server korup (loop ENOENT .next) → scripts/restart-dev.sh (clean restart + tunggu Ready); API 404 resource baru teratasi
+- Verifikasi browser end-to-end: palette 19 section, kanban 5 tahap + pipeline Rp 24 jt, finder kuliner→11 izin (6 WAJIB) → 9 izin masuk tracker via 1 klik, brankas reveal "ContohVault#2026!Ganti" terdekripsi, VaultHealth "PERLU PERHATIAN" (2FA 1), CRUD pelanggan baru sukses, Pengguna OWNER tampil, tutorial 18 panduan + lompat section bekerja, 0 hydration error (console + dev.log), lint 0/0, dark mode + mobile 390px OK
+- Round-trip keamanan via curl: POST password → tersimpan terenkripsi (strength SANGAT KUAT, enc field tidak ada di response) → reveal benar → delete bersih
+
+Stage Summary:
+- GUNARA OS v3.0 = OS pribadi + Bisnis Hub konsultan perizinan penuh: database metadata terlengkap (pelanggan 25 field, perusahaan legalitas, sosmed, brankas kredensial terenkripsi, pengguna), tracker izin 5 tahap ISO, katalog 46 layanan, Pencari Izin transparan, tutorial 18 panduan in-app
+- Keamanan: password user = scrypt; kredensial = AES-256-GCM; tidak ada rahasia di response list; reveal via endpoint eksklusif; set GUNARA_VAULT_KEY untuk produksi
+- Screenshot verifikasi: download/v3-*.png (12 buah)

@@ -20,6 +20,10 @@ import { CrmSection, RelationsSection } from "@/components/app/crm";
 import { LearningSection, DocumentationSection } from "@/components/app/mesin-lain";
 import { DailySection, WeeklySection, BacklogSection, DecisionsSection } from "@/components/app/hilir";
 import { DomainsSection, AgentsSection, SystemSection, RoadmapSection } from "@/components/app/arsenal";
+import { BisnisSection } from "@/components/app/bisnis";
+import { PerizinanSection } from "@/components/app/perizinan";
+import { AsetDigitalSection } from "@/components/app/aset-digital";
+import { TutorialSection } from "@/components/app/guide";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTitle, SheetDescription, SheetTrigger } from "@/components/ui/sheet";
@@ -55,7 +59,7 @@ function SidebarContent({
           </motion.div>
           <div>
             <p className="font-extrabold tracking-tight text-amber-50 leading-none">GUNARA OS</p>
-            <p className="text-[11px] text-emerald-200/70 mt-1">Sistem Operasi Hidup · v2.0</p>
+            <p className="text-[11px] text-emerald-200/70 mt-1">Sistem Operasi Hidup · v3.0</p>
           </div>
         </motion.div>
       </div>
@@ -97,6 +101,10 @@ function SidebarContent({
           &ldquo;Prak burukeun — segerakan kesadaran. Ulah edan, kudu eling.&rdquo;
         </p>
         <p className="text-[10px] text-emerald-200/40 mt-1">Jam 17.00: tutup laptop. Anak-anak menunggu.</p>
+        <div className="mt-2 rounded-lg bg-emerald-900/60 border border-emerald-800 px-2.5 py-2">
+          <p className="text-[10px] font-bold text-amber-300 tracking-wide">BISNIS HUB AKTIF</p>
+          <p className="text-[10px] text-emerald-200/70 mt-0.5">pusatperizinan.com · gunara.web.id</p>
+        </div>
       </div>
     </div>
   );
@@ -204,6 +212,10 @@ export function AppShell() {
       case "agents": return <AgentsSection />;
       case "sistem": return <SystemSection />;
       case "roadmap": return <RoadmapSection />;
+      case "bisnis": return <BisnisSection />;
+      case "perizinan": return <PerizinanSection />;
+      case "asetdigital": return <AsetDigitalSection />;
+      case "tutorial": return <TutorialSection onNavigate={go} />;
       default: return <Dashboard onNavigate={go} />;
     }
   };
@@ -309,7 +321,7 @@ export function AppShell() {
 
         <footer className="border-t bg-card/60 mt-auto">
           <div className="max-w-6xl mx-auto px-6 py-4 flex flex-wrap items-center justify-between gap-2 text-xs text-muted-foreground">
-            <p><strong className="text-emerald-800 dark:text-emerald-400">GUNARA OS v2.0</strong> — Dibangun dari doc-gunaracorp: Hulu → Mesin → Hilir.</p>
+            <p><strong className="text-emerald-800 dark:text-emerald-400">GUNARA OS v3.0</strong> — Hulu → Mesin → Hilir + Bisnis Hub (metadata terlengkap).</p>
             <p>Untuk 3 wajah yang setiap pagi masih memanggil &ldquo;Ayah&rdquo;. 🏛️</p>
           </div>
         </footer>

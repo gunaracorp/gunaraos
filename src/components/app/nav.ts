@@ -5,6 +5,7 @@
 import {
   LayoutDashboard, Waves, Wallet, Users, Handshake, BookOpen, Trophy,
   Sun, CalendarCheck, Inbox, Scale, Globe, Bot, ShieldCheck, Target,
+  Briefcase, ScrollText, Lock, GraduationCap,
   type LucideIcon,
 } from "lucide-react";
 
@@ -12,7 +13,9 @@ export type SectionId =
   | "dashboard" | "hulu"
   | "keuangan" | "klien" | "relasi" | "belajar" | "dokumentasi"
   | "harian" | "mingguan" | "backlog" | "keputusan"
-  | "domain" | "agents" | "sistem" | "roadmap";
+  | "domain" | "agents" | "sistem" | "roadmap"
+  | "bisnis" | "perizinan" | "asetdigital"
+  | "tutorial";
 
 export interface NavItem { id: SectionId; label: string; icon: LucideIcon; desc?: string }
 export interface NavGroup { title: string; items: NavItem[] }
@@ -46,6 +49,18 @@ export const NAV: NavGroup[] = [
       { id: "agents", label: "15 AI Agents", icon: Bot, desc: "Role activation siap copy" },
       { id: "sistem", label: "Sistem", icon: ShieldCheck, desc: "Aturan · Ritual · Stack" },
       { id: "roadmap", label: "Roadmap 90 Hari", icon: Target, desc: "Grand Build" },
+    ],
+  },
+  {
+    title: "💼 BISNIS HUB — Gunara Group", items: [
+      { id: "bisnis", label: "Database Bisnis", icon: Briefcase, desc: "Pelanggan · Perusahaan" },
+      { id: "perizinan", label: "Perizinan", icon: ScrollText, desc: "Tracker ISO · Katalog · Finder" },
+      { id: "asetdigital", label: "Aset Digital", icon: Lock, desc: "Sosmed · Brankas · Pengguna" },
+    ],
+  },
+  {
+    title: "📚 PANDUAN", items: [
+      { id: "tutorial", label: "Tutorial Lengkap", icon: GraduationCap, desc: "Semua fitur, langkah demi langkah" },
     ],
   },
 ];

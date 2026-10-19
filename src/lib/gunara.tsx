@@ -75,9 +75,9 @@ export const fmtDateFull = (d: Date) =>
 
 // ── Badge styling util ──
 export function statusTone(s: string): "default" | "green" | "amber" | "red" | "gray" {
-  const green = ["LUNAS", "SELESAI", "KLIEN", "RETAINER", "LIVE", "MASUK"];
-  const amber = ["NEGOSIASI", "MENUNGGU", "TERJADWAL", "PIPIN", "CEK", "REDIRECT", "PLAN"];
-  const red = ["TERLAMBAT", "MACET", "TELAT", "MASA TENGGANG", "AKTIF-HUTANG"];
+  const green = ["LUNAS", "SELESAI", "KLIEN", "RETAINER", "LIVE", "MASUK", "TERBIT", "AKTIF", "KUAT", "SANGAT KUAT"];
+  const amber = ["NEGOSIASI", "MENUNGGU", "TERJADWAL", "PIPIN", "CEK", "REDIRECT", "PLAN", "PROSPEK", "PENAWARAN", "KONTRAK", "PROSES", "LEAD", "DORMAN", "SEDANG", "UNDANGAN", "DITANGGUHKAN"];
+  const red = ["TERLAMBAT", "MACET", "TELAT", "MASA TENGGANG", "AKTIF-HUTANG", "GAGAL", "BATAL", "CHURN", "KOMPROMI", "TERKUNCI", "LEMAH", "DIJUAL", "DITUTUP", "NONAKTIF"];
   if (green.includes(s)) return "green";
   if (amber.includes(s)) return "amber";
   if (red.includes(s)) return "red";
@@ -450,6 +450,308 @@ export const DOMAIN_CONFIG: ResourceConfig = {
 // ── Komponen kecil untuk render kolom (didefinisikan di lib agar config bisa pakai) ──
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
+
+// ═══════════════════════════════════════════════════
+// BISNIS HUB — Metadata Terlengkap
+// ═══════════════════════════════════════════════════
+
+const SUMBER_LEAD = [
+  { value: "WA", label: "WhatsApp" }, { value: "IG", label: "Instagram" }, { value: "FB", label: "Facebook" },
+  { value: "TIKTOK", label: "TikTok" }, { value: "WEB", label: "Website" }, { value: "SEO", label: "SEO/Google" },
+  { value: "REFERRAL", label: "Referral" }, { value: "OFFLINE", label: "Offline/Event" },
+];
+
+export const CUSTOMER_CONFIG: ResourceConfig = {
+  key: "customer",
+  title: "Database Pelanggan",
+  subtitle: "Metadata 360° per manusia — identitas, kontak, alamat, perilaku, preferensi. Satu sumber kebenaran.",
+  emptyText: "Belum ada pelanggan. Tambahkan lead pertama — setiap baris adalah potensi kontrak.",
+  fields: [
+    { name: "nama", label: "Nama lengkap", type: "text", required: true },
+    { name: "jenis", label: "Jenis", type: "select", options: [
+      { value: "INDIVIDU", label: "Individu" }, { value: "BADAN_USAHA", label: "Badan Usaha" },
+    ] },
+    { name: "phone", label: "Telepon", type: "text", placeholder: "0812…" },
+    { name: "waPhone", label: "WhatsApp", type: "text", placeholder: "62812… (format WA)" },
+    { name: "email", label: "Email", type: "text" },
+    { name: "googleEmail", label: "Email Google (akun terhubung)", type: "text" },
+    { name: "ktpNo", label: "No. KTP", type: "text" },
+    { name: "npwpNo", label: "No. NPWP", type: "text" },
+    { name: "birthDate", label: "Tanggal lahir", type: "date" },
+    { name: "gender", label: "Gender", type: "select", options: [
+      { value: "L", label: "Laki-laki" }, { value: "P", label: "Perempuan" }, { value: "-", label: "—" },
+    ] },
+    { name: "pekerjaan", label: "Pekerjaan / jabatan", type: "text" },
+    { name: "address", label: "Alamat", type: "textarea", full: true, rows: 2 },
+    { name: "city", label: "Kota", type: "text" },
+    { name: "province", label: "Provinsi", type: "text" },
+    { name: "postalCode", label: "Kode pos", type: "text" },
+    { name: "sumber", label: "Sumber lead", type: "select", options: SUMBER_LEAD },
+    { name: "referralBy", label: "Direferensikan oleh", type: "text" },
+    { name: "status", label: "Status", type: "select", options: [
+      { value: "LEAD", label: "Lead" }, { value: "PROSPEK", label: "Prospek" }, { value: "KLIEN", label: "Klien" },
+      { value: "RETAINER", label: "Retainer" }, { value: "LAPSED", label: "Lapsed" }, { value: "CHURN", label: "Churn" },
+    ] },
+    { name: "preferensi", label: "Preferensi kontak", type: "select", options: [
+      { value: "WA", label: "WhatsApp" }, { value: "EMAIL", label: "Email" },
+      { value: "TELEPON", label: "Telepon" }, { value: "KUNJUNGAN", label: "Kunjungan" },
+    ] },
+    { name: "waktuKontak", label: "Waktu nyaman dihubungi", type: "text", placeholder: "sore / malam / lunch" },
+    { name: "totalBelanja", label: "Total belanja (Rp)", type: "money" },
+    { name: "lastDealAt", label: "Deal terakhir", type: "date" },
+    { name: "companyId", label: "Perusahaan (ID Company bila ada)", type: "text" },
+    { name: "tags", label: "Tag (pisah koma)", type: "text", placeholder: "potensial, umroh, konstruksi" },
+    { name: "notes", label: "Catatan", type: "textarea", full: true, rows: 2 },
+  ],
+  columns: [
+    { name: "nama", label: "Nama", render: (r) => (
+      <div><p className="font-medium">{r.nama}</p><p className="text-xs text-muted-foreground">{r.city || r.province || "—"}</p></div>
+    ) },
+    { name: "jenis", label: "Jenis", render: (r) => <BadgeMini text={r.jenis} />, hideOnMobile: true },
+    { name: "waPhone", label: "Kontak", render: (r) => r.waPhone || r.phone || r.email || "—", hideOnMobile: true },
+    { name: "status", label: "Status", render: (r) => <BadgeStatus value={r.status} /> },
+    { name: "totalBelanja", label: "Belanja", render: (r) => rupiahShort(r.totalBelanja) },
+    { name: "sumber", label: "Sumber", render: (r) => <BadgeMini text={r.sumber || "—"} tone="gray" />, hideOnMobile: true },
+  ],
+};
+
+export const COMPANY_CONFIG: ResourceConfig = {
+  key: "company",
+  title: "Database Perusahaan",
+  subtitle: "Badan usaha klien & grup sendiri — NIB, NPWP, SK AHU, KBLI, modal, pengurus. Satu baris = satu entitas legal.",
+  emptyText: "Belum ada perusahaan. Mulai dari perusahaan grup sendiri, lalu klien badan usaha.",
+  fields: [
+    { name: "nama", label: "Nama dagang", type: "text", required: true },
+    { name: "legalName", label: "Nama resmi (di akta)", type: "text" },
+    { name: "entityType", label: "Bentuk badan", type: "select", options: [
+      { value: "PT", label: "PT" }, { value: "CV", label: "CV" }, { value: "PMA", label: "PT PMA" },
+      { value: "PO-UPTA", label: "PO/UPTA" }, { value: "FIRMA", label: "Firma" }, { value: "KOPERASI", label: "Koperasi" },
+      { value: "YAYASAN", label: "Yayasan" }, { value: "PERSEORANGAN", label: "Perseorangan" },
+    ] },
+    { name: "nib", label: "NIB", type: "text" },
+    { name: "npwp", label: "NPWP", type: "text" },
+    { name: "skAhu", label: "SK Kemenkumham (AHU)", type: "text", placeholder: "AHU-038293.AH.01.30.Tahun 2024" },
+    { name: "sbuNo", label: "No. SBU (bila konstruksi)", type: "text" },
+    { name: "kblis", label: "KBLI (pisah koma)", type: "text", full: true, placeholder: "69201, 70201, 63122" },
+    { name: "bidangUsaha", label: "Bidang usaha utama", type: "text" },
+    { name: "deskripsi", label: "Deskripsi", type: "textarea", full: true, rows: 2 },
+    { name: "directorName", label: "Direktur / pemilik", type: "text" },
+    { name: "shareholders", label: "Pemegang saham", type: "text" },
+    { name: "modalDasar", label: "Modal dasar (Rp)", type: "money" },
+    { name: "modalDisetor", label: "Modal disetor (Rp)", type: "money" },
+    { name: "omzetTahunan", label: "Omzet tahunan (Rp)", type: "money" },
+    { name: "employeeCount", label: "Jumlah karyawan", type: "number" },
+    { name: "address", label: "Alamat kantor", type: "textarea", full: true, rows: 2 },
+    { name: "city", label: "Kota", type: "text" },
+    { name: "province", label: "Provinsi", type: "text" },
+    { name: "website", label: "Website", type: "text" },
+    { name: "email", label: "Email resmi", type: "text" },
+    { name: "phone", label: "Telepon", type: "text" },
+    { name: "establishedAt", label: "Tanggal berdiri", type: "date" },
+    { name: "customerId", label: "Pemilik (ID Pelanggan)", type: "text" },
+    { name: "isGrupSendiri", label: "Perusahaan grup sendiri", type: "checkbox" },
+    { name: "status", label: "Status", type: "select", options: [
+      { value: "PROSPEK", label: "Prospek" }, { value: "AKTIF", label: "Aktif" },
+      { value: "SELESAI", label: "Selesai" }, { value: "NONAKTIF", label: "Nonaktif" },
+    ] },
+    { name: "notes", label: "Catatan", type: "textarea", full: true, rows: 2 },
+  ],
+  columns: [
+    { name: "nama", label: "Perusahaan", render: (r) => (
+      <div className="flex items-center gap-1.5">
+        <span className="font-medium">{r.nama}</span>
+        {r.isGrupSendiri && <BadgeMini text="GRUP" tone="green" />}
+      </div>
+    ) },
+    { name: "entityType", label: "Badan", render: (r) => <BadgeMini text={r.entityType} tone={r.entityType === "PT" ? "green" : "gray"} /> },
+    { name: "city", label: "Kota", hideOnMobile: true },
+    { name: "nib", label: "NIB", hideOnMobile: true, render: (r) => (r.nib ? <span className="font-mono text-xs">{r.nib}</span> : "—") },
+    { name: "status", label: "Status", render: (r) => <BadgeStatus value={r.status} /> },
+    { name: "website", label: "Website", hideOnMobile: true },
+  ],
+};
+
+export const PERMIT_CONFIG: ResourceConfig = {
+  key: "permitApplication",
+  title: "Tracker Pengurusan Izin",
+  subtitle: "Alur 5 langkah ISO 9001:2015: Konsultasi → Penawaran → Kontrak → Proses → Garansi. Posisi setiap berkas selalu terlihat.",
+  emptyText: "Belum ada pengurusan berjalan. Buat dari Katalog Layanan atau Pencari Izin.",
+  fields: [
+    { name: "namaLayanan", label: "Nama layanan", type: "text", required: true },
+    { name: "layananKode", label: "Kode layanan", type: "text", placeholder: "NIB / PT / AMDAL…" },
+    { name: "customerName", label: "Pelanggan", type: "text" },
+    { name: "companyName", label: "Perusahaan klien", type: "text" },
+    { name: "tahap", label: "Tahap (1-5)", type: "number" },
+    { name: "status", label: "Status", type: "select", options: [
+      { value: "PENAWARAN", label: "Penawaran" }, { value: "KONTRAK", label: "Kontrak" }, { value: "PROSES", label: "Proses" },
+      { value: "TERBIT", label: "Terbit" }, { value: "GAGAL", label: "Gagal" }, { value: "BATAL", label: "Batal" },
+    ] },
+    { name: "instansi", label: "Instansi tujuan", type: "text", placeholder: "OSS RBA / Kemenkumham / BPOM…" },
+    { name: "harga", label: "Nilai deal (Rp)", type: "money" },
+    { name: "biayaPemerintah", label: "Biaya pemerintah (Rp)", type: "money" },
+    { name: "dpDiterima", label: "DP diterima (Rp)", type: "money" },
+    { name: "tanggalMasuk", label: "Tanggal masuk", type: "date" },
+    { name: "targetSelesai", label: "Target selesai", type: "date" },
+    { name: "tanggalTerbit", label: "Tanggal terbit", type: "date" },
+    { name: "dokumenUrl", label: "Link dokumen (Drive/folder)", type: "text", full: true },
+    { name: "notes", label: "Catatan progres", type: "textarea", full: true, rows: 2 },
+  ],
+  columns: [
+    { name: "namaLayanan", label: "Layanan", render: (r) => (
+      <div><p className="font-medium">{r.namaLayanan}</p><p className="text-xs text-muted-foreground">{r.customerName || r.companyName || "—"}</p></div>
+    ) },
+    { name: "tahap", label: "Tahap", render: (r) => <BadgeMini text={`T${r.tahap} · ${TAHAP_NAMA[r.tahap] || "?"}`} tone={r.tahap >= 5 ? "green" : "amber"} /> },
+    { name: "harga", label: "Deal", render: (r) => rupiahShort(r.harga) },
+    { name: "status", label: "Status", render: (r) => <BadgeStatus value={r.status} /> },
+    { name: "targetSelesai", label: "Target", type: "date", render: (r) => fmtDate(r.targetSelesai), hideOnMobile: true },
+  ],
+};
+
+export const SOCIAL_CONFIG: ResourceConfig = {
+  key: "socialAccount",
+  title: "Database Sosial Media",
+  subtitle: "Aset digital Gunara Group — akun, kredensial terenkripsi, jangkauan, ritme konten. Password disimpan AES-256-GCM.",
+  emptyText: "Belum ada akun sosial media tercatat. Daftarkan semua akun bisnis — aset digital adalah nyawa marketing.",
+  fields: [
+    { name: "platform", label: "Platform", type: "select", options: [
+      { value: "INSTAGRAM", label: "Instagram" }, { value: "FACEBOOK", label: "Facebook" }, { value: "TIKTOK", label: "TikTok" },
+      { value: "YOUTUBE", label: "YouTube" }, { value: "X", label: "X (Twitter)" }, { value: "LINKEDIN", label: "LinkedIn" },
+      { value: "WA_BUSINESS", label: "WhatsApp Business" }, { value: "GOOGLE_BISNIS", label: "Google Bisnisku" },
+      { value: "SHOPEE", label: "Shopee" }, { value: "TOKOPEDIA", label: "Tokopedia" }, { value: "TELEGRAM", label: "Telegram" },
+      { value: "LAINNYA", label: "Lainnya" },
+    ] },
+    { name: "handle", label: "Username / handle", type: "text", required: true, placeholder: "@pusatperizinan" },
+    { name: "displayName", label: "Nama tampilan", type: "text" },
+    { name: "url", label: "URL profil", type: "text", full: true },
+    { name: "kategori", label: "Kategori akun", type: "select", options: [
+      { value: "BISNIS", label: "Bisnis" }, { value: "PRIBADI", label: "Pribadi" },
+      { value: "PORTFOLIO", label: "Portfolio" }, { value: "KOMUNITAS", label: "Komunitas" },
+    ] },
+    { name: "emailUsed", label: "Email login", type: "text" },
+    { name: "phoneUsed", label: "Nomor login", type: "text" },
+    { name: "password", label: "Password (AES-256-GCM — kosongkan bila tak diubah)", type: "text" },
+    { name: "recoveryEmail", label: "Email pemulihan", type: "text" },
+    { name: "recoveryPhone", label: "Nomor pemulihan", type: "text" },
+    { name: "twoFactor", label: "2FA aktif?", type: "checkbox" },
+    { name: "followers", label: "Followers", type: "number" },
+    { name: "following", label: "Following", type: "number" },
+    { name: "postCount", label: "Jumlah post", type: "number" },
+    { name: "engagementPct", label: "Engagement (%)", type: "number" },
+    { name: "niche", label: "Niche / topik", type: "text" },
+    { name: "cadencePerWeek", label: "Target post/minggu", type: "number" },
+    { name: "lastPostAt", label: "Post terakhir", type: "date" },
+    { name: "linkedCompanyId", label: "Perusahaan terkait", type: "text" },
+    { name: "status", label: "Status", type: "select", options: [
+      { value: "AKTIF", label: "Aktif" }, { value: "DORMAN", label: "Dorman" }, { value: "DITANGGUHKAN", label: "Ditangguhkan" },
+      { value: "DIJUAL", label: "Dijual" }, { value: "KOMPROMI", label: "Kompromi/hack" }, { value: "DITUTUP", label: "Ditutup" },
+    ] },
+    { name: "tags", label: "Tag (pisah koma)", type: "text" },
+    { name: "notes", label: "Catatan", type: "textarea", full: true, rows: 2 },
+  ],
+  columns: [
+    { name: "handle", label: "Akun", render: (r) => (
+      <div><p className="font-medium font-mono text-xs">{r.handle}</p><p className="text-xs text-muted-foreground">{r.displayName || r.platform}</p></div>
+    ) },
+    { name: "platform", label: "Platform", render: (r) => <BadgeMini text={r.platform} /> },
+    { name: "followers", label: "Followers", render: (r) => (r.followers || 0).toLocaleString("id-ID") },
+    { name: "twoFactor", label: "2FA", render: (r) => <BadgeMini text={r.twoFactor ? "AKTIF" : "BELUM"} tone={r.twoFactor ? "green" : "red"} />, hideOnMobile: true },
+    { name: "status", label: "Status", render: (r) => <BadgeStatus value={r.status} /> },
+  ],
+};
+
+export const VAULT_CONFIG: ResourceConfig = {
+  key: "vaultEntry",
+  title: "Brankas Kredensial",
+  subtitle: "Satu brankas untuk semua: email Google, OSS, pajak, bank, marketplace. Enkripsi AES-256-GCM — kunci tidak pernah keluar server.",
+  emptyText: "Brankas masih kosong. Masukkan akun pertama — mulai dari email Google utama grup.",
+  fields: [
+    { name: "label", label: "Nama akun", type: "text", required: true, full: true, placeholder: "Google Workspace — pusatperizinan.com" },
+    { name: "category", label: "Kategori", type: "select", options: [
+      { value: "EMAIL_GOOGLE", label: "Email Google" }, { value: "EMAIL_LAIN", label: "Email Lain" }, { value: "SOSMED", label: "Sosial Media" },
+      { value: "MARKETPLACE", label: "Marketplace" }, { value: "BANK", label: "Bank" }, { value: "PAYMENT", label: "Payment Gateway" },
+      { value: "OSS", label: "OSS / Pemerintah" }, { value: "PAJAK", label: "Pajak (Coretax/DJP)" }, { value: "HOSTING", label: "Hosting & Domain" },
+      { value: "AI_TOOLS", label: "AI Tools" }, { value: "LAINNYA", label: "Lainnya" },
+    ] },
+    { name: "identifier", label: "Email / username", type: "text" },
+    { name: "password", label: "Password (dienkripsi — kosongkan bila tak diubah)", type: "text" },
+    { name: "pin", label: "PIN (bila perlu — dienkripsi)", type: "text" },
+    { name: "backupCodes", label: "Kode cadangan 2FA (pisah koma — dienkripsi)", type: "textarea", rows: 2 },
+    { name: "url", label: "URL login", type: "text" },
+    { name: "recoveryEmail", label: "Email pemulihan", type: "text" },
+    { name: "recoveryPhone", label: "Nomor pemulihan", type: "text" },
+    { name: "twoFactorType", label: "Jenis 2FA", type: "select", options: [
+      { value: "NONE", label: "Tidak ada" }, { value: "APP", label: "Authenticator App" }, { value: "SMS", label: "SMS" },
+      { value: "EMAIL", label: "Email" }, { value: "HARDWARE", label: "Hardware Key" },
+    ] },
+    { name: "ownerName", label: "A.n. (pemilik akun)", type: "text" },
+    { name: "linkedCompanyId", label: "Perusahaan terkait", type: "text" },
+    { name: "lastRotatedAt", label: "Terakhir ganti password", type: "date" },
+    { name: "status", label: "Status", type: "select", options: [
+      { value: "AKTIF", label: "Aktif" }, { value: "DINONAKTIFKAN", label: "Dinonaktifkan" }, { value: "KOMPROMI", label: "Kompromi" },
+    ] },
+    { name: "tags", label: "Tag (pisah koma)", type: "text" },
+    { name: "notes", label: "Catatan aman (JANGAN tulis password di sini)", type: "textarea", full: true, rows: 2 },
+  ],
+  columns: [
+    { name: "label", label: "Akun" },
+    { name: "category", label: "Kategori", render: (r) => <BadgeMini text={r.category} tone={r.category === "EMAIL_GOOGLE" ? "amber" : "gray"} />, hideOnMobile: true },
+    { name: "identifier", label: "Username", hideOnMobile: true, render: (r) => <span className="font-mono text-xs">{r.identifier || "—"}</span> },
+    { name: "strength", label: "Kekuatan", render: (r) => r.strength ? <BadgeStatus value={r.strength} /> : "—" },
+    { name: "twoFactorType", label: "2FA", render: (r) => <BadgeMini text={r.twoFactorType === "NONE" ? "TANPA 2FA" : r.twoFactorType} tone={r.twoFactorType === "NONE" ? "red" : "green"} />, hideOnMobile: true },
+  ],
+};
+
+export const APPUSER_CONFIG: ResourceConfig = {
+  key: "appUser",
+  title: "Pengguna & Akses",
+  subtitle: "User ID, email, password (scrypt), email Google, role & status akses — standar OWASP: hash tidak pernah dikirim ke browser.",
+  emptyText: "Belum ada pengguna. Daftarkan pemilik sistem terlebih dahulu (role OWNER).",
+  fields: [
+    { name: "nama", label: "Nama lengkap", type: "text", required: true },
+    { name: "email", label: "Email login (user id)", type: "text", required: true },
+    { name: "password", label: "Password (scrypt — kosongkan bila tak diubah)", type: "text" },
+    { name: "googleEmail", label: "Email Google terhubung", type: "text" },
+    { name: "phone", label: "Telepon", type: "text" },
+    { name: "jabatan", label: "Jabatan", type: "text" },
+    { name: "role", label: "Role", type: "select", options: [
+      { value: "OWNER", label: "Owner" }, { value: "ADMIN", label: "Admin" }, { value: "KONSULTAN", label: "Konsultan" },
+      { value: "STAFF", label: "Staff" }, { value: "VIEWER", label: "Viewer" },
+    ] },
+    { name: "status", label: "Status", type: "select", options: [
+      { value: "AKTIF", label: "Aktif" }, { value: "UNDANGAN", label: "Undangan" },
+      { value: "DINONAKTIFKAN", label: "Dinonaktifkan" }, { value: "TERKUNCI", label: "Terkunci" },
+    ] },
+    { name: "twoFactorType", label: "2FA", type: "select", options: [
+      { value: "NONE", label: "Tidak ada" }, { value: "APP", label: "Authenticator App" }, { value: "SMS", label: "SMS" },
+      { value: "EMAIL", label: "Email" }, { value: "HARDWARE", label: "Hardware Key" },
+    ] },
+    { name: "passwordHint", label: "Pengingat password (JANGAN password asli)", type: "text" },
+    { name: "companyId", label: "Perusahaan", type: "text" },
+    { name: "notes", label: "Catatan", type: "textarea", full: true, rows: 2 },
+  ],
+  columns: [
+    { name: "nama", label: "Nama", render: (r) => (
+      <div><p className="font-medium">{r.nama}</p><p className="text-xs text-muted-foreground">{r.jabatan || "—"}</p></div>
+    ) },
+    { name: "email", label: "Email", render: (r) => <span className="font-mono text-xs">{r.email}</span> },
+    { name: "googleEmail", label: "Google", hideOnMobile: true, render: (r) => <span className="font-mono text-xs">{r.googleEmail || "—"}</span> },
+    { name: "role", label: "Role", render: (r) => <BadgeMini text={r.role} tone={r.role === "OWNER" ? "green" : "gray"} /> },
+    { name: "passwordStrength", label: "Password", render: (r) => r.passwordStrength ? <BadgeStatus value={r.passwordStrength} /> : "—" },
+    { name: "status", label: "Status", render: (r) => <BadgeStatus value={r.status} /> },
+  ],
+};
+
+export const TAHAP_NAMA: Record<number, string> = {
+  1: "Konsultasi", 2: "Penawaran", 3: "Kontrak", 4: "Proses", 5: "Garansi",
+};
+
+export const PERMIT_STAGE_META = [
+  { tahap: 1, nama: "Konsultasi", desc: "Ceritakan rencana bisnis — pemetaan izin wajib & opsional" },
+  { tahap: 2, nama: "Penawaran", desc: "Analisis kebutuhan, rincian biaya transparan, estimasi waktu" },
+  { tahap: 3, nama: "Kontrak", desc: "Kontrak resmi ditandatangani, pembayaran ke rekening resmi" },
+  { tahap: 4, nama: "Proses", desc: "Pengurusan penuh ke instansi — progres dilaporkan rutin" },
+  { tahap: 5, nama: "Garansi", desc: "Penyerahan dokumen legal + garansi proses ulang" },
+] as const;
 
 export function BadgeMini({ text, tone }: { text: string; tone?: "green" | "amber" | "red" | "gray" }) {
   return (
