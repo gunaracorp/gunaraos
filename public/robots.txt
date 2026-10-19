@@ -12,3 +12,7 @@ Allow: /
 
 User-agent: *
 Allow: /
+
+# GUNARA OS — by Gugun Gunara (Muhammad Lutfi Azmi · prabudanling · Santri Angon)
+# PT Top Konsultan Internasional (topkonsultan.web.id) · PT Digital Bisnis Manajemen (digiman.id)
+Sitemap: https://gunara.web.id/sitemap.xml

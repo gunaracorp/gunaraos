@@ -1,0 +1,20 @@
+{
+  "name": "GUNARA OS — by Gugun Gunara (Muhammad Lutfi Azmi)",
+  "short_name": "GUNARA OS",
+  "description": "Sistem Operasi Hidup & Bisnis — ditempa by Gugun Gunara · Muhammad Lutfi Azmi · prabudanling · Santri Angon · PT Top Konsultan Internasional (topkonsultan.web.id) · PT Digital Bisnis Manajemen (digiman.id)",
+  "id": "/",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0d1f19",
+  "theme_color": "#0d1f19",
+  "lang": "id",
+  "categories": ["business", "productivity", "finance"],
+  "icons": [
+    {
+      "src": "/logo.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ]
+}

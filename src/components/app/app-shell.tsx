@@ -24,6 +24,7 @@ import { BisnisSection } from "@/components/app/bisnis";
 import { PerizinanSection } from "@/components/app/perizinan";
 import { AsetDigitalSection } from "@/components/app/aset-digital";
 import { TutorialSection } from "@/components/app/guide";
+import { BrandMark, BrandConsole, BrandSignatureLine } from "./brand-signature";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTitle, SheetDescription, SheetTrigger } from "@/components/ui/sheet";
@@ -50,13 +51,8 @@ function SidebarContent({
           transition={{ duration: 0.5, ease: EASE }}
           className="flex items-center gap-2.5"
         >
-          <motion.div
-            whileHover={reduce ? {} : { rotate: -6, scale: 1.06 }}
-            transition={{ type: "spring", stiffness: 300, damping: 18 }}
-            className="size-9 rounded-xl bg-gradient-to-br from-amber-400 to-amber-600 flex items-center justify-center text-emerald-950 font-black text-lg shadow-lg"
-          >
-            G
-          </motion.div>
+          {/* Vault: klik 7× pada logo membuka signature tersembunyi */}
+          <BrandMark />
           <div>
             <p className="font-extrabold tracking-tight text-amber-50 leading-none">GUNARA OS</p>
             <p className="text-[11px] text-emerald-200/70 mt-1">Sistem Operasi Hidup · v3.0</p>
@@ -324,10 +320,17 @@ export function AppShell() {
             <p><strong className="text-emerald-800 dark:text-emerald-400">GUNARA OS v3.0</strong> — Hulu → Mesin → Hilir + Bisnis Hub (metadata terlengkap).</p>
             <p>Untuk 3 wajah yang setiap pagi masih memanggil &ldquo;Ayah&rdquo;. 🏛️</p>
           </div>
+          {/* Signature senyap — tersembunyi di permukaan, utuh di dalam sistem */}
+          <div className="max-w-6xl mx-auto px-6 pb-4">
+            <BrandSignatureLine />
+          </div>
         </footer>
       </main>
 
       <CommandPalette open={paletteOpen} onOpenChange={setPaletteOpen} onNavigate={go} />
+
+      {/* Banner signature di DevTools console — senyap, tak terlihat di UI */}
+      <BrandConsole />
     </div>
   );
 }

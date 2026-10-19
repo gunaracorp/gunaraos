@@ -1,7 +1,10 @@
 {
-  "name": "nextjs_tailwind_shadcn_ts",
-  "version": "0.2.1",
+  "name": "gunara-os",
+  "version": "3.0.0",
   "private": true,
+  "description": "GUNARA OS — Sistem Operasi Hidup & Bisnis (Hulu → Mesin → Hilir). by Gugun Gunara — Muhammad Lutfi Azmi · prabudanling · Santri Angon · PT Top Konsultan Internasional (topkonsultan.web.id) · PT Digital Bisnis Manajemen (digiman.id)",
+  "author": "Gugun Gunara (Muhammad Lutfi Azmi) — prabudanling · Santri Angon",
+  "homepage": "https://gunara.web.id",
   "scripts": {
     "dev": "next dev -p 3000 2>&1 | tee dev.log",
     "build": "next build && cp -r .next/static .next/standalone/.next/ && cp -r public .next/standalone/",
