@@ -118,23 +118,22 @@ Stage Summary:
 - Catatan: README di-root repo; file download/README.md lama (satu kalimat) tidak disentuh
 
 ---
-Task ID: 1
+Task ID: 2
 Agent: Z.ai (main)
-Task: Install github.com/prabudanling/gunara-os + tanam branding tersembunyi "Gugun Gunara"
+Task: Upgrade GUNARA OS v3.0 → v6.0 "DEWAN 46" + Ultimate Solver AI
 
 Work Log:
-- Clone repo prabudanling/gunara-os → /home/z/my-project/gunara-os
-- Buat src/lib/branding.ts (single source of truth: nama, PT, sosial media, keywords, JSON-LD builder)
-- Upgrade src/app/layout.tsx: metadata SEO lengkap (title, description, keywords, author/creator/publisher, OG, Twitter card @gunzz_krenzz, robots max-image-preview, canonical, manifest) + JSON-LD @graph (Person, 2 Organization, WebSite, SoftwareApplication)
-- Buat src/components/app/brand-signature.tsx: BrandMark (logo G diklik 7× → Vault Signature dialog), BrandConsole (banner DevTools), BrandSignatureLine (footer senyap opacity-40 + rel="me")
-- Integrasi ke app-shell.tsx (logo vault, console, footer signature)
-- Tambah: public/site.webmanifest, src/app/sitemap.ts, src/app/opengraph-image.tsx (OG PNG dinamis), robots.txt + sitemap
-- package.json: name gunara-os v3.0.0 + author/branding fields
-- Commit di clone (author Gugun Gunara) → siap push ke GitHub
-- rsync clone → /home/z/my-project (root), bun install, prisma generate
-- Verifikasi agent-browser: dashboard render OK, vault easter egg OK, footer signature OK, console banner OK, 0 error
+- Buat src/lib/dewan.ts: 46 dewan pakar (12 domain: Strategi, Keuangan, Hukum, Teknologi, Marketing, SDM, Operasional, Hidup & Spiritual, Analitik, Kreatif, Properti, Global) — tiap dewan 120–400 tahun kolektif, total 10.368 tahun; + KATEGORI_REKOMENDASI
+- Prisma: model Consultation (problem, kategori, urgensi, dewan, putusan) → db push ke /home/z/my-project/db/custom.db
+- API /api/solver: POST = orkestrasi AI (persona GUNARA OS v6.0 + profil dewan terpilih + format putusan wajib) → simpan ke DB; GET riwayat; DELETE
+- UI src/components/app/dewan.tsx: Dewan46Section — hero statistik, search, filter 12 grup, grid 46 kartu, dialog detail (motto, susunan arketipe, kerangka kerja), tombol "Panggil ke Ultimate Solver" (via sessionStorage draft)
+- UI src/components/app/solver.tsx: UltimateSolverSection — form masalah/kategori/urgensi/picker 46 dewan (maks 8), ritual sidang beranimasi, putusan ReactMarkdown terstruktur (Putusan → Akar Masalah → Perspektif Dewan → Solusi 48j/30h/90h → Risiko → Ritual → Tanda Tangan), salin, arsip riwayat + hapus
+- nav.ts: grup baru "🏛️ DEWAN — Nalar Kolektif v6.0" (solver + dewan46); app-shell: 2 case baru + bump v6.0 (sidebar & footer)
+- branding.ts: version 6.0.0, title/description SEO v6.0 + Dewan 46
+- dashboard.tsx: banner CTA "DEWAN 46 — Baru di v6.0" → solver
+- Verifikasi agent-browser end-to-end: dashboard banner OK, sidang AI real (14,5s) → putusan terstruktur tampil + tersimpan Arsip(1), Dewan 46 grid+filter+dialog OK, 0 error. Fix: tabel Consultation awalnya tak terbuat di root db → prisma db push ulang + restart dev server
 
 Stage Summary:
-- Sistem jalan di port 3000 dengan branding 4 lapis: (1) SEO metadata + JSON-LD tak terlihat, (2) footer senyap rel=me 6 sosial media, (3) Vault easter egg via 7× klik logo, (4) banner DevTools console
-- Clone /home/z/my-project/gunara-os berisi commit branding — siap di-push ke GitHub
-- Catatan SEO: indexing Google aktif setelah deploy ke domain publik (metadataBase: gunara.web.id)
+- v6.0 live di port 3000: persona Master Polymath · Sage Universal · Ultimate Problem Solver aktif via /api/solver (z-ai-web-dev-sdk, backend-only)
+- 10.368 tahun pengalaman kolektif Dewan 46 terhitung otomatis dari data
+- Commit "v6.0" ada di clone gunara-os — siap push GitHub

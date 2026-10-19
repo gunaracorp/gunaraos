@@ -27,6 +27,7 @@ import {
   PulseDot, HoverLift, ShimmerBlock, useNow, EASE,
 } from "./motion";
 import { rupiah, fmtDateFull, todayISO, isoFrom, fmtDate } from "@/lib/gunara";
+import { TOTAL_YEARS } from "@/lib/dewan";
 import { cn } from "@/lib/utils";
 import { useToast } from "@/hooks/use-toast";
 
@@ -195,6 +196,25 @@ export function Dashboard({ onNavigate }: { onNavigate: (section: string) => voi
           </div>
         </div>
       </motion.div>
+
+      {/* ═══ DEWAN 46 — v6.0 ═══ */}
+      <FadeUp delay={0.1}>
+        <button
+          onClick={() => onNavigate("solver")}
+          className="w-full group rounded-xl border border-amber-500/30 bg-gradient-to-r from-amber-400/10 via-card to-card p-4 flex items-center gap-4 text-left transition-colors hover:border-amber-500/60 hover:bg-amber-400/[0.06]"
+        >
+          <span className="size-11 flex-none rounded-xl bg-gradient-to-br from-emerald-700 to-emerald-950 text-amber-200 flex items-center justify-center shadow">
+            <Landmark className="size-5" />
+          </span>
+          <span className="flex-1 min-w-0">
+            <span className="block text-sm font-black tracking-tight">DEWAN 46 — Baru di v6.0</span>
+            <span className="block text-xs text-muted-foreground truncate">
+              Master Polymath · Sage Universal · Ultimate Problem Solver — sidangkan 46 dewan pakar ({TOTAL_YEARS.toLocaleString("id-ID")} tahun kolektif) untuk masalah apa pun.
+            </span>
+          </span>
+          <ArrowRight className="size-4 flex-none text-amber-600 dark:text-amber-400 group-hover:translate-x-1 transition-transform" />
+        </button>
+      </FadeUp>
 
       {/* ═══ 3 MIT + Energi ═══ */}
       <div className="grid lg:grid-cols-3 gap-4">
