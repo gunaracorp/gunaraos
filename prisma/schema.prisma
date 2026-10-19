@@ -454,3 +454,27 @@ model Consultation {
   status    String   @default("selesai")
   createdAt DateTime @default(now())
 }
+
+// ═══════════════════════════════════════════════════════
+// ⚡ GOD MODE — Arena Debat & Sage Console (v7.0)
+// ═══════════════════════════════════════════════════════
+
+model Debate {
+  id        String   @id @default(cuid())
+  problem   String                    // permasalahan yang didebat
+  topik     String   @default("umum") // kategori topik debat
+  dewan     String   @default("[]")   // JSON array id dewan peserta (2–4)
+  transkrip String   @default("")     // transkrip debat lengkap ronde 1–2 (markdown)
+  putusan   String   @default("")     // verdict akhir arbiter (markdown)
+  ronde     Int      @default(2)      // jumlah ronde debat
+  status    String   @default("selesai")
+  createdAt DateTime @default(now())
+}
+
+model SageChat {
+  id         String   @id @default(cuid())
+  mode       String   @default("solver") // polymath | sage | solver
+  pertanyaan String                    // pertanyaan user
+  jawaban    String                    // jawaban persona (markdown)
+  createdAt  DateTime @default(now())
+}

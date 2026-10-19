@@ -1,7 +1,7 @@
 "use client";
 
 // ═══════════════════════════════════════════════════════════════════
-// GUNARA OS v6.0 — ULTIMATE SOLVER
+// GUNARA OS v7.0 — ULTIMATE SOLVER
 // Ajukan masalah apa pun → Dewan 46 bersidang (AI) → putusan ter-
 // struktur: akar masalah, perspektif per dewan, solusi berlapis,
 // risiko, dan ritual eksekusi. Persona: Master Polymath · Sage
@@ -178,7 +178,7 @@ export function UltimateSolverSection() {
       <FadeUp>
         <div className="relative overflow-hidden rounded-2xl border bg-gradient-to-br from-emerald-950 via-emerald-900 to-emerald-950 p-6 sm:p-8 text-emerald-50">
           <div className="absolute -right-8 -top-8 opacity-[0.07]"><Brain className="size-52" /></div>
-          <p className="text-[10px] font-bold uppercase tracking-[0.3em] text-amber-300/90">GUNARA OS v6.0 — Mesin Putusan</p>
+          <p className="text-[10px] font-bold uppercase tracking-[0.3em] text-amber-300/90">GUNARA OS v7.0 — Mesin Putusan</p>
           <h1 className="mt-2 text-3xl sm:text-4xl font-black tracking-tight text-amber-100">⚖️ ULTIMATE SOLVER</h1>
           <p className="mt-2 max-w-2xl text-sm text-emerald-100/80 leading-relaxed">
             Master Polymath · Sage Universal · The Ultimate Problem Solver — memimpin {`Dewan 46`} ({tahunLabel} tahun
@@ -405,7 +405,7 @@ export function UltimateSolverSection() {
                 </div>
                 <footer className="border-t bg-emerald-950 px-5 py-3">
                   <p className="text-[11px] font-semibold text-amber-200/90 flex items-center gap-1.5">
-                    <ShieldCheck className="size-3.5" /> Ditetapkan dalam sidang Dewan 46 — GUNARA OS v6.0 · by Gugun Gunara
+                    <ShieldCheck className="size-3.5" /> Ditetapkan dalam sidang Dewan 46 — GUNARA OS v7.0 · by Gugun Gunara
                   </p>
                 </footer>
               </motion.article>

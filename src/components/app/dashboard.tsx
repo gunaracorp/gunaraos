@@ -19,7 +19,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
   Flame, Trophy, HeartPulse, Landmark, HandCoins, Users, Sparkles, ArrowRight,
-  Sun, ShieldCheck, Quote, ListChecks, CalendarClock, Clock,
+  Sun, ShieldCheck, Quote, ListChecks, CalendarClock, Clock, Swords, MessagesSquare,
 } from "lucide-react";
 import { useRecords, useSettings } from "./use-records";
 import {
@@ -197,22 +197,64 @@ export function Dashboard({ onNavigate }: { onNavigate: (section: string) => voi
         </div>
       </motion.div>
 
-      {/* ═══ DEWAN 46 — v6.0 ═══ */}
+      {/* ═══ GOD MODE — v7.0 ═══ */}
       <FadeUp delay={0.1}>
+        <div className="grid sm:grid-cols-2 gap-3">
+          <button
+            onClick={() => onNavigate("arena")}
+            className="group rounded-xl border border-amber-500/30 bg-gradient-to-r from-amber-400/10 via-card to-card p-4 flex items-center gap-3.5 text-left transition-colors hover:border-amber-500/60 hover:bg-amber-400/[0.06]"
+          >
+            <span className="size-11 flex-none rounded-xl bg-gradient-to-br from-emerald-700 to-emerald-950 text-amber-200 flex items-center justify-center shadow">
+              <Swords className="size-5" />
+            </span>
+            <span className="flex-1 min-w-0">
+              <span className="flex items-center gap-1.5">
+                <span className="block text-sm font-black tracking-tight">Arena Debat Dewan</span>
+                <span className="rounded-full bg-amber-400 text-emerald-950 px-1.5 py-0.5 text-[9px] font-black tracking-wider">BARU v7.0</span>
+              </span>
+              <span className="block text-xs text-muted-foreground truncate">
+                2–4 dewan saling berdebat — serangan silang lalu diarbitrase 3 persona.
+              </span>
+            </span>
+            <ArrowRight className="size-4 flex-none text-amber-600 dark:text-amber-400 group-hover:translate-x-1 transition-transform" />
+          </button>
+          <button
+            onClick={() => onNavigate("sage")}
+            className="group rounded-xl border border-amber-500/30 bg-gradient-to-r from-amber-400/10 via-card to-card p-4 flex items-center gap-3.5 text-left transition-colors hover:border-amber-500/60 hover:bg-amber-400/[0.06]"
+          >
+            <span className="size-11 flex-none rounded-xl bg-gradient-to-br from-amber-600 to-emerald-950 text-amber-100 flex items-center justify-center shadow">
+              <MessagesSquare className="size-5" />
+            </span>
+            <span className="flex-1 min-w-0">
+              <span className="flex items-center gap-1.5">
+                <span className="block text-sm font-black tracking-tight">Sage Console</span>
+                <span className="rounded-full bg-amber-400 text-emerald-950 px-1.5 py-0.5 text-[9px] font-black tracking-wider">BARU v7.0</span>
+              </span>
+              <span className="block text-xs text-muted-foreground truncate">
+                Ngobrol langsung: Master Polymath · Sage Universal · Ultimate Problem Solver.
+              </span>
+            </span>
+            <ArrowRight className="size-4 flex-none text-amber-600 dark:text-amber-400 group-hover:translate-x-1 transition-transform" />
+          </button>
+        </div>
+      </FadeUp>
+
+      {/* ═══ DEWAN 46 — Ultimate Solver ═══ */}
+      <FadeUp delay={0.12}>
         <button
           onClick={() => onNavigate("solver")}
-          className="w-full group rounded-xl border border-amber-500/30 bg-gradient-to-r from-amber-400/10 via-card to-card p-4 flex items-center gap-4 text-left transition-colors hover:border-amber-500/60 hover:bg-amber-400/[0.06]"
+          className="w-full group rounded-xl border bg-card p-4 flex items-center gap-4 text-left transition-colors hover:border-emerald-600/40 hover:bg-muted/30"
         >
           <span className="size-11 flex-none rounded-xl bg-gradient-to-br from-emerald-700 to-emerald-950 text-amber-200 flex items-center justify-center shadow">
             <Landmark className="size-5" />
           </span>
           <span className="flex-1 min-w-0">
-            <span className="block text-sm font-black tracking-tight">DEWAN 46 — Baru di v6.0</span>
+            <span className="block text-sm font-black tracking-tight">Ultimate Solver — Dewan 46</span>
             <span className="block text-xs text-muted-foreground truncate">
-              Master Polymath · Sage Universal · Ultimate Problem Solver — sidangkan 46 dewan pakar ({TOTAL_YEARS.toLocaleString("id-ID")} tahun kolektif) untuk masalah apa pun.
+              Sidangkan Dewan 46 ({TOTAL_YEARS.toLocaleString("id-ID")} tahun kolektif) untuk masalah apa pun — putusan terstruktur siap eksekusi.
             </span>
           </span>
-          <ArrowRight className="size-4 flex-none text-amber-600 dark:text-amber-400 group-hover:translate-x-1 transition-transform" />
+          <ArrowRight className="size-4 flex-none text-muted-foreground group-hover:translate-x-1 transition-transform" />
         </button>
       </FadeUp>
 

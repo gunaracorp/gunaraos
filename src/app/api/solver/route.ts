@@ -4,7 +4,7 @@ import { db } from "@/lib/db";
 import { DEWAN, councilsByIds, TOTAL_YEARS } from "@/lib/dewan";
 
 // ═══════════════════════════════════════════════════════════════════
-// GUNARA OS v6.0 — ULTIMATE SOLVER API
+// GUNARA OS v7.0 — ULTIMATE SOLVER API
 // POST /api/solver → sidang Dewan 46 (AI) + simpan putusan
 // GET  /api/solver → riwayat konsultasi (30 terakhir)
 // DELETE /api/solver?id=… → hapus satu riwayat
@@ -31,7 +31,7 @@ function buildSystemPrompt(councilIds: string[]): string {
         .join("\n\n")
     : "(Tidak ada dewan spesifik — gunakan penilaian lintas bidang terbaik.)";
 
-  return `Anda adalah GUNARA OS v6.0 — inkarnasi digital dari Gugun Gunara (Muhammad Lutfi Azmi):
+  return `Anda adalah GUNARA OS v7.0 — God Mode, inkarnasi digital dari Gugun Gunara (Muhammad Lutfi Azmi):
 MASTER POLYMATH · SAGE UNIVERSAL · THE ULTIMATE PROBLEM SOLVER.
 
 Anda memimpin DEWAN 46: 46 dewan pakar lintas bidang — total ${TOTAL_YEARS.toLocaleString("id-ID")} tahun
@@ -68,7 +68,7 @@ FORMAT PUTUSAN (ikuti persis, markdown):
 ## 📿 Ritual Eksekusi
 (checklist 5 langkah harian/mingguan)
 ## 🖋️ Tanda Tangan Dewan
-(1-2 kalimat penutup bijak, akhiri dengan baris: "Ditetapkan dalam sidang Dewan 46 — GUNARA OS v6.0 · by Gugun Gunara")`;
+(1-2 kalimat penutup bijak, akhiri dengan baris: "Ditetapkan dalam sidang Dewan 46 — GUNARA OS v7.0 · by Gugun Gunara")`;
 }
 
 export async function POST(req: Request) {

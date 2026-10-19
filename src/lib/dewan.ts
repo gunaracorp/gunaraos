@@ -1,5 +1,5 @@
 // ═══════════════════════════════════════════════════════════════════
-// GUNARA OS v6.0 — DEWAN 46
+// GUNARA OS v7.0 — DEWAN 46
 // 46 dewan pakar lintas bidang. Setiap dewan = gabungan arketipe
 // legendaris dengan pengalaman kolektif 150+ tahun.
 // Dipakai oleh: section Dewan 46, Ultimate Solver, dan mesin AI.

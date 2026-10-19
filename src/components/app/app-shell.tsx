@@ -25,6 +25,8 @@ import { PerizinanSection } from "@/components/app/perizinan";
 import { AsetDigitalSection } from "@/components/app/aset-digital";
 import { Dewan46Section } from "@/components/app/dewan";
 import { UltimateSolverSection } from "@/components/app/solver";
+import { ArenaSection } from "@/components/app/arena";
+import { SageConsoleSection } from "@/components/app/sage";
 import { TutorialSection } from "@/components/app/guide";
 import { BrandMark, BrandConsole, BrandSignatureLine } from "./brand-signature";
 import { cn } from "@/lib/utils";
@@ -57,7 +59,7 @@ function SidebarContent({
           <BrandMark />
           <div>
             <p className="font-extrabold tracking-tight text-amber-50 leading-none">GUNARA OS</p>
-            <p className="text-[11px] text-emerald-200/70 mt-1">v6.0 · Dewan 46 Aktif</p>
+            <p className="text-[11px] text-emerald-200/70 mt-1">v7.0 · God Mode Aktif</p>
           </div>
         </motion.div>
       </div>
@@ -215,6 +217,8 @@ export function AppShell() {
       case "asetdigital": return <AsetDigitalSection />;
       case "dewan46": return <Dewan46Section onNavigate={go} />;
       case "solver": return <UltimateSolverSection />;
+      case "arena": return <ArenaSection />;
+      case "sage": return <SageConsoleSection />;
       case "tutorial": return <TutorialSection onNavigate={go} />;
       default: return <Dashboard onNavigate={go} />;
     }
@@ -321,7 +325,7 @@ export function AppShell() {
 
         <footer className="border-t bg-card/60 mt-auto">
           <div className="max-w-6xl mx-auto px-6 py-4 flex flex-wrap items-center justify-between gap-2 text-xs text-muted-foreground">
-            <p><strong className="text-emerald-800 dark:text-emerald-400">GUNARA OS v6.0</strong> — Hulu → Mesin → Hilir + Bisnis Hub + Dewan 46 (Master Polymath · Sage Universal · Ultimate Problem Solver).</p>
+            <p><strong className="text-emerald-800 dark:text-emerald-400">GUNARA OS v7.0</strong> — Hulu → Mesin → Hilir + Bisnis Hub + Dewan 46 + God Mode (Arena Debat · Sage Console) — Master Polymath · Sage Universal · Ultimate Problem Solver.</p>
             <p>Untuk 3 wajah yang setiap pagi masih memanggil &ldquo;Ayah&rdquo;. 🏛️</p>
           </div>
           {/* Signature senyap — tersembunyi di permukaan, utuh di dalam sistem */}

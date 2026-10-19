@@ -1,7 +1,7 @@
 "use client";
 
 // ═══════════════════════════════════════════════════════════════════
-// GUNARA OS v6.0 — DEWAN 46
+// GUNARA OS v7.0 — DEWAN 46
 // Galeri 46 dewan pakar lintas bidang (150+ tahun pengalaman kolektif
 // per dewan). Klik kartu → detail dewan → "Panggil ke Ultimate Solver".
 // ═══════════════════════════════════════════════════════════════════
@@ -75,7 +75,7 @@ export function Dewan46Section({ onNavigate }: { onNavigate: (section: string) =
           <div className="absolute -right-10 -top-10 opacity-[0.07]">
             <Landmark className="size-56" />
           </div>
-          <p className="text-[10px] font-bold uppercase tracking-[0.3em] text-amber-300/90">GUNARA OS v6.0 — Nalar Kolektif</p>
+          <p className="text-[10px] font-bold uppercase tracking-[0.3em] text-amber-300/90">GUNARA OS v7.0 — Nalar Kolektif</p>
           <h1 className="mt-2 text-3xl sm:text-4xl font-black tracking-tight text-amber-100">
             🏛️ DEWAN 46
           </h1>

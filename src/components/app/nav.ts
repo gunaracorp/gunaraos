@@ -5,7 +5,8 @@
 import {
   LayoutDashboard, Waves, Wallet, Users, Handshake, BookOpen, Trophy,
   Sun, CalendarCheck, Inbox, Scale, Globe, Bot, ShieldCheck, Target,
-  Briefcase, ScrollText, Lock, GraduationCap, Landmark, Brain,
+  Briefcase, ScrollText, Lock, GraduationCap, Landmark, Brain, Swords,
+  MessagesSquare,
   type LucideIcon,
 } from "lucide-react";
 
@@ -15,7 +16,7 @@ export type SectionId =
   | "harian" | "mingguan" | "backlog" | "keputusan"
   | "domain" | "agents" | "sistem" | "roadmap"
   | "bisnis" | "perizinan" | "asetdigital"
-  | "dewan46" | "solver"
+  | "arena" | "sage" | "dewan46" | "solver"
   | "tutorial";
 
 export interface NavItem { id: SectionId; label: string; icon: LucideIcon; desc?: string }
@@ -53,7 +54,13 @@ export const NAV: NavGroup[] = [
     ],
   },
   {
-    title: "🏛️ DEWAN — Nalar Kolektif v6.0", items: [
+    title: "⚡ GOD MODE — v7.0", items: [
+      { id: "arena", label: "Arena Debat", icon: Swords, desc: "Dewan saling berdebat, diarbitrase" },
+      { id: "sage", label: "Sage Console", icon: MessagesSquare, desc: "Ngobrol 3 wajah kebijaksanaan" },
+    ],
+  },
+  {
+    title: "🏛️ DEWAN — Nalar Kolektif", items: [
       { id: "solver", label: "Ultimate Solver", icon: Brain, desc: "Sidangkan Dewan 46 via AI" },
       { id: "dewan46", label: "Dewan 46", icon: Landmark, desc: "46 dewan · 150+ tahun/dewan" },
     ],
