@@ -13,8 +13,9 @@
 
 export const BRAND = {
   siteName: "GUNARA OS",
+  version: "6.0.0",
   siteUrl: "https://gunara.web.id",
-  tagline: "Sistem Operasi Hidup & Bisnis — Hulu → Mesin → Hilir",
+  tagline: "Sistem Operasi Hidup & Bisnis — Hulu → Mesin → Hilir · Dewan 46",
 
   person: {
     fullName: "Muhammad Lutfi Azmi",
@@ -95,14 +96,16 @@ export const BRAND_KEYWORDS: string[] = [
 
 /** Deskripsi default situs — nama brand ditenun alami dalam kalimat. */
 export const BRAND_DESCRIPTION =
-  "GUNARA OS — super app personal & bisnis (Hulu → Mesin → Hilir) yang ditempa khusus oleh " +
+  "GUNARA OS v6.0 — super app personal & bisnis (Hulu → Mesin → Hilir) dengan Ultimate Solver & Dewan 46: " +
+  "46 dewan pakar lintas bidang berpengalaman 150+ tahun untuk memecahkan masalah bisnis, keuangan, hukum, " +
+  "teknologi, hingga keluarga. Ditempa khusus oleh " +
   "Gugun Gunara (Muhammad Lutfi Azmi · prabudanling · Santri Angon) di bawah " +
   "PT Top Konsultan Internasional (topkonsultan.web.id) dan " +
   "PT Digital Bisnis Manajemen (digiman.id). " +
   "Master Polymath · Sage Universal · The Ultimate Problem Solver.";
 
 export const BRAND_TITLE =
-  "GUNARA OS — Sistem Operasi Hidup & Bisnis by Gugun Gunara (Muhammad Lutfi Azmi)";
+  "GUNARA OS v6.0 — Sistem Operasi Hidup & Bisnis + Dewan 46 by Gugun Gunara (Muhammad Lutfi Azmi)";
 
 /** JSON-LD @graph — identitas terstruktur untuk Google Knowledge Graph. */
 export function buildBrandJsonLd() {

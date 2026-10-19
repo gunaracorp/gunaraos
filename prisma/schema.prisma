@@ -439,3 +439,18 @@ model ServiceCatalog {
   hargaMulai Float   @default(0)
   aktif      Boolean @default(true)
 }
+
+// ═══════════════════════════════════════════════════════
+// 🏛️ DEWAN 46 — Ultimate Solver (v6.0)
+// ═══════════════════════════════════════════════════════
+
+model Consultation {
+  id        String   @id @default(cuid())
+  problem   String                    // masalah yang diajukan
+  kategori  String   @default("umum") // bisnis | keuangan | hukum | teknologi | marketing | sdm | operasional | hidup | spiritual | umum
+  urgensi   String   @default("rutinitas") // rutinitas | krusial | eksistensial
+  dewan     String   @default("[]")   // JSON array id dewan yang dipanggil
+  putusan   String   @default("")     // putusan lengkap dari Dewan 46 (AI)
+  status    String   @default("selesai")
+  createdAt DateTime @default(now())
+}
