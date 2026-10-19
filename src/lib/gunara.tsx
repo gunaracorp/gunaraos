@@ -19,7 +19,7 @@ export interface ColumnConfig {
   name: string;
   label: string;
   type?: FieldType;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+   
   render?: (row: Record<string, any>) => React.ReactNode;
   hideOnMobile?: boolean;
 }
@@ -31,7 +31,7 @@ export interface ResourceConfig {
   icon?: string;
   fields: FieldConfig[];
   columns: ColumnConfig[];
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+   
   defaults?: Record<string, any>;
   emptyText?: string;
 }

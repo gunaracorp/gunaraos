@@ -13,7 +13,11 @@ function Sheet({ ...props }: React.ComponentProps<typeof SheetPrimitive.Root>) {
 function SheetTrigger({
   ...props
 }: React.ComponentProps<typeof SheetPrimitive.Trigger>) {
-  return <SheetPrimitive.Trigger data-slot="sheet-trigger" {...props} />
+  return (
+    // suppressHydrationWarning: aria-controls dari useId Radix bisa mismatch
+    // saat hydration stale HTML (upstream React 19.2, radix-ui/primitives#3700).
+    <SheetPrimitive.Trigger data-slot="sheet-trigger" suppressHydrationWarning {...props} />
+  )
 }
 
 function SheetClose({

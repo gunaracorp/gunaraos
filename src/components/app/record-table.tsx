@@ -26,7 +26,7 @@ import {
 import type { FieldConfig, ResourceConfig } from "@/lib/gunara";
 import { cn } from "@/lib/utils";
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
+ 
 type Row = Record<string, any>;
 
 interface RecordTableProps {

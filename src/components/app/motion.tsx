@@ -158,15 +158,11 @@ export function CountUp({
   const inView = useInView(ref, { once: true, margin: "-20px" });
   const reduce = useReducedMotion();
   const fromRef = useRef(0);
-  const [display, setDisplay] = useState(() => format(reduce ? value : 0));
+  const [display, setDisplay] = useState(() => format(0));
 
   useEffect(() => {
-    if (!inView) return;
-    if (reduce) {
-      setDisplay(format(value));
-      fromRef.current = value;
-      return;
-    }
+    // reduced-motion → lewati animasi; nilai akhir diturunkan saat render (tanpa setState di efek)
+    if (!inView || reduce) return;
     const controls = animate(fromRef.current, value, {
       duration,
       ease: EASE,
@@ -176,12 +172,13 @@ export function CountUp({
       },
     });
     return () => controls.stop();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [inView, value, reduce]);
+  }, [inView, value, reduce, duration]);
+
+  const shown = reduce ? format(value) : display;
 
   return (
     <span ref={ref} className={cn("tabular-nums", className)}>
-      {display}
+      {shown}
     </span>
   );
 }

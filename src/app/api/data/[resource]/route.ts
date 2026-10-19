@@ -38,7 +38,7 @@ const ORDERED: Record<string, Record<string, string>> = {
   setting: { key: "asc" },
 };
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
+ 
 function getModel(name: string): any | null {
   const key = MODELS[name];
   if (!key) return null;

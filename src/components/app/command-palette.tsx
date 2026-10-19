@@ -11,6 +11,7 @@ import {
   CommandGroup, CommandItem, CommandSeparator,
 } from "@/components/ui/command";
 import { NAV, COMMAND_CENTER, type SectionId } from "./nav";
+import { useMounted } from "./motion";
 
 export function CommandPalette({
   open,
@@ -21,6 +22,14 @@ export function CommandPalette({
   onOpenChange: (v: boolean) => void;
   onNavigate: (id: SectionId) => void;
 }) {
+  // ── ANTI-HYDRATION (React 19.2 + Radix useId race, lihat radix-ui/primitives#3700
+  // & facebook/react#35399): ID internal DialogTitle/DialogDescription dari useId
+  // bisa bergeser saat hydration terhadap HTML lama (HMR/stale cache) dan memicu
+  // warning "some attributes didn't match". Palette hanya perlu ada SETELAH mount
+  // (default tertutup, dibuka via ⌘K/tombol) → render null di server & render
+  // pertama klien sehingga ID-nya 100% client-generated dan tak pernah dibandingkan.
+  const mounted = useMounted();
+
   // Global shortcut ⌘K / Ctrl+K — standar aplikasi kelas dunia
   useEffect(() => {
     const down = (e: KeyboardEvent) => {
@@ -37,6 +46,8 @@ export function CommandPalette({
     onNavigate(id);
     onOpenChange(false);
   };
+
+  if (!mounted) return null;
 
   return (
     <CommandDialog open={open} onOpenChange={onOpenChange}>

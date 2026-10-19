@@ -158,10 +158,10 @@ export function CrmSection() {
 function FollowUpDialog({ open, onOpenChange, clients, initial, onSubmit }: {
   open: boolean;
   onOpenChange: (v: boolean) => void;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+   
   clients: any[];
   initial: Record<string, unknown> | null;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+   
   onSubmit: (data: any) => Promise<unknown>;
 }) {
   const [saving, setSaving] = useState(false);

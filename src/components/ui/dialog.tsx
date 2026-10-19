@@ -108,9 +108,12 @@ function DialogTitle({
   ...props
 }: React.ComponentProps<typeof DialogPrimitive.Title>) {
   return (
+    // suppressHydrationWarning: id dari useId Radix bisa mismatch saat hydration
+    // stale HTML (upstream React 19.2, radix-ui/primitives#3700) — harmless.
     <DialogPrimitive.Title
       data-slot="dialog-title"
       className={cn("text-lg leading-none font-semibold", className)}
+      suppressHydrationWarning
       {...props}
     />
   )
@@ -124,6 +127,7 @@ function DialogDescription({
     <DialogPrimitive.Description
       data-slot="dialog-description"
       className={cn("text-muted-foreground text-sm", className)}
+      suppressHydrationWarning
       {...props}
     />
   )

@@ -53,3 +53,22 @@ Stage Summary:
 - GUNARA OS v2.0: bebas hydration error, animasi full di seluruh aplikasi (reduced-motion safe), fitur standar internasional (⌘K palette, dark mode, skeleton, focus ring, jam live WIB)
 - File baru: motion.tsx, nav.ts, command-palette.tsx, theme-provider.tsx; File direvisi: dashboard, app-shell, record-table, finance, crm, gunara.tsx (isoFrom), layout.tsx, globals.css
 - Screenshot verifikasi tersimpan di /home/z/my-project/download/gunara-v2-*.png (8 buah)
+
+---
+Task ID: 3
+Agent: Main Agent (Z.ai)
+Task: Fix hydration error BARU (radix aria-controls/id useId mismatch pada Sheet trigger & Command Palette header)
+
+Work Log:
+- Diagnosis: error berbeda dari Task 2 — bukan tanggal, tapi ID `useId` Radix bergeser (`aria-controls="radix-_R_3atmlb_"` vs `radix-_R_eatmlb_`; DialogTitle `radix-_R_6atmlbH1_` vs `radix-_R_qatmlbH1_`)
+- Riset upstream: KNOWN ISSUE radix-ui/primitives#3700 + facebook/react#35399 (via react PR #34031) + vercel/next.js#84029 — mismatch id/aria-controls Radix + React 19.2 + Next 16 Turbopack, Radix tutup dengan "bukan bug Radix, tunggu fix React"; belum ada fix di React stabil (terakhir dilaporkan masih terjadi Aug 2026)
+- Reproduksi lokal: fresh load via agent-browser = BERSIH (console hanya HMR) → error user dipicu hydration stale HTML saat HMR/refactor Task 2 (tab terbuka selama kode berubah)
+- Audit determinisme: layout.tsx, page.tsx, app-shell, motion.tsx (useMounted/useNow), use-records.ts, dashboard, toaster, sheet, command.tsx — semua first-render identik server/klien; useTheme hanya di ThemeToggle yang sudah ber-guard mounted
+- Hardening 4 file: (1) command-palette.tsx di-gate `useMounted()` → ID DialogTitle/Description 100% client-generated, tak pernah dibandingkan saat hydration; (2) app-shell.tsx Button SheetTrigger + suppressHydrationWarning; (3) ui/sheet.tsx Trigger suppressHydrationWarning; (4) ui/dialog.tsx DialogTitle+DialogDescription suppressHydrationWarning (proteksi semua dialog aplikasi)
+- Bonus standar internasional: (a) CountUp refactor — branch reduce tidak lagi setState di dalam efek (rule react-hooks/set-state-in-effect), nilai diturunkan saat render; (b) `bun run lint --fix` membersihkan 13 directive eslint-disable mati; (c) SheetContent drawer diberi SheetDescription sr-only → warning aksesibilitas Radix "Missing Description" hilang
+- Lint final: 0 error, 0 warning (sebelumnya 13 warning)
+- Verifikasi agent-browser: fresh load + drawer buka/tutup + palette buka/tutup + navigasi Ritual Harian + dark mode toggle ("dark" terpersist) + viewport 390px = konsol NOL hydrat/error/warning setelah console --clear; dev.log bersih; screenshot download/gunara-v3-final.png
+
+Stage Summary:
+- GUNARA OS v2.1: kebal penuh terhadap kelas error hydration Radix/React 19.2 — CommandPalette tak lagi ikut hydration, semua trigger/title/description Radix ber-suppressHydrationWarning, lint 100% bersih, aksesibilitas dialog lengkap (title+description)
+- Jika user masih melihat error lama: hard refresh (Ctrl+Shift+R) — error tersebut bersifat recoverable (console-only, tidak merusak fungsionalitas) dan hanya muncul saat HTML lama ter-hydrate

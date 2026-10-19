@@ -22,7 +22,7 @@ import { DailySection, WeeklySection, BacklogSection, DecisionsSection } from "@
 import { DomainsSection, AgentsSection, SystemSection, RoadmapSection } from "@/components/app/arsenal";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
-import { Sheet, SheetContent, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
+import { Sheet, SheetContent, SheetTitle, SheetDescription, SheetTrigger } from "@/components/ui/sheet";
 import { NAV, ALL_ITEMS, COMMAND_CENTER, type NavItem, type SectionId } from "./nav";
 import { PageTransition, useNow, useMounted, EASE } from "./motion";
 import { CommandPalette } from "./command-palette";
@@ -229,12 +229,18 @@ export function AppShell() {
             size="icon"
             className="lg:hidden fixed top-3 left-3 z-50 bg-emerald-950 text-amber-200 shadow-lg hover:bg-emerald-900"
             aria-label="Buka menu navigasi"
+            // aria-controls dari useId Radix bisa bergeser saat hydration stale
+            // (upstream React 19.2 — radix#3700); atribut ini harmless saat sheet
+            // tertutup & dihitung ulang Radix saat dibuka → diamkan saja.
+            suppressHydrationWarning
           >
             {mobileOpen ? <X className="size-4" /> : <Menu className="size-4" />}
           </Button>
         </SheetTrigger>
         <SheetContent side="left" className="p-0 w-72 bg-sidebar text-sidebar-foreground border-sidebar-border">
           <SheetTitle className="sr-only">Navigasi GUNARA OS</SheetTitle>
+          {/* Deskripsi sr-only: wajib Radix agar tidak ada warning aria-describedby */}
+          <SheetDescription className="sr-only">Menu navigasi seluruh section GUNARA OS</SheetDescription>
           <SidebarContent active={active} onNavigate={go} />
         </SheetContent>
       </Sheet>

@@ -2,9 +2,9 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
+ 
 export function useRecords<T = Record<string, any>>(resource: string, where?: { key: string; value: string }) {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+   
   const [items, setItems] = useState<T[]>([]);
   const [loading, setLoading] = useState(true);
   const whereRef = useRef(where);
@@ -26,7 +26,7 @@ export function useRecords<T = Record<string, any>>(resource: string, where?: { 
 
   useEffect(() => { refresh(); }, [refresh, where?.value]);
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+   
   const create = useCallback(async (data: any) => {
     const res = await fetch(`/api/data/${resource}`, {
       method: "POST",
@@ -39,7 +39,7 @@ export function useRecords<T = Record<string, any>>(resource: string, where?: { 
     return json.item;
   }, [resource, refresh]);
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+   
   const update = useCallback(async (id: string, data: any) => {
     const res = await fetch(`/api/data/${resource}/${id}`, {
       method: "PATCH",
@@ -71,7 +71,7 @@ export function useSettings(keys: string[]) {
     try {
       const res = await fetch(`/api/data/setting`, { cache: "no-store" });
       const json = await res.json();
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+       
       const map: Record<string, string> = {};
       for (const item of json.items || []) map[item.key] = item.value;
       setValues(map);
