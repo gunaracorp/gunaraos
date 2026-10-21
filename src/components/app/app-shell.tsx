@@ -420,7 +420,7 @@ export function AppShell() {
             <ThemeToggle />
             <LangToggle />
             <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-950 text-amber-200 px-3 py-1.5 font-semibold">
-              Gunara Group · 2 PT · 43 Domain
+              Gunara Group · 2 PT · 49 Domain
             </span>
           </div>
         </header>

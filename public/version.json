@@ -1,25 +1,25 @@
 {
   "name": "GUNARA OS",
-  "version": "9.2.0",
-  "versionShort": "v9.2",
-  "codename": "Version Control",
+  "version": "9.3.0",
+  "versionShort": "v9.3",
+  "codename": "Domain Money Engine",
   "channel": "stable",
   "releaseDate": "2026-10-22",
-  "generatedAt": "2026-10-21T21:55:29.947Z",
+  "generatedAt": "2026-10-21T23:17:03.992Z",
   "semver": {
     "major": 9,
-    "minor": 2,
+    "minor": 3,
     "patch": 0,
     "prerelease": null,
     "build": null
   },
-  "releaseCount": 5,
+  "releaseCount": 6,
   "latestRelease": {
-    "version": "9.2.0",
+    "version": "9.3.0",
     "date": "2026-10-22",
-    "codename": "Version Control",
-    "title": "Sistem Kontrol Versi Berstandar Internasional",
-    "summary": "Seluruh proyek kini punya sistem version control penuh — SemVer 2.0.0 + Keep a Changelog + Conventional Commits — dengan CLI satu perintah, API manifest, Release Center di dalam aplikasi, dan single source of truth anti-drift."
+    "codename": "Domain Money Engine",
+    "title": "49 Domain · 49 Mesin Uang — Portfolio Monetisasi Penuh",
+    "summary": "Seluruh portfolio domain (48 dari registrar + prabudanling.web.id) kini terdata lengkap dengan status registrar asli, tanggal kedaluwarsa, biaya perpanjangan, dan BLUEPRINT 'apa isi website & cara menghasilkan uang' per domain — potensi gabungan Rp 266,5 juta/bulan dengan biaya Rp 3,96 juta/tahun (ROI ×806)."
   },
   "notesComplete": true,
   "standards": [

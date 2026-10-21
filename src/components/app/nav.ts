@@ -68,7 +68,7 @@ export const NAV: NavGroup[] = [
   },
   {
     title: "🛡️ ARSENAL — Senjata", items: [
-      { id: "domain", label: "43 Domain", icon: Globe, desc: "Portfolio & misi" },
+      { id: "domain", label: "49 Domain Money Engine", icon: Globe, desc: "Portfolio & misi" },
       { id: "agents", label: "15 AI Agents", icon: Bot, desc: "Role activation siap copy" },
       { id: "sistem", label: "Sistem", icon: ShieldCheck, desc: "Aturan · Ritual · Stack" },
       { id: "roadmap", label: "Roadmap 90 Hari", icon: Target, desc: "Grand Build" },

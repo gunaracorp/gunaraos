@@ -1,0 +1,772 @@
+     1→// ═══════════════════════════════════════════════════
+     2→// GUNARA OS — Types & Konfigurasi Resource
+     3→// ═══════════════════════════════════════════════════
+     4→
+     5→export type FieldType = "text" | "textarea" | "number" | "money" | "date" | "select" | "checkbox";
+     6→
+     7→export interface FieldConfig {
+     8→  name: string;
+     9→  label: string;
+    10→  type: FieldType;
+    11→  options?: { value: string; label: string }[];
+    12→  required?: boolean;
+    13→  placeholder?: string;
+    14→  full?: boolean; // full width di form grid
+    15→  rows?: number;
+    16→}
+    17→
+    18→export interface ColumnConfig {
+    19→  name: string;
+    20→  label: string;
+    21→  type?: FieldType;
+    22→   
+    23→  render?: (row: Record<string, any>) => React.ReactNode;
+    24→  hideOnMobile?: boolean;
+    25→}
+    26→
+    27→export interface ResourceConfig {
+    28→  key: string;
+    29→  title: string;
+    30→  subtitle?: string;
+    31→  icon?: string;
+    32→  fields: FieldConfig[];
+    33→  columns: ColumnConfig[];
+    34→   
+    35→  defaults?: Record<string, any>;
+    36→  emptyText?: string;
+    37→}
+    38→
+    39→// ── Helpers format ──
+    40→export const rupiah = (n: number | null | undefined) =>
+    41→  "Rp " + (n || 0).toLocaleString("id-ID", { maximumFractionDigits: 0 });
+    42→
+    43→export const rupiahShort = (n: number | null | undefined) => {
+    44→  const v = n || 0;
+    45→  if (Math.abs(v) >= 1_000_000_000) return `Rp ${(v / 1_000_000_000).toLocaleString("id-ID", { maximumFractionDigits: 2 })} M`;
+    46→  if (Math.abs(v) >= 1_000_000) return `Rp ${(v / 1_000_000).toLocaleString("id-ID", { maximumFractionDigits: 1 })} jt`;
+    47→  if (Math.abs(v) >= 1_000) return `Rp ${(v / 1_000).toLocaleString("id-ID", { maximumFractionDigits: 0 })} rb`;
+    48→  return rupiah(v);
+    49→};
+    50→
+    51→/** Konversi Date → ISO tanggal (yyyy-mm-dd) memakai waktu LOKAL, bukan UTC.
+    52→ *  Penting: pengguna berada di WIB (UTC+7) — toISOString() akan salah tanggal
+    53→ *  antara jam 00.00–07.00 WIB. */
+    54→export const isoFrom = (d: Date) => {
+    55→  const y = d.getFullYear();
+    56→  const m = String(d.getMonth() + 1).padStart(2, "0");
+    57→  const dd = String(d.getDate()).padStart(2, "0");
+    58→  return `${y}-${m}-${dd}`;
+    59→};
+    60→
+    61→export const todayISO = () => isoFrom(new Date());
+    62→
+    63→export const fmtDate = (iso?: string | null) => {
+    64→  if (!iso) return "—";
+    65→  const d = new Date(iso);
+    66→  if (isNaN(d.getTime())) return iso;
+    67→  return d.toLocaleDateString("id-ID", { day: "numeric", month: "short", year: "numeric" });
+    68→};
+    69→
+    70→export const dayName = (d: Date) =>
+    71→  ["Minggu", "Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu"][d.getDay()];
+    72→
+    73→export const fmtDateFull = (d: Date) =>
+    74→  `${dayName(d)}, ${d.getDate()} ${d.toLocaleDateString("id-ID", { month: "long" })} ${d.getFullYear()}`;
+    75→
+    76→// ── Badge styling util ──
+    77→export function statusTone(s: string): "default" | "green" | "amber" | "red" | "gray" {
+    78→  const green = ["LUNAS", "SELESAI", "KLIEN", "RETAINER", "LIVE", "MASUK", "TERBIT", "AKTIF", "KUAT", "SANGAT KUAT"];
+    79→  const amber = ["NEGOSIASI", "MENUNGGU", "TERJADWAL", "PIPIN", "CEK", "REDIRECT", "PLAN", "PROSPEK", "PENAWARAN", "KONTRAK", "PROSES", "LEAD", "DORMAN", "SEDANG", "UNDANGAN", "DITANGGUHKAN"];
+    80→  const red = ["TERLAMBAT", "MACET", "TELAT", "MASA TENGGANG", "AKTIF-HUTANG", "GAGAL", "BATAL", "CHURN", "KOMPROMI", "TERKUNCI", "LEMAH", "DIJUAL", "DITUTUP", "NONAKTIF"];
+    81→  if (green.includes(s)) return "green";
+    82→  if (amber.includes(s)) return "amber";
+    83→  if (red.includes(s)) return "red";
+    84→  return "default";
+    85→}
+    86→
+    87→// ═══════════════════════════════════════════════════
+    88→// KONFIGURASI RESOURCE (form + kolom tabel)
+    89→// ═══════════════════════════════════════════════════
+    90→
+    91→const PRIORITAS_HUTANG = [
+    92→  { value: "BUNGA-TINGGI", label: "Bunga Tinggi" },
+    93→  { value: "TENGGAT-DEKAT", label: "Tenggat Dekat" },
+    94→  { value: "RINGAN", label: "Ringan" },
+    95→];
+    96→
+    97→export const DEBT_CONFIG: ResourceConfig = {
+    98→  key: "debt",
+    99→  title: "Hutang Saya",
+   100→  subtitle: "Uang yang kupinjam — sisa dihitung otomatis dari pembayaran",
+   101→  fields: [
+   102→    { name: "kepada", label: "Kepada (siapa)", type: "text", required: true, placeholder: "Bank X / Teman Y" },
+   103→    { name: "tanggal", label: "Tanggal terjadi", type: "date" },
+   104→    { name: "nilaiAwal", label: "Nilai awal", type: "money", required: true },
+   105→    { name: "cicilanPerBulan", label: "Cicilan / bulan (yang mampu)", type: "money" },
+   106→    { name: "tenggat", label: "Tenggat (contoh: 2027-03)", type: "text", placeholder: "2027-03" },
+   107→    { name: "prioritas", label: "Prioritas", type: "select", options: PRIORITAS_HUTANG },
+   108→    { name: "status", label: "Status", type: "select", options: [
+   109→      { value: "AKTIF", label: "Aktif" }, { value: "LUNAS", label: "Lunas" }, { value: "NEGOSIASI", label: "Negosiasi" },
+   110→    ] },
+   111→    { name: "catatan", label: "Catatan (kesepakatan verbal, dll)", type: "textarea", full: true },
+   112→  ],
+   113→  columns: [
+   114→    { name: "kepada", label: "Kepada" },
+   115→    { name: "nilaiAwal", label: "Nilai Awal", type: "money", render: (r) => rupiah(r.nilaiAwal), hideOnMobile: true },
+   116→    { name: "sisa", label: "Sisa", render: (r) => rupiah(r.nilaiAwal - (r.payments || []).reduce((a: number, p: { jumlah: number }) => a + p.jumlah, 0)) },
+   117→    { name: "cicilanPerBulan", label: "Cicilan/Bln", render: (r) => rupiah(r.cicilanPerBulan), hideOnMobile: true },
+   118→    { name: "prioritas", label: "Prioritas", render: (r) => <BadgeMini text={r.prioritas} />, hideOnMobile: true },
+   119→    { name: "status", label: "Status", render: (r) => <BadgeStatus value={r.status} /> },
+   120→  ],
+   121→};
+   122→
+   123→export const RECEIVABLE_CONFIG: ResourceConfig = {
+   124→  key: "receivable",
+   125→  title: "Piutang Klien",
+   126→  subtitle: "Klien yang belum lunas membayar — sisa = kontrak − DP",
+   127→  fields: [
+   128→    { name: "klien", label: "Klien", type: "text", required: true },
+   129→    { name: "proyek", label: "Proyek", type: "text", full: true, placeholder: "Website company profile — Toko A" },
+   130→    { name: "nilaiKontrak", label: "Nilai kontrak", type: "money", required: true },
+   131→    { name: "dpDiterima", label: "DP diterima", type: "money" },
+   132→    { name: "jatuhTempo", label: "Jatuh tempo", type: "date" },
+   133→    { name: "status", label: "Status", type: "select", options: [
+   134→      { value: "MENUNGGU", label: "Menunggu" }, { value: "TERLAMBAT", label: "Terlambat" },
+   135→      { value: "MACET", label: "Macet" }, { value: "LUNAS", label: "Lunas" },
+   136→    ] },
+   137→    { name: "catatan", label: "Catatan", type: "textarea", full: true },
+   138→  ],
+   139→  columns: [
+   140→    { name: "klien", label: "Klien" },
+   141→    { name: "proyek", label: "Proyek", hideOnMobile: true },
+   142→    { name: "sisa", label: "Sisa Tagihan", render: (r) => rupiah(r.nilaiKontrak - r.dpDiterima) },
+   143→    { name: "jatuhTempo", label: "Jatuh Tempo", type: "date", render: (r) => fmtDate(r.jatuhTempo), hideOnMobile: true },
+   144→    { name: "status", label: "Status", render: (r) => <BadgeStatus value={r.status} /> },
+   145→  ],
+   146→};
+   147→
+   148→export const CASHFLOW_CONFIG: ResourceConfig = {
+   149→  key: "cashflow",
+   150→  title: "Arus Kas",
+   151→  subtitle: "Masuk-keluar harian — 2 menit per transaksi",
+   152→  fields: [
+   153→    { name: "tanggal", label: "Tanggal", type: "date" },
+   154→    { name: "jenis", label: "Jenis", type: "select", options: [
+   155→      { value: "MASUK", label: "Masuk" }, { value: "KELUAR", label: "Keluar" },
+   156→    ] },
+   157→    { name: "pt", label: "PT mana", type: "select", options: [
+   158→      { value: "TKI", label: "PT Top Konsultan" }, { value: "DIGIMAN", label: "PT Digiman" }, { value: "PRIBADI", label: "Pribadi" },
+   159→    ] },
+   160→    { name: "kategori", label: "Kategori", type: "text", placeholder: "closing / retainer / operasional / anak" },
+   161→    { name: "nilai", label: "Nilai", type: "money", required: true },
+   162→    { name: "keterangan", label: "Keterangan", type: "text", full: true },
+   163→  ],
+   164→  columns: [
+   165→    { name: "tanggal", label: "Tanggal", type: "date", render: (r) => fmtDate(r.tanggal) },
+   166→    { name: "jenis", label: "Jenis", render: (r) => <BadgeMini text={r.jenis} tone={r.jenis === "MASUK" ? "green" : "red"} /> },
+   167→    { name: "pt", label: "PT", render: (r) => <BadgeMini text={r.pt} />, hideOnMobile: true },
+   168→    { name: "kategori", label: "Kategori", hideOnMobile: true },
+   169→    { name: "nilai", label: "Nilai", render: (r) => (
+   170→      <span className={r.jenis === "MASUK" ? "text-emerald-700 font-semibold" : "text-rose-700 font-semibold"}>
+   171→        {r.jenis === "KELUAR" ? "−" : "+"}{rupiah(r.nilai)}
+   172→      </span>
+   173→    ) },
+   174→    { name: "keterangan", label: "Keterangan", hideOnMobile: true },
+   175→  ],
+   176→  defaults: { tanggal: "", jenis: "MASUK", pt: "DIGIMAN" },
+   177→};
+   178→
+   179→export const CHILD_SAVING_CONFIG: ResourceConfig = {
+   180→  key: "childSaving",
+   181→  title: "Rekening Anak",
+   182→  subtitle: "Bukan keuangan — ini janji. 20% dari setiap income.",
+   183→  fields: [
+   184→    { name: "tanggal", label: "Tanggal", type: "date" },
+   185→    { name: "nilai", label: "Nilai (20% income)", type: "money", required: true },
+   186→    { name: "catatan", label: "Catatan", type: "text", full: true },
+   187→  ],
+   188→  columns: [
+   189→    { name: "tanggal", label: "Tanggal", type: "date", render: (r) => fmtDate(r.tanggal) },
+   190→    { name: "nilai", label: "Nilai", render: (r) => rupiah(r.nilai) },
+   191→    { name: "catatan", label: "Catatan", hideOnMobile: true },
+   192→  ],
+   193→};
+   194→
+   195→export const CLIENT_CONFIG: ResourceConfig = {
+   196→  key: "client",
+   197→  title: "Master Klien",
+   198→  subtitle: "1 baris = 1 manusia. Dirancang untuk ratusan klien.",
+   199→  fields: [
+   200→    { name: "nama", label: "Nama", type: "text", required: true },
+   201→    { name: "kontak", label: "WA / Email", type: "text" },
+   202→    { name: "segmen", label: "Segmen", type: "select", options: [
+   203→      { value: "UMKM", label: "UMKM" }, { value: "PRODUSEN", label: "Produsen" },
+   204→      { value: "PMA", label: "PMA" }, { value: "BIRO", label: "Biro" }, { value: "LAINNYA", label: "Lainnya" },
+   205→    ] },
+   206→    { name: "layanan", label: "Layanan diambil", type: "text", placeholder: "P1–P6 / Website / Bundle" },
+   207→    { name: "status", label: "Status", type: "select", options: [
+   208→      { value: "PIPIN", label: "Pipin (baru)" }, { value: "NEGOSIASI", label: "Negosiasi" },
+   209→      { value: "KLIEN", label: "Klien" }, { value: "RETAINER", label: "Retainer" }, { value: "ARSIP", label: "Arsip" },
+   210→    ] },
+   211→    { name: "nilaiTotal", label: "Nilai total (Rp)", type: "money" },
+   212→    { name: "sumber", label: "Sumber (dari mana dia tahu kita)", type: "text", full: true, placeholder: "SEO / PPP / referral / iklan" },
+   213→    { name: "tglKontakTerakhir", label: "Kontak terakhir", type: "date" },
+   214→    { name: "catatan", label: "Catatan penting (anaknya SMA, suka dihubungi sore)", type: "textarea", full: true },
+   215→  ],
+   216→  columns: [
+   217→    { name: "nama", label: "Nama" },
+   218→    { name: "segmen", label: "Segmen", render: (r) => <BadgeMini text={r.segmen} />, hideOnMobile: true },
+   219→    { name: "status", label: "Status", render: (r) => <BadgeStatus value={r.status} /> },
+   220→    { name: "nilaiTotal", label: "Nilai", render: (r) => rupiahShort(r.nilaiTotal) },
+   221→    { name: "sumber", label: "Sumber", hideOnMobile: true },
+   222→    { name: "tglKontakTerakhir", label: "Kontak Trakhir", type: "date", render: (r) => fmtDate(r.tglKontakTerakhir), hideOnMobile: true },
+   223→  ],
+   224→};
+   225→
+   226→export const FOLLOWUP_CONFIG: ResourceConfig = {
+   227→  key: "followUp",
+   228→  title: "Follow-Up",
+   229→  subtitle: "Uang ada di follow-up, bukan di leads baru. Telat >3 hari = merah.",
+   230→  fields: [
+   231→    { name: "tindakan", label: "Tindakan", type: "text", required: true, full: true, placeholder: "WA follow-up proposal" },
+   232→    { name: "tenggat", label: "Tenggat", type: "date" },
+   233→    { name: "status", label: "Status", type: "select", options: [
+   234→      { value: "TERJADWAL", label: "Terjadwal" }, { value: "SELESAI", label: "Selesai" }, { value: "TELAT", label: "Telat" },
+   235→    ] },
+   236→    { name: "hasil", label: "Hasil", type: "textarea", full: true },
+   237→  ],
+   238→  columns: [
+   239→    { name: "tindakan", label: "Tindakan" },
+   240→    { name: "tenggat", label: "Tenggat", type: "date", render: (r) => fmtDate(r.tenggat) },
+   241→    { name: "status", label: "Status", render: (r) => <BadgeStatus value={r.status} /> },
+   242→    { name: "hasil", label: "Hasil", hideOnMobile: true },
+   243→  ],
+   244→};
+   245→
+   246→export const RELATION_CONFIG: ResourceConfig = {
+   247→  key: "relation",
+   248→  title: "Master Relasi",
+   249→  subtitle: "Politik itu ledger kepercayaan — lebih dari 3 bulan tanpa kabar = wajib sapa",
+   250→  fields: [
+   251→    { name: "nama", label: "Nama", type: "text", required: true },
+   252→    { name: "domainRelasi", label: "Domain", type: "select", options: [
+   253→      { value: "PPP", label: "PPP" }, { value: "Bisnis", label: "Bisnis" }, { value: "Pemerintahan", label: "Pemerintahan" },
+   254→      { value: "Media", label: "Media" }, { value: "Agama", label: "Agama" },
+   255→    ] },
+   256→    { name: "kekuatan", label: "Kekuatan", type: "select", options: [
+   257→      { value: "TOKOH", label: "Tokoh" }, { value: "PENGARUH", label: "Pengaruh" },
+   258→      { value: "AKTIVIS", label: "Aktivis" }, { value: "CALON KLIEN", label: "Calon Klien" },
+   259→    ] },
+   260→    { name: "prioritas", label: "Prioritas", type: "select", options: [
+   261→      { value: "A", label: "A — jaga tiap bulan" }, { value: "B", label: "B — triwulan" }, { value: "C", label: "C — tahunan" },
+   262→    ] },
+   263→    { name: "kontakTerakhir", label: "Kontak terakhir", type: "date" },
+   264→    { name: "sayaBantu", label: "Saya pernah bantu", type: "textarea", full: true, placeholder: "bikinkan website gratis, antar dokumen…" },
+   265→    { name: "diaBantu", label: "Dia pernah bantu", type: "textarea", full: true, placeholder: "jangan lupa utang budi = modal relasi" },
+   266→    { name: "catatan", label: "Catatan", type: "textarea", full: true },
+   267→  ],
+   268→  columns: [
+   269→    { name: "nama", label: "Nama" },
+   270→    { name: "domainRelasi", label: "Domain", render: (r) => <BadgeMini text={r.domainRelasi} />, hideOnMobile: true },
+   271→    { name: "prioritas", label: "Prio", render: (r) => <BadgeMini text={r.prioritas} tone={r.prioritas === "A" ? "amber" : "gray"} /> },
+   272→    { name: "kontakTerakhir", label: "Kontak Trakhir", type: "date", render: (r) => fmtDate(r.kontakTerakhir) },
+   273→    { name: "sayaBantu", label: "Saya Bantu", hideOnMobile: true },
+   274→  ],
+   275→};
+   276→
+   277→export const POLITICAL_CONFIG: ResourceConfig = {
+   278→  key: "politicalActivity",
+   279→  title: "Aktivitas Politik",
+   280→  subtitle: "Boundary rule: bantuan = investasi relasi ATAU proyek PT resmi dengan invoice. Tidak ada zona abu-abu.",
+   281→  fields: [
+   282→    { name: "tanggal", label: "Tanggal", type: "date" },
+   283→    { name: "kegiatan", label: "Kegiatan PPP", type: "text", required: true, full: true },
+   284→    { name: "peran", label: "Peranku", type: "text" },
+   285→    { name: "relasiBaru", label: "Relasi baru", type: "text" },
+   286→    { name: "peluang", label: "Peluang bisnis/reputasi", type: "textarea", full: true },
+   287→  ],
+   288→  columns: [
+   289→    { name: "tanggal", label: "Tanggal", type: "date", render: (r) => fmtDate(r.tanggal) },
+   290→    { name: "kegiatan", label: "Kegiatan" },
+   291→    { name: "peran", label: "Peran", hideOnMobile: true },
+   292→    { name: "relasiBaru", label: "Relasi Baru", hideOnMobile: true },
+   293→    { name: "peluang", label: "Peluang", hideOnMobile: true },
+   294→  ],
+   295→};
+   296→
+   297→export const LEARNING_CONFIG: ResourceConfig = {
+   298→  key: "learningJournal",
+   299→  title: "Jurnal Belajar",
+   300→  subtitle: "1 entri = warisan keahlian. Setahun = 250 entri = BUKU ILMU.",
+   301→  fields: [
+   302→    { name: "tanggal", label: "Tanggal", type: "date" },
+   303→    { name: "judul", label: "Judul materi", type: "text", required: true, full: true },
+   304→    { name: "dipelajari", label: "Yang kupelajari (3 poin)", type: "textarea", full: true, rows: 3 },
+   305→    { name: "mengejutkan", label: "Yang mengejutkan (1 poin)", type: "textarea", rows: 2 },
+   306→    { name: "bisaDipakai", label: "Bisa kupakai untuk: klien/proyek mana?", type: "textarea", rows: 2 },
+   307→    { name: "jadiKonten", label: "Sudah jadi konten? (link reels/artikel)", type: "text", full: true },
+   308→  ],
+   309→  columns: [
+   310→    { name: "tanggal", label: "Tanggal", type: "date", render: (r) => fmtDate(r.tanggal) },
+   311→    { name: "judul", label: "Judul Materi" },
+   312→    { name: "bisaDipakai", label: "Bisa Dipakai Untuk", hideOnMobile: true },
+   313→    { name: "jadiKonten", label: "Jadi Konten?", hideOnMobile: true },
+   314→  ],
+   315→};
+   316→
+   317→export const WINLOG_CONFIG: ResourceConfig = {
+   318→  key: "winLog",
+   319→  title: "Win Log",
+   320→  subtitle: "Tidak ada kemenangan yang terlalu kecil. Hari buruk? Buka file ini — obat paling murah.",
+   321→  fields: [
+   322→    { name: "tanggal", label: "Tanggal", type: "date" },
+   323→    { name: "kemenangan", label: "Kemenangan", type: "text", required: true, full: true },
+   324→    { name: "bukti", label: "Bukti", type: "text", placeholder: "akta / invoice / screenshot" },
+   325→    { name: "jadiKonten", label: "Jadi konten?", type: "text", placeholder: "cerita founder / case study" },
+   326→  ],
+   327→  columns: [
+   328→    { name: "tanggal", label: "Tanggal", type: "date", render: (r) => fmtDate(r.tanggal) },
+   329→    { name: "kemenangan", label: "Kemenangan" },
+   330→    { name: "bukti", label: "Bukti", hideOnMobile: true },
+   331→    { name: "jadiKonten", label: "Jadi Konten?", hideOnMobile: true },
+   332→  ],
+   333→};
+   334→
+   335→export const CASESTUDY_CONFIG: ResourceConfig = {
+   336→  key: "caseStudy",
+   337→  title: "Studi Kasus",
+   338→  subtitle: "1 proyek selesai = amunisi penjualan selamanya.",
+   339→  fields: [
+   340→    { name: "judul", label: "Judul (nama proyek/klien)", type: "text", required: true, full: true },
+   341→    { name: "klien", label: "Klien & kebutuhan awal", type: "text", full: true },
+   342→    { name: "masalah", label: "Masalah sebenarnya", type: "textarea", full: true, rows: 3 },
+   343→    { name: "langkah", label: "Apa yang kami lakukan (langkah)", type: "textarea", full: true, rows: 3 },
+   344→    { name: "hasil", label: "Hasil (angka bila bisa)", type: "textarea", rows: 2 },
+   345→    { name: "testimoni", label: "Testimoni (kutip asli)", type: "textarea", rows: 2 },
+   346→    { name: "buktiLink", label: "Dokumen bukti (link foto/invoice)", type: "text", full: true },
+   347→  ],
+   348→  columns: [
+   349→    { name: "judul", label: "Judul" },
+   350→    { name: "klien", label: "Klien", hideOnMobile: true },
+   351→    { name: "hasil", label: "Hasil", hideOnMobile: true },
+   352→  ],
+   353→};
+   354→
+   355→export const WEEKLY_CONFIG: ResourceConfig = {
+   356→  key: "weeklyReview",
+   357→  title: "Weekly Review",
+   358→  subtitle: "Minggu malam, 30 menit, setelah anak-anak tidur — rapat dengan manager.",
+   359→  fields: [
+   360→    { name: "minggu", label: "Label minggu", type: "text", required: true, full: true, placeholder: "Minggu ke-42 (13–19 Okt)" },
+   361→    { name: "mitSelesai", label: "MIT selesai", type: "number" },
+   362→    { name: "mitTotal", label: "dari total MIT", type: "number" },
+   363→    { name: "leads", label: "Leads masuk", type: "number" },
+   364→    { name: "ditindak", label: "Ditindak", type: "number" },
+   365→    { name: "closing", label: "Closing", type: "number" },
+   366→    { name: "energi", label: "Energi rata-rata (1-10)", type: "number" },
+   367→    { name: "progres", label: "Progres project (FORTRESS/DIGIMAN)", type: "textarea", full: true, rows: 2 },
+   368→    { name: "hentikan", label: "Apa yang harus saya HENTIKAN minggu ini?", type: "textarea", full: true, rows: 2 },
+   369→    { name: "janji", label: "Janji yang belum kutepati?", type: "textarea", full: true, rows: 2 },
+   370→    { name: "target", label: "Target hasil minggu depan (bukan target usaha!)", type: "textarea", full: true, rows: 2 },
+   371→    { name: "fokus1", label: "Fokus 1", type: "text" },
+   372→    { name: "fokus2", label: "Fokus 2", type: "text" },
+   373→    { name: "fokus3", label: "Fokus 3", type: "text" },
+   374→    { name: "jadwalAnak", label: "Jadwal anak minggu ini", type: "text", full: true },
+   375→  ],
+   376→  columns: [
+   377→    { name: "minggu", label: "Minggu" },
+   378→    { name: "mit", label: "MIT", render: (r) => `${r.mitSelesai}/${r.mitTotal}` },
+   379→    { name: "leads", label: "Leads", hideOnMobile: true },
+   380→    { name: "closing", label: "Closing", hideOnMobile: true },
+   381→    { name: "energi", label: "Energi", render: (r) => `${r.energi}/10`, hideOnMobile: true },
+   382→  ],
+   383→};
+   384→
+   385→export const BACKLOG_CONFIG: ResourceConfig = {
+   386→  key: "backlogItem",
+   387→  title: "Backlog — Penjara Ide",
+   388→  subtitle: "Ide masuk sini = lega, kepala bersih. Ide TIDAK BOLEH dieksekusi di minggu yang sama ia lahir.",
+   389→  fields: [
+   390→    { name: "tanggal", label: "Tanggal lahir ide", type: "date" },
+   391→    { name: "ide", label: "Ide", type: "text", required: true, full: true },
+   392→    { name: "kenapa", label: "Kenapa menarik", type: "textarea", full: true, rows: 2 },
+   393→    { name: "ditinjau", label: "Kapan ditinjau", type: "text", placeholder: "Review Q2 / setelah omzet stabil" },
+   394→    { name: "status", label: "Status", type: "select", options: [
+   395→      { value: "MENUNGGU", label: "Menunggu (30 hari)" }, { value: "NAIK PRIORITAS", label: "Naik prioritas" }, { value: "CORET", label: "Dicoret" },
+   396→    ] },
+   397→  ],
+   398→  columns: [
+   399→    { name: "tanggal", label: "Tanggal", type: "date", render: (r) => fmtDate(r.tanggal) },
+   400→    { name: "ide", label: "Ide" },
+   401→    { name: "ditinjau", label: "Ditinjau Kapan", hideOnMobile: true },
+   402→    { name: "status", label: "Status", render: (r) => <BadgeStatus value={r.status} /> },
+   403→  ],
+   404→};
+   405→
+   406→export const DECISION_CONFIG: ResourceConfig = {
+   407→  key: "decisionLog",
+   408→  title: "Decisions Log",
+   409→  subtitle: "3 bulan lagi kamu akan lupa kenapa memilih sesuatu. Manager yang baik membuka catatan, bukan menuduh.",
+   410→  fields: [
+   411→    { name: "tanggal", label: "Tanggal", type: "date" },
+   412→    { name: "keputusan", label: "Keputusan", type: "text", required: true, full: true },
+   413→    { name: "alasan", label: "Alasan saat itu", type: "textarea", full: true, rows: 2 },
+   414→    { name: "hasil", label: "Hasil (isi 3 bln kemudian)", type: "textarea", full: true, rows: 2 },
+   415→  ],
+   416→  columns: [
+   417→    { name: "tanggal", label: "Tanggal", type: "date", render: (r) => fmtDate(r.tanggal) },
+   418→    { name: "keputusan", label: "Keputusan" },
+   419→    { name: "alasan", label: "Alasan", hideOnMobile: true },
+   420→    { name: "hasil", label: "Hasil", hideOnMobile: true },
+   421→  ],
+   422→};
+   423→
+   424→export const DOMAIN_CONFIG: ResourceConfig = {
+   425→  key: "domain",
+   426→  title: "Domain Portfolio",
+   427→  subtitle: "43 domain — setiap domain diberi misi. Kualitas jaringan > jumlah domain.",
+   428→  fields: [
+   429→    { name: "nama", label: "Domain", type: "text", required: true },
+   430→    { name: "tier", label: "Tier", type: "select", options: [
+   431→      { value: "INTI", label: "Inti" }, { value: "GATEWAY", label: "Gateway" },
+   432→      { value: "FUTURE", label: "Future" }, { value: "PARKED", label: "Parked" },
+   433→    ] },
+   434→    { name: "status", label: "Status", type: "select", options: [
+   435→      { value: "LIVE", label: "Live" }, { value: "PRIORITAS", label: "Prioritas" }, { value: "PLAN", label: "Rencana" },
+   436→      { value: "PARK", label: "Park" }, { value: "REDIRECT", label: "Redirect" }, { value: "CEK", label: "Perlu cek" },
+   437→      { value: "MASA TENGGANG", label: "Masa Tenggang" }, { value: "LEPAS", label: "Dilepas" },
+   438→    ] },
+   439→    { name: "peran", label: "Peran", type: "text", full: true },
+   440→    { name: "catatan", label: "Catatan", type: "textarea", full: true },
+   441→  ],
+   442→  columns: [
+   443→    { name: "nama", label: "Domain" },
+   444→    { name: "tier", label: "Tier", render: (r) => <BadgeMini text={r.tier} tone={r.tier === "INTI" ? "green" : r.tier === "GATEWAY" ? "amber" : "gray"} /> },
+   445→    { name: "status", label: "Status", render: (r) => <BadgeStatus value={r.status} /> },
+   446→    { name: "peran", label: "Peran", hideOnMobile: true },
+   447→  ],
+   448→};
+   449→
+   450→// ── Komponen kecil untuk render kolom (didefinisikan di lib agar config bisa pakai) ──
+   451→import { Badge } from "@/components/ui/badge";
+   452→import { cn } from "@/lib/utils";
+   453→
+   454→// ═══════════════════════════════════════════════════
+   455→// BISNIS HUB — Metadata Terlengkap
+   456→// ═══════════════════════════════════════════════════
+   457→
+   458→const SUMBER_LEAD = [
+   459→  { value: "WA", label: "WhatsApp" }, { value: "IG", label: "Instagram" }, { value: "FB", label: "Facebook" },
+   460→  { value: "TIKTOK", label: "TikTok" }, { value: "WEB", label: "Website" }, { value: "SEO", label: "SEO/Google" },
+   461→  { value: "REFERRAL", label: "Referral" }, { value: "OFFLINE", label: "Offline/Event" },
+   462→];
+   463→
+   464→export const CUSTOMER_CONFIG: ResourceConfig = {
+   465→  key: "customer",
+   466→  title: "Database Pelanggan",
+   467→  subtitle: "Metadata 360° per manusia — identitas, kontak, alamat, perilaku, preferensi. Satu sumber kebenaran.",
+   468→  emptyText: "Belum ada pelanggan. Tambahkan lead pertama — setiap baris adalah potensi kontrak.",
+   469→  fields: [
+   470→    { name: "nama", label: "Nama lengkap", type: "text", required: true },
+   471→    { name: "jenis", label: "Jenis", type: "select", options: [
+   472→      { value: "INDIVIDU", label: "Individu" }, { value: "BADAN_USAHA", label: "Badan Usaha" },
+   473→    ] },
+   474→    { name: "phone", label: "Telepon", type: "text", placeholder: "0812…" },
+   475→    { name: "waPhone", label: "WhatsApp", type: "text", placeholder: "62812… (format WA)" },
+   476→    { name: "email", label: "Email", type: "text" },
+   477→    { name: "googleEmail", label: "Email Google (akun terhubung)", type: "text" },
+   478→    { name: "ktpNo", label: "No. KTP", type: "text" },
+   479→    { name: "npwpNo", label: "No. NPWP", type: "text" },
+   480→    { name: "birthDate", label: "Tanggal lahir", type: "date" },
+   481→    { name: "gender", label: "Gender", type: "select", options: [
+   482→      { value: "L", label: "Laki-laki" }, { value: "P", label: "Perempuan" }, { value: "-", label: "—" },
+   483→    ] },
+   484→    { name: "pekerjaan", label: "Pekerjaan / jabatan", type: "text" },
+   485→    { name: "address", label: "Alamat", type: "textarea", full: true, rows: 2 },
+   486→    { name: "city", label: "Kota", type: "text" },
+   487→    { name: "province", label: "Provinsi", type: "text" },
+   488→    { name: "postalCode", label: "Kode pos", type: "text" },
+   489→    { name: "sumber", label: "Sumber lead", type: "select", options: SUMBER_LEAD },
+   490→    { name: "referralBy", label: "Direferensikan oleh", type: "text" },
+   491→    { name: "status", label: "Status", type: "select", options: [
+   492→      { value: "LEAD", label: "Lead" }, { value: "PROSPEK", label: "Prospek" }, { value: "KLIEN", label: "Klien" },
+   493→      { value: "RETAINER", label: "Retainer" }, { value: "LAPSED", label: "Lapsed" }, { value: "CHURN", label: "Churn" },
+   494→    ] },
+   495→    { name: "preferensi", label: "Preferensi kontak", type: "select", options: [
+   496→      { value: "WA", label: "WhatsApp" }, { value: "EMAIL", label: "Email" },
+   497→      { value: "TELEPON", label: "Telepon" }, { value: "KUNJUNGAN", label: "Kunjungan" },
+   498→    ] },
+   499→    { name: "waktuKontak", label: "Waktu nyaman dihubungi", type: "text", placeholder: "sore / malam / lunch" },
+   500→    { name: "totalBelanja", label: "Total belanja (Rp)", type: "money" },
+   501→    { name: "lastDealAt", label: "Deal terakhir", type: "date" },
+   502→    { name: "companyId", label: "Perusahaan (ID Company bila ada)", type: "text" },
+   503→    { name: "tags", label: "Tag (pisah koma)", type: "text", placeholder: "potensial, umroh, konstruksi" },
+   504→    { name: "notes", label: "Catatan", type: "textarea", full: true, rows: 2 },
+   505→  ],
+   506→  columns: [
+   507→    { name: "nama", label: "Nama", render: (r) => (
+   508→      <div><p className="font-medium">{r.nama}</p><p className="text-xs text-muted-foreground">{r.city || r.province || "—"}</p></div>
+   509→    ) },
+   510→    { name: "jenis", label: "Jenis", render: (r) => <BadgeMini text={r.jenis} />, hideOnMobile: true },
+   511→    { name: "waPhone", label: "Kontak", render: (r) => r.waPhone || r.phone || r.email || "—", hideOnMobile: true },
+   512→    { name: "status", label: "Status", render: (r) => <BadgeStatus value={r.status} /> },
+   513→    { name: "totalBelanja", label: "Belanja", render: (r) => rupiahShort(r.totalBelanja) },
+   514→    { name: "sumber", label: "Sumber", render: (r) => <BadgeMini text={r.sumber || "—"} tone="gray" />, hideOnMobile: true },
+   515→  ],
+   516→};
+   517→
+   518→export const COMPANY_CONFIG: ResourceConfig = {
+   519→  key: "company",
+   520→  title: "Database Perusahaan",
+   521→  subtitle: "Badan usaha klien & grup sendiri — NIB, NPWP, SK AHU, KBLI, modal, pengurus. Satu baris = satu entitas legal.",
+   522→  emptyText: "Belum ada perusahaan. Mulai dari perusahaan grup sendiri, lalu klien badan usaha.",
+   523→  fields: [
+   524→    { name: "nama", label: "Nama dagang", type: "text", required: true },
+   525→    { name: "legalName", label: "Nama resmi (di akta)", type: "text" },
+   526→    { name: "entityType", label: "Bentuk badan", type: "select", options: [
+   527→      { value: "PT", label: "PT" }, { value: "CV", label: "CV" }, { value: "PMA", label: "PT PMA" },
+   528→      { value: "PO-UPTA", label: "PO/UPTA" }, { value: "FIRMA", label: "Firma" }, { value: "KOPERASI", label: "Koperasi" },
+   529→      { value: "YAYASAN", label: "Yayasan" }, { value: "PERSEORANGAN", label: "Perseorangan" },
+   530→    ] },
+   531→    { name: "nib", label: "NIB", type: "text" },
+   532→    { name: "npwp", label: "NPWP", type: "text" },
+   533→    { name: "skAhu", label: "SK Kemenkumham (AHU)", type: "text", placeholder: "AHU-038293.AH.01.30.Tahun 2024" },
+   534→    { name: "sbuNo", label: "No. SBU (bila konstruksi)", type: "text" },
+   535→    { name: "kblis", label: "KBLI (pisah koma)", type: "text", full: true, placeholder: "69201, 70201, 63122" },
+   536→    { name: "bidangUsaha", label: "Bidang usaha utama", type: "text" },
+   537→    { name: "deskripsi", label: "Deskripsi", type: "textarea", full: true, rows: 2 },
+   538→    { name: "directorName", label: "Direktur / pemilik", type: "text" },
+   539→    { name: "shareholders", label: "Pemegang saham", type: "text" },
+   540→    { name: "modalDasar", label: "Modal dasar (Rp)", type: "money" },
+   541→    { name: "modalDisetor", label: "Modal disetor (Rp)", type: "money" },
+   542→    { name: "omzetTahunan", label: "Omzet tahunan (Rp)", type: "money" },
+   543→    { name: "employeeCount", label: "Jumlah karyawan", type: "number" },
+   544→    { name: "address", label: "Alamat kantor", type: "textarea", full: true, rows: 2 },
+   545→    { name: "city", label: "Kota", type: "text" },
+   546→    { name: "province", label: "Provinsi", type: "text" },
+   547→    { name: "website", label: "Website", type: "text" },
+   548→    { name: "email", label: "Email resmi", type: "text" },
+   549→    { name: "phone", label: "Telepon", type: "text" },
+   550→    { name: "establishedAt", label: "Tanggal berdiri", type: "date" },
+   551→    { name: "customerId", label: "Pemilik (ID Pelanggan)", type: "text" },
+   552→    { name: "isGrupSendiri", label: "Perusahaan grup sendiri", type: "checkbox" },
+   553→    { name: "status", label: "Status", type: "select", options: [
+   554→      { value: "PROSPEK", label: "Prospek" }, { value: "AKTIF", label: "Aktif" },
+   555→      { value: "SELESAI", label: "Selesai" }, { value: "NONAKTIF", label: "Nonaktif" },
+   556→    ] },
+   557→    { name: "notes", label: "Catatan", type: "textarea", full: true, rows: 2 },
+   558→  ],
+   559→  columns: [
+   560→    { name: "nama", label: "Perusahaan", render: (r) => (
+   561→      <div className="flex items-center gap-1.5">
+   562→        <span className="font-medium">{r.nama}</span>
+   563→        {r.isGrupSendiri && <BadgeMini text="GRUP" tone="green" />}
+   564→      </div>
+   565→    ) },
+   566→    { name: "entityType", label: "Badan", render: (r) => <BadgeMini text={r.entityType} tone={r.entityType === "PT" ? "green" : "gray"} /> },
+   567→    { name: "city", label: "Kota", hideOnMobile: true },
+   568→    { name: "nib", label: "NIB", hideOnMobile: true, render: (r) => (r.nib ? <span className="font-mono text-xs">{r.nib}</span> : "—") },
+   569→    { name: "status", label: "Status", render: (r) => <BadgeStatus value={r.status} /> },
+   570→    { name: "website", label: "Website", hideOnMobile: true },
+   571→  ],
+   572→};
+   573→
+   574→export const PERMIT_CONFIG: ResourceConfig = {
+   575→  key: "permitApplication",
+   576→  title: "Tracker Pengurusan Izin",
+   577→  subtitle: "Alur 5 langkah ISO 9001:2015: Konsultasi → Penawaran → Kontrak → Proses → Garansi. Posisi setiap berkas selalu terlihat.",
+   578→  emptyText: "Belum ada pengurusan berjalan. Buat dari Katalog Layanan atau Pencari Izin.",
+   579→  fields: [
+   580→    { name: "namaLayanan", label: "Nama layanan", type: "text", required: true },
+   581→    { name: "layananKode", label: "Kode layanan", type: "text", placeholder: "NIB / PT / AMDAL…" },
+   582→    { name: "customerName", label: "Pelanggan", type: "text" },
+   583→    { name: "companyName", label: "Perusahaan klien", type: "text" },
+   584→    { name: "tahap", label: "Tahap (1-5)", type: "number" },
+   585→    { name: "status", label: "Status", type: "select", options: [
+   586→      { value: "PENAWARAN", label: "Penawaran" }, { value: "KONTRAK", label: "Kontrak" }, { value: "PROSES", label: "Proses" },
+   587→      { value: "TERBIT", label: "Terbit" }, { value: "GAGAL", label: "Gagal" }, { value: "BATAL", label: "Batal" },
+   588→    ] },
+   589→    { name: "instansi", label: "Instansi tujuan", type: "text", placeholder: "OSS RBA / Kemenkumham / BPOM…" },
+   590→    { name: "harga", label: "Nilai deal (Rp)", type: "money" },
+   591→    { name: "biayaPemerintah", label: "Biaya pemerintah (Rp)", type: "money" },
+   592→    { name: "dpDiterima", label: "DP diterima (Rp)", type: "money" },
+   593→    { name: "tanggalMasuk", label: "Tanggal masuk", type: "date" },
+   594→    { name: "targetSelesai", label: "Target selesai", type: "date" },
+   595→    { name: "tanggalTerbit", label: "Tanggal terbit", type: "date" },
+   596→    { name: "dokumenUrl", label: "Link dokumen (Drive/folder)", type: "text", full: true },
+   597→    { name: "notes", label: "Catatan progres", type: "textarea", full: true, rows: 2 },
+   598→  ],
+   599→  columns: [
+   600→    { name: "namaLayanan", label: "Layanan", render: (r) => (
+   601→      <div><p className="font-medium">{r.namaLayanan}</p><p className="text-xs text-muted-foreground">{r.customerName || r.companyName || "—"}</p></div>
+   602→    ) },
+   603→    { name: "tahap", label: "Tahap", render: (r) => <BadgeMini text={`T${r.tahap} · ${TAHAP_NAMA[r.tahap] || "?"}`} tone={r.tahap >= 5 ? "green" : "amber"} /> },
+   604→    { name: "harga", label: "Deal", render: (r) => rupiahShort(r.harga) },
+   605→    { name: "status", label: "Status", render: (r) => <BadgeStatus value={r.status} /> },
+   606→    { name: "targetSelesai", label: "Target", type: "date", render: (r) => fmtDate(r.targetSelesai), hideOnMobile: true },
+   607→  ],
+   608→};
+   609→
+   610→export const SOCIAL_CONFIG: ResourceConfig = {
+   611→  key: "socialAccount",
+   612→  title: "Database Sosial Media",
+   613→  subtitle: "Aset digital Gunara Group — akun, kredensial terenkripsi, jangkauan, ritme konten. Password disimpan AES-256-GCM.",
+   614→  emptyText: "Belum ada akun sosial media tercatat. Daftarkan semua akun bisnis — aset digital adalah nyawa marketing.",
+   615→  fields: [
+   616→    { name: "platform", label: "Platform", type: "select", options: [
+   617→      { value: "INSTAGRAM", label: "Instagram" }, { value: "FACEBOOK", label: "Facebook" }, { value: "TIKTOK", label: "TikTok" },
+   618→      { value: "YOUTUBE", label: "YouTube" }, { value: "X", label: "X (Twitter)" }, { value: "LINKEDIN", label: "LinkedIn" },
+   619→      { value: "WA_BUSINESS", label: "WhatsApp Business" }, { value: "GOOGLE_BISNIS", label: "Google Bisnisku" },
+   620→      { value: "SHOPEE", label: "Shopee" }, { value: "TOKOPEDIA", label: "Tokopedia" }, { value: "TELEGRAM", label: "Telegram" },
+   621→      { value: "LAINNYA", label: "Lainnya" },
+   622→    ] },
+   623→    { name: "handle", label: "Username / handle", type: "text", required: true, placeholder: "@pusatperizinan" },
+   624→    { name: "displayName", label: "Nama tampilan", type: "text" },
+   625→    { name: "url", label: "URL profil", type: "text", full: true },
+   626→    { name: "kategori", label: "Kategori akun", type: "select", options: [
+   627→      { value: "BISNIS", label: "Bisnis" }, { value: "PRIBADI", label: "Pribadi" },
+   628→      { value: "PORTFOLIO", label: "Portfolio" }, { value: "KOMUNITAS", label: "Komunitas" },
+   629→    ] },
+   630→    { name: "emailUsed", label: "Email login", type: "text" },
+   631→    { name: "phoneUsed", label: "Nomor login", type: "text" },
+   632→    { name: "password", label: "Password (AES-256-GCM — kosongkan bila tak diubah)", type: "text" },
+   633→    { name: "recoveryEmail", label: "Email pemulihan", type: "text" },
+   634→    { name: "recoveryPhone", label: "Nomor pemulihan", type: "text" },
+   635→    { name: "twoFactor", label: "2FA aktif?", type: "checkbox" },
+   636→    { name: "followers", label: "Followers", type: "number" },
+   637→    { name: "following", label: "Following", type: "number" },
+   638→    { name: "postCount", label: "Jumlah post", type: "number" },
+   639→    { name: "engagementPct", label: "Engagement (%)", type: "number" },
+   640→    { name: "niche", label: "Niche / topik", type: "text" },
+   641→    { name: "cadencePerWeek", label: "Target post/minggu", type: "number" },
+   642→    { name: "lastPostAt", label: "Post terakhir", type: "date" },
+   643→    { name: "linkedCompanyId", label: "Perusahaan terkait", type: "text" },
+   644→    { name: "status", label: "Status", type: "select", options: [
+   645→      { value: "AKTIF", label: "Aktif" }, { value: "DORMAN", label: "Dorman" }, { value: "DITANGGUHKAN", label: "Ditangguhkan" },
+   646→      { value: "DIJUAL", label: "Dijual" }, { value: "KOMPROMI", label: "Kompromi/hack" }, { value: "DITUTUP", label: "Ditutup" },
+   647→    ] },
+   648→    { name: "tags", label: "Tag (pisah koma)", type: "text" },
+   649→    { name: "notes", label: "Catatan", type: "textarea", full: true, rows: 2 },
+   650→  ],
+   651→  columns: [
+   652→    { name: "handle", label: "Akun", render: (r) => (
+   653→      <div><p className="font-medium font-mono text-xs">{r.handle}</p><p className="text-xs text-muted-foreground">{r.displayName || r.platform}</p></div>
+   654→    ) },
+   655→    { name: "platform", label: "Platform", render: (r) => <BadgeMini text={r.platform} /> },
+   656→    { name: "followers", label: "Followers", render: (r) => (r.followers || 0).toLocaleString("id-ID") },
+   657→    { name: "twoFactor", label: "2FA", render: (r) => <BadgeMini text={r.twoFactor ? "AKTIF" : "BELUM"} tone={r.twoFactor ? "green" : "red"} />, hideOnMobile: true },
+   658→    { name: "status", label: "Status", render: (r) => <BadgeStatus value={r.status} /> },
+   659→  ],
+   660→};
+   661→
+   662→export const VAULT_CONFIG: ResourceConfig = {
+   663→  key: "vaultEntry",
+   664→  title: "Brankas Kredensial",
+   665→  subtitle: "Satu brankas untuk semua: email Google, OSS, pajak, bank, marketplace. Enkripsi AES-256-GCM — kunci tidak pernah keluar server.",
+   666→  emptyText: "Brankas masih kosong. Masukkan akun pertama — mulai dari email Google utama grup.",
+   667→  fields: [
+   668→    { name: "label", label: "Nama akun", type: "text", required: true, full: true, placeholder: "Google Workspace — pusatperizinan.com" },
+   669→    { name: "category", label: "Kategori", type: "select", options: [
+   670→      { value: "EMAIL_GOOGLE", label: "Email Google" }, { value: "EMAIL_LAIN", label: "Email Lain" }, { value: "SOSMED", label: "Sosial Media" },
+   671→      { value: "MARKETPLACE", label: "Marketplace" }, { value: "BANK", label: "Bank" }, { value: "PAYMENT", label: "Payment Gateway" },
+   672→      { value: "OSS", label: "OSS / Pemerintah" }, { value: "PAJAK", label: "Pajak (Coretax/DJP)" }, { value: "HOSTING", label: "Hosting & Domain" },
+   673→      { value: "AI_TOOLS", label: "AI Tools" }, { value: "LAINNYA", label: "Lainnya" },
+   674→    ] },
+   675→    { name: "identifier", label: "Email / username", type: "text" },
+   676→    { name: "password", label: "Password (dienkripsi — kosongkan bila tak diubah)", type: "text" },
+   677→    { name: "pin", label: "PIN (bila perlu — dienkripsi)", type: "text" },
+   678→    { name: "backupCodes", label: "Kode cadangan 2FA (pisah koma — dienkripsi)", type: "textarea", rows: 2 },
+   679→    { name: "url", label: "URL login", type: "text" },
+   680→    { name: "recoveryEmail", label: "Email pemulihan", type: "text" },
+   681→    { name: "recoveryPhone", label: "Nomor pemulihan", type: "text" },
+   682→    { name: "twoFactorType", label: "Jenis 2FA", type: "select", options: [
+   683→      { value: "NONE", label: "Tidak ada" }, { value: "APP", label: "Authenticator App" }, { value: "SMS", label: "SMS" },
+   684→      { value: "EMAIL", label: "Email" }, { value: "HARDWARE", label: "Hardware Key" },
+   685→    ] },
+   686→    { name: "ownerName", label: "A.n. (pemilik akun)", type: "text" },
+   687→    { name: "linkedCompanyId", label: "Perusahaan terkait", type: "text" },
+   688→    { name: "lastRotatedAt", label: "Terakhir ganti password", type: "date" },
+   689→    { name: "status", label: "Status", type: "select", options: [
+   690→      { value: "AKTIF", label: "Aktif" }, { value: "DINONAKTIFKAN", label: "Dinonaktifkan" }, { value: "KOMPROMI", label: "Kompromi" },
+   691→    ] },
+   692→    { name: "tags", label: "Tag (pisah koma)", type: "text" },
+   693→    { name: "notes", label: "Catatan aman (JANGAN tulis password di sini)", type: "textarea", full: true, rows: 2 },
+   694→  ],
+   695→  columns: [
+   696→    { name: "label", label: "Akun" },
+   697→    { name: "category", label: "Kategori", render: (r) => <BadgeMini text={r.category} tone={r.category === "EMAIL_GOOGLE" ? "amber" : "gray"} />, hideOnMobile: true },
+   698→    { name: "identifier", label: "Username", hideOnMobile: true, render: (r) => <span className="font-mono text-xs">{r.identifier || "—"}</span> },
+   699→    { name: "strength", label: "Kekuatan", render: (r) => r.strength ? <BadgeStatus value={r.strength} /> : "—" },
+   700→    { name: "twoFactorType", label: "2FA", render: (r) => <BadgeMini text={r.twoFactorType === "NONE" ? "TANPA 2FA" : r.twoFactorType} tone={r.twoFactorType === "NONE" ? "red" : "green"} />, hideOnMobile: true },
+   701→  ],
+   702→};
+   703→
+   704→export const APPUSER_CONFIG: ResourceConfig = {
+   705→  key: "appUser",
+   706→  title: "Pengguna & Akses",
+   707→  subtitle: "User ID, email, password (scrypt), email Google, role & status akses — standar OWASP: hash tidak pernah dikirim ke browser.",
+   708→  emptyText: "Belum ada pengguna. Daftarkan pemilik sistem terlebih dahulu (role OWNER).",
+   709→  fields: [
+   710→    { name: "nama", label: "Nama lengkap", type: "text", required: true },
+   711→    { name: "email", label: "Email login (user id)", type: "text", required: true },
+   712→    { name: "password", label: "Password (scrypt — kosongkan bila tak diubah)", type: "text" },
+   713→    { name: "googleEmail", label: "Email Google terhubung", type: "text" },
+   714→    { name: "phone", label: "Telepon", type: "text" },
+   715→    { name: "jabatan", label: "Jabatan", type: "text" },
+   716→    { name: "role", label: "Role", type: "select", options: [
+   717→      { value: "OWNER", label: "Owner" }, { value: "ADMIN", label: "Admin" }, { value: "KONSULTAN", label: "Konsultan" },
+   718→      { value: "STAFF", label: "Staff" }, { value: "VIEWER", label: "Viewer" },
+   719→    ] },
+   720→    { name: "status", label: "Status", type: "select", options: [
+   721→      { value: "AKTIF", label: "Aktif" }, { value: "UNDANGAN", label: "Undangan" },
+   722→      { value: "DINONAKTIFKAN", label: "Dinonaktifkan" }, { value: "TERKUNCI", label: "Terkunci" },
+   723→    ] },
+   724→    { name: "twoFactorType", label: "2FA", type: "select", options: [
+   725→      { value: "NONE", label: "Tidak ada" }, { value: "APP", label: "Authenticator App" }, { value: "SMS", label: "SMS" },
+   726→      { value: "EMAIL", label: "Email" }, { value: "HARDWARE", label: "Hardware Key" },
+   727→    ] },
+   728→    { name: "passwordHint", label: "Pengingat password (JANGAN password asli)", type: "text" },
+   729→    { name: "companyId", label: "Perusahaan", type: "text" },
+   730→    { name: "notes", label: "Catatan", type: "textarea", full: true, rows: 2 },
+   731→  ],
+   732→  columns: [
+   733→    { name: "nama", label: "Nama", render: (r) => (
+   734→      <div><p className="font-medium">{r.nama}</p><p className="text-xs text-muted-foreground">{r.jabatan || "—"}</p></div>
+   735→    ) },
+   736→    { name: "email", label: "Email", render: (r) => <span className="font-mono text-xs">{r.email}</span> },
+   737→    { name: "googleEmail", label: "Google", hideOnMobile: true, render: (r) => <span className="font-mono text-xs">{r.googleEmail || "—"}</span> },
+   738→    { name: "role", label: "Role", render: (r) => <BadgeMini text={r.role} tone={r.role === "OWNER" ? "green" : "gray"} /> },
+   739→    { name: "passwordStrength", label: "Password", render: (r) => r.passwordStrength ? <BadgeStatus value={r.passwordStrength} /> : "—" },
+   740→    { name: "status", label: "Status", render: (r) => <BadgeStatus value={r.status} /> },
+   741→  ],
+   742→};
+   743→
+   744→export const TAHAP_NAMA: Record<number, string> = {
+   745→  1: "Konsultasi", 2: "Penawaran", 3: "Kontrak", 4: "Proses", 5: "Garansi",
+   746→};
+   747→
+   748→export const PERMIT_STAGE_META = [
+   749→  { tahap: 1, nama: "Konsultasi", desc: "Ceritakan rencana bisnis — pemetaan izin wajib & opsional" },
+   750→  { tahap: 2, nama: "Penawaran", desc: "Analisis kebutuhan, rincian biaya transparan, estimasi waktu" },
+   751→  { tahap: 3, nama: "Kontrak", desc: "Kontrak resmi ditandatangani, pembayaran ke rekening resmi" },
+   752→  { tahap: 4, nama: "Proses", desc: "Pengurusan penuh ke instansi — progres dilaporkan rutin" },
+   753→  { tahap: 5, nama: "Garansi", desc: "Penyerahan dokumen legal + garansi proses ulang" },
+   754→] as const;
+   755→
+   756→export function BadgeMini({ text, tone }: { text: string; tone?: "green" | "amber" | "red" | "gray" }) {
+   757→  return (
+   758→    <span className={cn(
+   759→      "inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium whitespace-nowrap",
+   760→      tone === "green" && "bg-emerald-100 text-emerald-800 dark:bg-emerald-900/40 dark:text-emerald-300",
+   761→      tone === "amber" && "bg-amber-100 text-amber-900 dark:bg-amber-900/40 dark:text-amber-300",
+   762→      tone === "red" && "bg-rose-100 text-rose-800 dark:bg-rose-900/40 dark:text-rose-300",
+   763→      (!tone || tone === "gray") && "bg-stone-200 text-stone-700 dark:bg-stone-800 dark:text-stone-300",
+   764→    )}>{text}</span>
+   765→  );
+   766→}
+   767→
+   768→export function BadgeStatus({ value }: { value: string }) {
+   769→  const tone = statusTone(value);
+   770→  return <BadgeMini text={value} tone={tone === "default" ? "gray" : tone} />;
+   771→}
+   772→

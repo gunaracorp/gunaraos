@@ -56,7 +56,7 @@ interface HealthData {
 interface ProbeResult { path: string; status: number | null; ms: number | null; ok: boolean }
 
 const LABEL_ID: Record<string, string> = {
-  setting: "Pengaturan", domain: "43 Domain", agent: "15 AI Agents",
+  setting: "Pengaturan", domain: "49 Domain Money Engine", agent: "15 AI Agents",
   appUser: "Pengguna", customer: "Pelanggan", company: "Perusahaan",
   client: "Klien CRM", followUp: "Follow-up", debt: "Hutang",
   debtPayment: "Cicilan Hutang", receivable: "Piutang", cashflow: "Kas",

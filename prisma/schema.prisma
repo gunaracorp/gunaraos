@@ -241,6 +241,16 @@ model Domain {
   status  String  @default("PLAN")
   catatan String  @default("")
   urutan  Int     @default(0)
+  // ── v9.3 DOMAIN MONEY ENGINE — data registrar + blueprint monetisasi ──
+  regStatus         String  @default("AKTIF")  // status registrar: AKTIF | MENUNGGU | REDEMPTION
+  berakhir          String  @default("")       // tanggal kedaluwarsa (YYYY-MM-DD)
+  jatuhTempo        String  @default("")       // jatuh tempo tagihan pembayaran (YYYY-MM-DD)
+  hargaPerpanjangan Float   @default(0)        // biaya perpanjangan / tahun (Rp)
+  autoKredit        Boolean @default(false)    // auto-kredit registrar aktif?
+  kategori          String  @default("")       // cluster bisnis: KONSULTAN | AGENCY | UMRAH | MEDIA | JASA | PRODUK | PERSONAL
+  isiWebsite        String  @default("")       // BLUEPRINT: apa isi website ini (halaman, konten, fitur)
+  monetisasi        String  @default("")       // BLUEPRINT: strategi menghasilkan uang dari website ini
+  potensiRp         Float   @default(0)        // estimasi potensi revenue / bulan (Rp, kondisi matang)
 }
 
 model Agent {

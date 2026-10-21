@@ -259,9 +259,9 @@ export const TUTORIALS: TutorialGroup[] = [
         ],
       },
       {
-        id: "domain", target: "domain", judul: "43 Domain Portfolio", ringkas: "Setiap domain punya misi & tier", menit: 2,
+        id: "domain", target: "domain", judul: "49 Domain Money Engine", ringkas: "Setiap domain punya misi & tier", menit: 2,
         langkah: [
-          "Buka Arsenal → 43 Domain. Grid dikelompokkan per tier: INTI, GATEWAY, FUTURE, PARKED.",
+          "Buka Arsenal → 49 Domain Money Engine. Grid dikelompokkan per tier: INTI, GATEWAY, FUTURE, PARKED.",
           "Edit status tiap domain: LIVE, PRIORITAS, PLAN, REDIRECT, MASA TENGGANG…",
           "Domain MASA TENGGANG ditandai merah — putuskan: perpanjang atau lepas.",
         ],

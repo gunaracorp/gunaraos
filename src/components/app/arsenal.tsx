@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo, useState, type ReactNode } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -8,65 +8,451 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle,
 } from "@/components/ui/dialog";
-import { Globe, Bot, ShieldCheck, CalendarDays, Copy, Check, ScrollText, Sparkles } from "lucide-react";
+import {
+  Globe, Bot, ShieldCheck, CalendarDays, Copy, Check, ScrollText, Sparkles,
+  CheckCircle2, AlertTriangle, Wallet, TrendingUp, Zap, ShieldAlert, Clock,
+  Lightbulb, Target, type LucideIcon,
+} from "lucide-react";
 import { RecordTable } from "./record-table";
 import { useRecords, useSettings } from "./use-records";
-import { DOMAIN_CONFIG, fmtDate } from "@/lib/gunara";
+import { FadeUp, CountUp, useMounted, useNow } from "./motion";
+import { DOMAIN_CONFIG, fmtDate, rupiah, rupiahShort } from "@/lib/gunara";
 import { cn } from "@/lib/utils";
 
-// ═════════ 43 DOMAIN ═════════
-export function DomainsSection() {
-  const domain = useRecords("domain");
-  const grouped = useMemo(() => {
-    const g: Record<string, typeof domain.items> = { INTI: [], GATEWAY: [], FUTURE: [], PARKED: [] };
-    for (const d of domain.items) (g[d.tier] = g[d.tier] || []).push(d);
-    return g;
-  }, [domain.items]);
+// ═════════ DOMAIN MONEY ENGINE — 49 Domain, 49 Mesin Uang ═════════
 
-  const tierMeta: Record<string, { title: string; desc: string; tone: string }> = {
-    INTI: { title: "⭐ Inti — Bangun Sekarang", desc: "6 domain prioritas. Fokus total di sini.", tone: "border-emerald-300 dark:border-emerald-800 bg-emerald-50/50 dark:bg-emerald-950/20" },
-    GATEWAY: { title: "🚪 Gateway — Halaman Pintu", desc: "1 halaman sederhana, noindex, semua link mengarah ke inti.", tone: "border-amber-300 dark:border-amber-800 bg-amber-50/50 dark:bg-amber-950/20" },
-    FUTURE: { title: "📅 Cadangan — Klaster Umrah (Tahun 2-3)", desc: "Aktifkan saat PT TKI menangani PPIU/IJO.", tone: "border-stone-300 dark:border-stone-700" },
-    PARKED: { title: "💤 Park Sadar", desc: "Biarkan di registrar. TIDAK SEMUA domain harus jadi website. Keputusan CEO: coret yang tak ada rencana.", tone: "border-stone-200 dark:border-stone-800 opacity-90" },
+type Row = Record<string, any>;
+
+/** Sisa hari s/d tanggal `iso` (parsed zona LOKAL) relatif terhadap `now`.
+ *  ATURAN ANTI-HYDRATION: panggil HANYA saat `mounted && now` (client-only). */
+function diffDays(iso: string, now: Date): number {
+  const t = new Date(iso + "T00:00:00").getTime();
+  return Math.ceil((t - now.getTime()) / 86400000);
+}
+
+function sisaLabel(s: number | null): string {
+  if (s === null || isNaN(s)) return "—";
+  if (s < 0) return `lewat ${-s} hari`;
+  if (s === 0) return "berakhir hari ini";
+  return `${s} hari lagi`;
+}
+
+const KATEGORI_GRUP: { key: string; label: string }[] = [
+  { key: "KONSULTAN", label: "💼 Konsultan & Perizinan" },
+  { key: "AGENCY", label: "🏢 Agency Digital" },
+  { key: "JASA", label: "🔧 Jasa & Otomotif" },
+  { key: "PRODUK", label: "☕ Produk & F&B" },
+  { key: "MEDIA", label: "📰 Media & Portal" },
+  { key: "UMRAH", label: "🕋 Umrah & Spiritual" },
+  { key: "PERSONAL", label: "👤 Personal Brand" },
+];
+
+const SISTEM_UANG: { emoji: string; judul: string; domains: string[]; strategi: string }[] = [
+  { emoji: "💼", judul: "Mesin Leads Konsultan", domains: ["topkonsultan.web.id", "pusatperizinan.web.id", "gunara.web.id"], strategi: "Satu funnel: SEO perizinan → konsultasi WA → closing. Satu funnel, klien jutaan rupiah." },
+  { emoji: "🏢", judul: "Agency Chain", domains: ["digiman.id", "juraganwebsite.web.id", "pppdigital.id", "pppbisnis.com"], strategi: "Rantai agency — website, ads, konten. Cross-sell antar lengan, satu pembukuan terpisah." },
+  { emoji: "📰", judul: "AdSense Media Network", domains: ["cekhoax.web.id", "cektransparan.web.id", "ciamisraya.web.id", "dara.web.id", "evo.web.id", "telegroup.web.id", "gaa.web.id", "sgl.web.id", "visitpessel.web.id", "nusaparadise.id", "duasamudra.web.id", "165.web.id", "fk165.web.id"], strategi: "13 portal niche → traffic organik gratis → iklan programmatic, saling menyuntik otoritas SEO." },
+  { emoji: "🕋", judul: "Kuartal Umrah", domains: ["arofahajj.com", "gohajj.web.id", "solusibaitullah.web.id", "medina.web.id", "medinagov.web.id", "gorefleksi.web.id", "suarasufi.web.id", "jiwaabdicinta.web.id", "enya.web.id", "enyanyahwa.web.id", "alhwda.web.id", "santriangon.web.id", "mehudi.or.id"], strategi: "Klaster spiritual: donasi, sponsor kajian, afiliasi travel — satu audiens, banyak pintu masuk." },
+  { emoji: "🔧", judul: "Jasa Lokal WA-Landing", domains: ["berkatpendingin.web.id", "mandiripendingin.web.id", "juragankompresor.web.id", "gopijat.web.id", "pusatgeely.web.id", "semestaperdana.web.id", "tirtasejukabadi.web.id"], strategi: "Landing 1 halaman + tombol WA: servis, jual, sewa — closing cepat, margin jasa langsung." },
+  { emoji: "☕", judul: "Produk & F&B", domains: ["kopnusa.id", "bambuwater.web.id", "degerasia.web.id", "mesita.id"], strategi: "Katalog produk + pemesanan WA — margin langsung per botol, per cangkir, per porsi." },
+  { emoji: "👤", judul: "Personal Brand", domains: ["gunara.web.id", "prabudanling.web.id", "dr-fatriidana.my.id", "muhdin.web.id"], strategi: "Otoritas pribadi = pipa konsultasi premium, speaking, dan kemitraan tanpa biaya iklan." },
+];
+
+const AKSI_MINGGU: { lingkaran: string; isi: ReactNode }[] = [
+  { lingkaran: "bg-rose-600 text-white", isi: <>Tebus <strong className="text-rose-700 dark:text-rose-300">pppbisnis.com</strong> — <strong>Rp 215rb</strong> <span className="font-extrabold text-rose-700 dark:text-rose-300">SEKARANG</span>, atau domain hilang selamanya.</> },
+  { lingkaran: "bg-amber-500 text-white", isi: <>Bayar <strong>3 tagihan</strong> domain berstatus MENUNGGU (mehudi.or.id · juragankompresor.web.id · gopijat.web.id) — total <strong>Rp 165rb</strong>.</> },
+  { lingkaran: "bg-sky-600 text-white", isi: <>Aktifkan <strong>auto-kredit</strong> di registrar untuk semua domain AKTIF — perpanjangan tidak boleh lagi jadi drama tahunan.</> },
+  { lingkaran: "bg-emerald-600 text-white", isi: <>Pilih <strong>1 domain INTI</strong> &amp; bangun blueprintnya minggu ini — satu yang matang mengalahkan sembilan yang hambar.</> },
+];
+
+function StatusBadge({ value }: { value: string }) {
+  return (
+    <Badge variant="outline" className={cn(
+      "shrink-0 border",
+      value === "AKTIF" && "bg-emerald-100 text-emerald-800 border-emerald-300 dark:bg-emerald-950/40 dark:text-emerald-300",
+      value === "MENUNGGU" && "bg-amber-100 text-amber-900 border-amber-300 dark:bg-amber-950/40 dark:text-amber-300",
+      value === "REDEMPTION" && "bg-rose-100 text-rose-800 border-rose-300 dark:bg-rose-950/40 dark:text-rose-300",
+    )}>{value || "—"}</Badge>
+  );
+}
+
+function KpiCard({ icon: Icon, label, tone, children }: {
+  icon: LucideIcon; label: string; tone?: "emerald" | "amber"; children: ReactNode;
+}) {
+  return (
+    <Card className="border shadow-sm">
+      <CardContent className="p-4">
+        <div className="flex items-center gap-1.5 min-w-0">
+          <Icon className={cn("size-3.5 shrink-0",
+            tone === "emerald" && "text-emerald-600 dark:text-emerald-400",
+            tone === "amber" && "text-amber-600 dark:text-amber-400")} aria-hidden />
+          <span className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground truncate">{label}</span>
+        </div>
+        <div className={cn("mt-1.5 font-mono text-2xl font-extrabold tabular-nums",
+          tone === "emerald" && "text-emerald-700 dark:text-emerald-400",
+          tone === "amber" && "text-amber-700 dark:text-amber-400")}>
+          {children}
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
+
+function DomainCard({ d, onOpen }: { d: Row; onOpen: (d: Row) => void }) {
+  const redemption = d.regStatus === "REDEMPTION";
+  return (
+    <Card className={cn("border shadow-sm",
+      d.regStatus && d.regStatus !== "AKTIF" && (redemption ? "ring-2 ring-rose-400/70" : "ring-2 ring-amber-400/60"))}>
+      <CardContent className="p-4 flex flex-col">
+        <div className="flex items-start justify-between gap-2 min-w-0">
+          <p className="font-bold text-sm break-words min-w-0">{d.nama}</p>
+          <div className="flex flex-wrap justify-end gap-1 shrink-0">
+            <StatusBadge value={d.regStatus || "—"} />
+            <Badge variant="outline">{d.kategori || "—"}</Badge>
+          </div>
+        </div>
+        <p className="mt-2 font-mono text-lg font-extrabold text-emerald-700 dark:text-emerald-400 break-words">
+          {rupiahShort(d.potensiRp)}<span className="text-xs font-semibold text-muted-foreground">/bln</span>
+        </p>
+        <p className="text-[11px] text-muted-foreground">↻ {rupiahShort(d.hargaPerpanjangan)}/thn</p>
+        <p className="mt-2 text-xs text-muted-foreground line-clamp-2">{d.peran || "—"}</p>
+        <Button size="sm" variant="outline" className="mt-3 w-full" onClick={() => onOpen(d)}>
+          Lihat Blueprint
+        </Button>
+      </CardContent>
+    </Card>
+  );
+}
+
+function BlueprintDialog({ item, onClose }: { item: Row | null; onClose: () => void }) {
+  const mounted = useMounted();
+  const now = useNow();
+  const [copied, setCopied] = useState(false);
+
+  const sisa = item?.berakhir && mounted && now ? diffDays(item.berakhir, now) : null;
+
+  const copy = async () => {
+    if (!item) return;
+    const teks = [
+      `BLUEPRINT ${item.nama}`,
+      `Peran: ${item.peran || "—"}`,
+      `Status registrar: ${item.regStatus || "—"}`,
+      `Potensi/bulan: ${rupiah(item.potensiRp)}`,
+      `Biaya perpanjangan/tahun: ${rupiah(item.hargaPerpanjangan)}`,
+      `Berakhir: ${fmtDate(item.berakhir)} (${sisaLabel(sisa)})`,
+      "",
+      "APA ISI WEBSITE INI:",
+      item.isiWebsite || "—",
+      "",
+      "CARA MENGHASILKAN UANG:",
+      item.monetisasi || "—",
+      ...(item.catatan ? ["", `Catatan: ${item.catatan}`] : []),
+    ].join("\n");
+    try {
+      await navigator.clipboard.writeText(teks);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 1500);
+    } catch { /* clipboard ditolak */ }
   };
 
   return (
-    <div className="space-y-4">
-      <div className="rounded-xl border-2 border-emerald-800/20 bg-gradient-to-br from-emerald-50 to-amber-50 dark:from-emerald-950/40 dark:to-amber-950/30 p-5">
-        <h2 className="text-lg font-extrabold tracking-tight">🌐 Domain Portfolio — 43 Domain, Setiap Domain Punya Misi</h2>
-        <p className="text-sm text-muted-foreground mt-1 max-w-3xl">
-          Jangan terjebak &quot;bangun 42 website&quot; — bangun 4-6 inti yang menghasilkan dulu.
-          Sisanya = proteksi merek & amunisi masa depan. Kualitas jaringan &gt; jumlah domain.
-        </p>
-      </div>
-
-      <RecordTable
-        config={DOMAIN_CONFIG}
-        rows={domain.items}
-        loading={domain.loading}
-        onCreate={domain.create}
-        onUpdate={domain.update}
-        onDelete={domain.remove}
-      />
-
-      <div className="grid lg:grid-cols-2 gap-4">
-        {Object.entries(grouped).map(([tier, items]) => items.length > 0 && (
-          <Card key={tier} className={cn("border shadow-sm", tierMeta[tier]?.tone)}>
-            <div className="px-5 py-3 border-b">
-              <h3 className="font-bold text-sm">{tierMeta[tier]?.title || tier}</h3>
-              <p className="text-xs text-muted-foreground">{tierMeta[tier]?.desc}</p>
+    <Dialog open={item !== null} onOpenChange={(v) => { if (!v) onClose(); }}>
+      <DialogContent className="sm:max-w-2xl" aria-label={item ? `Blueprint ${item.nama}` : "Blueprint domain"}>
+        <DialogHeader>
+          <DialogTitle className="flex flex-wrap items-center gap-2 break-words min-w-0">
+            <span className="break-words min-w-0">{item?.nama}</span>
+            {item && <StatusBadge value={item.regStatus || "—"} />}
+          </DialogTitle>
+          <DialogDescription>{item?.peran || "Blueprint konten & strategi monetisasi domain ini."}</DialogDescription>
+        </DialogHeader>
+        {item && (
+          <div className="space-y-3">
+            <div className="grid grid-cols-2 gap-3">
+              <div className="rounded-lg bg-muted p-3 min-w-0">
+                <p className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">Potensi / Bulan</p>
+                <p className="font-mono text-xl font-extrabold text-emerald-700 dark:text-emerald-400 break-words">{rupiah(item.potensiRp)}</p>
+              </div>
+              <div className="rounded-lg bg-muted p-3 min-w-0">
+                <p className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">Biaya / Tahun</p>
+                <p className="font-mono text-xl font-extrabold break-words">{rupiahShort(item.hargaPerpanjangan)}</p>
+              </div>
+              <div className="rounded-lg bg-muted p-3 col-span-2 flex flex-wrap items-center justify-between gap-2">
+                <p className="text-xs text-muted-foreground">Berakhir: <strong className="text-foreground">{fmtDate(item.berakhir)}</strong></p>
+                <Badge variant="outline" className={cn(
+                  sisa !== null && !isNaN(sisa) && sisa <= 90 && "bg-amber-100 text-amber-900 border-amber-300 dark:bg-amber-950/40 dark:text-amber-300",
+                )}>{sisaLabel(sisa)}</Badge>
+              </div>
             </div>
-            <CardContent className="p-4 flex flex-wrap gap-1.5">
-              {items.map((d) => (
-                <span key={d.id} className={cn("inline-flex items-center gap-1 rounded-full border px-2.5 py-1 text-xs font-medium", d.status === "MASA TENGGANG" && "bg-rose-100 text-rose-800 border-rose-300 dark:bg-rose-950/40 dark:text-rose-300", d.status === "LIVE" && "bg-emerald-100 text-emerald-800 border-emerald-300 dark:bg-emerald-950/40 dark:text-emerald-300", d.status === "PRIORITAS" && "bg-amber-100 text-amber-900 border-amber-300 dark:bg-amber-950/40 dark:text-amber-300")}>
-                  <Globe className="size-3" /> {d.nama}
-                  {d.status && d.status !== "PLAN" && <span className="opacity-70">· {d.status}</span>}
-                </span>
-              ))}
+
+            <div>
+              <p className="text-xs font-bold uppercase tracking-wide text-muted-foreground mb-1.5">Apa isi website ini</p>
+              <div className="bg-muted rounded-lg p-3">
+                <p className="text-sm leading-relaxed whitespace-pre-wrap break-words">
+                  {item.isiWebsite || "Belum diisi — tulis blueprint halaman, konten, dan fiturnya."}
+                </p>
+              </div>
+            </div>
+
+            <div>
+              <p className="text-xs font-bold uppercase tracking-wide text-emerald-800 dark:text-emerald-400 mb-1.5">Cara menghasilkan uang</p>
+              <div className="bg-emerald-50 dark:bg-emerald-950/30 border border-emerald-200 dark:border-emerald-900 rounded-lg p-3">
+                <p className="text-sm leading-relaxed whitespace-pre-wrap break-words">
+                  {item.monetisasi || "Belum diisi — definisikan strategi monetisasinya."}
+                </p>
+              </div>
+            </div>
+
+            {item.catatan && (
+              <p className="italic text-xs text-amber-700 dark:text-amber-400 break-words">{item.catatan}</p>
+            )}
+
+            <Button onClick={copy} className="w-full sm:w-auto" aria-label={`Salin blueprint ${item.nama}`}>
+              {copied ? <Check className="size-4 mr-1.5" /> : <Copy className="size-4 mr-1.5" />}
+              {copied ? "Tersalin!" : "Salin Blueprint"}
+            </Button>
+          </div>
+        )}
+      </DialogContent>
+    </Dialog>
+  );
+}
+
+export function DomainsSection() {
+  const domain = useRecords("domain");
+  const [view, setView] = useState<Row | null>(null);
+  const mounted = useMounted();
+  const now = useNow();
+
+  // ── KPI (useMemo, tanpa Date → aman hydration) ──
+  const kpi = useMemo(() => {
+    const items = domain.items;
+    const biaya = items.reduce((a: number, d: Row) => a + (Number(d.hargaPerpanjangan) || 0), 0);
+    const potensi = items.reduce((a: number, d: Row) => a + (Number(d.potensiRp) || 0), 0);
+    return {
+      total: items.length,
+      aktif: items.filter((d: Row) => d.regStatus === "AKTIF").length,
+      perluBayar: items.filter((d: Row) => d.regStatus && d.regStatus !== "AKTIF").length,
+      biaya,
+      potensi,
+      roi: biaya > 0 ? (potensi * 12) / biaya : 0,
+    };
+  }, [domain.items]);
+
+  // ── Data alert aksi segera ──
+  const redemptions = useMemo(() => domain.items.filter((d: Row) => d.regStatus === "REDEMPTION"), [domain.items]);
+  const menunggu = useMemo(() => domain.items.filter((d: Row) => d.regStatus === "MENUNGGU"), [domain.items]);
+  const tagihanTotal = useMemo(
+    () => menunggu.reduce((a: number, d: Row) => a + (Number(d.hargaPerpanjangan) || 0), 0),
+    [menunggu],
+  );
+
+  // Sisa hari dihitung HANYA saat mounted (anti-hydration) — sebelum mount: tanpa chip tanggal
+  const expiring = useMemo(() => {
+    if (!mounted || !now) return [];
+    return domain.items
+      .filter((d: Row) => d.regStatus === "AKTIF" && d.berakhir)
+      .map((d: Row) => ({ d, sisa: diffDays(d.berakhir, now) }))
+      .filter((x: { d: Row; sisa: number }) => !isNaN(x.sisa) && x.sisa <= 90)
+      .sort((a: { sisa: number }, b: { sisa: number }) => a.sisa - b.sisa);
+  }, [domain.items, mounted, now]);
+
+  // ── Grouping blueprint per kategori (urutan tetap) ──
+  const grouped = useMemo(() => {
+    const groups = KATEGORI_GRUP.map(({ key, label }) => ({ key, label, items: [] as Row[], subtotal: 0 }));
+    const sisa: Row[] = [];
+    for (const d of domain.items) {
+      const g = groups.find((x) => x.key === d.kategori);
+      if (g) { g.items.push(d); g.subtotal += Number(d.potensiRp) || 0; }
+      else sisa.push(d);
+    }
+    return { groups: groups.filter((g) => g.items.length > 0), sisa };
+  }, [domain.items]);
+
+  // ── Potensi gabungan tiap sistem uang (data-driven dari DB) ──
+  const sistemPotensi = useMemo(() => {
+    const m: Record<string, number> = {};
+    for (const d of domain.items) m[d.nama] = Number(d.potensiRp) || 0;
+    return SISTEM_UANG.map((s) => ({ ...s, potensi: s.domains.reduce((a, n) => a + (m[n] || 0), 0) }));
+  }, [domain.items]);
+
+  return (
+    <div className="space-y-4">
+      {/* 1. HERO */}
+      <FadeUp>
+        <div className="rounded-xl border-2 border-emerald-800/20 bg-gradient-to-br from-emerald-50 to-amber-50 dark:from-emerald-950/40 dark:to-amber-950/30 p-5">
+          <div className="flex flex-wrap items-center gap-2">
+            <h2 className="text-lg font-extrabold tracking-tight min-w-0 break-words">🌐 Domain Money Engine — 49 Domain, 49 Mesin Uang</h2>
+            <Badge variant="outline" className="shrink-0 border-emerald-800/30 bg-emerald-900 text-amber-200 dark:bg-emerald-900 dark:text-amber-300 text-[10px] uppercase tracking-wider">
+              v9.3 Domain Money Engine
+            </Badge>
+          </div>
+          <p className="text-sm text-muted-foreground mt-1 max-w-3xl">
+            Setiap domain bukan sekadar alamat — ia punya misi, blueprint konten, strategi monetisasi, dan target revenue sendiri.
+            Buka blueprint-nya, jalankan mesinnya, ukur uangnya.
+          </p>
+        </div>
+      </FadeUp>
+
+      {/* 2. KPI STRIP */}
+      <FadeUp delay={0.05}>
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
+          <KpiCard icon={Globe} label="Total Domain">
+            <CountUp value={kpi.total} format={(n) => String(Math.round(n))} />
+          </KpiCard>
+          <KpiCard icon={CheckCircle2} label="Aktif" tone="emerald">
+            <CountUp value={kpi.aktif} format={(n) => String(Math.round(n))} />
+          </KpiCard>
+          <KpiCard icon={AlertTriangle} label="Perlu Bayar" tone="amber">
+            <CountUp value={kpi.perluBayar} format={(n) => String(Math.round(n))} />
+          </KpiCard>
+          <KpiCard icon={Wallet} label="Biaya / Tahun">
+            <CountUp value={kpi.biaya} format={(n) => rupiahShort(Math.round(n))} />
+          </KpiCard>
+          <KpiCard icon={TrendingUp} label="Potensi / Bulan" tone="emerald">
+            <CountUp value={kpi.potensi} format={(n) => rupiahShort(Math.round(n))} />
+          </KpiCard>
+          <KpiCard icon={Zap} label="ROI Tahunan" tone="emerald">
+            <CountUp value={kpi.roi} format={(n) => `×${n.toFixed(1)}`} />
+          </KpiCard>
+        </div>
+      </FadeUp>
+
+      {/* 3. ALERT AKSI SEGERA */}
+      {(redemptions.length > 0 || menunggu.length > 0 || expiring.length > 0) && (
+        <FadeUp delay={0.05}>
+          <Card className="border border-rose-300 dark:border-rose-900 shadow-sm">
+            <CardContent className="p-4">
+              <div className="flex items-center gap-2">
+                <AlertTriangle className="size-4 text-rose-600 dark:text-rose-400 shrink-0" aria-hidden />
+                <p className="font-bold text-sm text-rose-700 dark:text-rose-300">Aksi Segera — aset &amp; uang yang bisa hilang</p>
+              </div>
+              <div className="flex flex-wrap gap-2 mt-3">
+                {redemptions.map((d: Row) => (
+                  <span key={d.id} className="inline-flex items-center gap-1.5 rounded-full border border-rose-300 bg-rose-100 px-2.5 py-1 text-xs font-semibold text-rose-800 dark:border-rose-900 dark:bg-rose-950/40 dark:text-rose-300">
+                    <ShieldAlert className="size-3.5 shrink-0" aria-hidden />
+                    <span className="break-words min-w-0">{d.nama} REDEMPTION — Tebus {rupiahShort(d.hargaPerpanjangan)} SEKARANG atau HILANG</span>
+                  </span>
+                ))}
+                {menunggu.length > 0 && (
+                  <span className="inline-flex items-center gap-1.5 rounded-full border border-amber-300 bg-amber-100 px-2.5 py-1 text-xs font-semibold text-amber-900 dark:border-amber-900 dark:bg-amber-950/40 dark:text-amber-300">
+                    <Wallet className="size-3.5 shrink-0" aria-hidden />
+                    <span className="break-words min-w-0">Bayar tagihan {rupiahShort(tagihanTotal)} — {menunggu.map((d: Row) => d.nama).join(", ")}</span>
+                  </span>
+                )}
+                {expiring.map(({ d, sisa }) => (
+                  <span key={d.id} className="inline-flex items-center gap-1.5 rounded-full border border-sky-300 bg-sky-100 px-2.5 py-1 text-xs font-medium text-sky-900 dark:border-sky-900 dark:bg-sky-950/40 dark:text-sky-300">
+                    <Clock className="size-3.5 shrink-0" aria-hidden />
+                    <span className="break-words min-w-0">{d.nama} · {sisaLabel(sisa)}</span>
+                  </span>
+                ))}
+              </div>
             </CardContent>
           </Card>
-        ))}
-      </div>
+        </FadeUp>
+      )}
+
+      {/* 4. TABS */}
+      <FadeUp delay={0.05}>
+        <Tabs defaultValue="blueprint">
+          <TabsList className="flex-wrap h-auto">
+            <TabsTrigger value="blueprint" className="gap-1.5">💰 Blueprint Uang</TabsTrigger>
+            <TabsTrigger value="dewan" className="gap-1.5">💡 Dewan Monetisasi</TabsTrigger>
+            <TabsTrigger value="data" className="gap-1.5">📋 Kelola Data</TabsTrigger>
+          </TabsList>
+
+          {/* TAB 1 — BLUEPRINT UANG */}
+          <TabsContent value="blueprint" className="space-y-5">
+            {grouped.groups.map((g) => (
+              <div key={g.key}>
+                <div className="flex flex-wrap items-baseline gap-2 mb-2">
+                  <h3 className="font-bold text-sm">{g.label}</h3>
+                  <Badge variant="outline" className="text-[10px]">{g.items.length} domain</Badge>
+                  <span className="text-xs text-muted-foreground">potensi <strong className="text-emerald-700 dark:text-emerald-400">{rupiahShort(g.subtotal)}</strong>/bln</span>
+                </div>
+                <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
+                  {g.items.map((d) => <DomainCard key={d.id} d={d} onOpen={setView} />)}
+                </div>
+              </div>
+            ))}
+            {grouped.sisa.length > 0 && (
+              <div>
+                <div className="flex flex-wrap items-baseline gap-2 mb-2">
+                  <h3 className="font-bold text-sm">◇ Belum Dikategorikan</h3>
+                  <Badge variant="outline" className="text-[10px]">{grouped.sisa.length} domain</Badge>
+                </div>
+                <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
+                  {grouped.sisa.map((d) => <DomainCard key={d.id} d={d} onOpen={setView} />)}
+                </div>
+              </div>
+            )}
+          </TabsContent>
+
+          {/* TAB 2 — DEWAN MONETISASI */}
+          <TabsContent value="dewan" className="space-y-4">
+            <div>
+              <div className="flex items-center gap-2 mb-2">
+                <Lightbulb className="size-4 text-amber-500 shrink-0" aria-hidden />
+                <h3 className="font-bold text-sm">7 Sistem Uang dari 49 Domain</h3>
+              </div>
+              <div className="grid sm:grid-cols-2 xl:grid-cols-3 gap-3">
+                {sistemPotensi.map((s) => (
+                  <Card key={s.judul} className="border shadow-sm">
+                    <CardContent className="p-4">
+                      <p className="text-xl" aria-hidden>{s.emoji}</p>
+                      <p className="font-bold text-sm mt-1">{s.judul}</p>
+                      <div className="flex flex-wrap gap-1 mt-2">
+                        {s.domains.map((n) => (
+                          <span key={n} className="rounded-full bg-muted px-2 py-0.5 text-[11px] text-muted-foreground break-words">{n}</span>
+                        ))}
+                      </div>
+                      <p className="text-xs text-muted-foreground mt-2 leading-relaxed">{s.strategi}</p>
+                      <p className="text-xs font-semibold text-emerald-700 dark:text-emerald-400 mt-2">Potensi gabungan: {rupiahShort(s.potensi)}/bln</p>
+                    </CardContent>
+                  </Card>
+                ))}
+                <Card className="border shadow-sm ring-1 ring-emerald-300 dark:ring-emerald-800 bg-emerald-50/50 dark:bg-emerald-950/20">
+                  <CardContent className="p-4">
+                    <p className="text-xl" aria-hidden>🎯</p>
+                    <p className="font-bold text-sm mt-1">Aturan Emas</p>
+                    <p className="text-sm leading-relaxed mt-2 text-emerald-900 dark:text-emerald-200">
+                      3-6 inti dulu, sisanya gateway — jangan bangun 49 website sekaligus; satu yang matang mengalahkan sembilan yang hambar.
+                    </p>
+                  </CardContent>
+                </Card>
+              </div>
+            </div>
+
+            <Card className="border shadow-sm">
+              <div className="px-5 py-3 border-b bg-muted/50 font-bold text-sm flex items-center gap-2">
+                <Target className="size-4 shrink-0" aria-hidden /> Aksi Cepat Minggu Ini
+              </div>
+              <CardContent className="p-4">
+                <ul className="space-y-3">
+                  {AKSI_MINGGU.map((a, i) => (
+                    <li key={i} className="flex gap-3 items-start">
+                      <span className={cn("flex-none size-7 rounded-full text-xs font-extrabold flex items-center justify-center", a.lingkaran)}>{i + 1}</span>
+                      <p className="text-sm leading-relaxed min-w-0 break-words pt-0.5">{a.isi}</p>
+                    </li>
+                  ))}
+                </ul>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          {/* TAB 3 — KELOLA DATA */}
+          <TabsContent value="data">
+            <RecordTable
+              config={DOMAIN_CONFIG}
+              rows={domain.items}
+              loading={domain.loading}
+              onCreate={domain.create}
+              onUpdate={domain.update}
+              onDelete={domain.remove}
+            />
+          </TabsContent>
+        </Tabs>
+      </FadeUp>
+
+      <BlueprintDialog item={view} onClose={() => setView(null)} />
     </div>
   );
 }

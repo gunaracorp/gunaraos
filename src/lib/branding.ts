@@ -17,7 +17,7 @@
 // ═══════════════════════════════════════════════════════════════════
 
 /** Nomor versi aplikasi — SINGLE SOURCE OF TRUTH (SemVer 2.0.0, di-sync oleh scripts/version.ts). */
-export const VERSION = "9.2.0";
+export const VERSION = "9.3.0";
 
 /** Versi pendek untuk display ("9.2" dari "9.2.0"). */
 export const VERSION_SHORT = VERSION.split(".").slice(0, 2).join(".");

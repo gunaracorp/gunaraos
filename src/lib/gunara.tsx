@@ -423,8 +423,8 @@ export const DECISION_CONFIG: ResourceConfig = {
 
 export const DOMAIN_CONFIG: ResourceConfig = {
   key: "domain",
-  title: "Domain Portfolio",
-  subtitle: "43 domain — setiap domain diberi misi. Kualitas jaringan > jumlah domain.",
+  title: "Kelola Domain & Blueprint Uang",
+  subtitle: "49 domain — setiap domain punya misi, isi website, dan mesin uangnya sendiri.",
   fields: [
     { name: "nama", label: "Domain", type: "text", required: true },
     { name: "tier", label: "Tier", type: "select", options: [
@@ -436,13 +436,38 @@ export const DOMAIN_CONFIG: ResourceConfig = {
       { value: "PARK", label: "Park" }, { value: "REDIRECT", label: "Redirect" }, { value: "CEK", label: "Perlu cek" },
       { value: "MASA TENGGANG", label: "Masa Tenggang" }, { value: "LEPAS", label: "Dilepas" },
     ] },
+    { name: "regStatus", label: "Status Registrar", type: "select", options: [
+      { value: "AKTIF", label: "Aktif" }, { value: "MENUNGGU", label: "Menunggu" }, { value: "REDEMPTION", label: "Redemption" },
+    ] },
+    { name: "kategori", label: "Kategori", type: "select", options: [
+      { value: "KONSULTAN", label: "Konsultan" }, { value: "AGENCY", label: "Agency" }, { value: "UMRAH", label: "Umrah" },
+      { value: "MEDIA", label: "Media" }, { value: "JASA", label: "Jasa" }, { value: "PRODUK", label: "Produk" },
+      { value: "PERSONAL", label: "Personal" },
+    ] },
+    { name: "berakhir", label: "Berakhir", type: "date" },
+    { name: "jatuhTempo", label: "Jatuh Tempo", type: "date" },
+    { name: "hargaPerpanjangan", label: "Perpanjangan / Tahun (Rp)", type: "money" },
+    { name: "potensiRp", label: "Potensi Revenue / Bulan (Rp)", type: "money" },
+    { name: "autoKredit", label: "Auto Kredit", type: "checkbox" },
     { name: "peran", label: "Peran", type: "text", full: true },
+    { name: "isiWebsite", label: "Isi Website (blueprint)", type: "textarea", rows: 3, full: true },
+    { name: "monetisasi", label: "Strategi Monetisasi (blueprint)", type: "textarea", rows: 3, full: true },
     { name: "catatan", label: "Catatan", type: "textarea", full: true },
   ],
   columns: [
     { name: "nama", label: "Domain" },
-    { name: "tier", label: "Tier", render: (r) => <BadgeMini text={r.tier} tone={r.tier === "INTI" ? "green" : r.tier === "GATEWAY" ? "amber" : "gray"} /> },
-    { name: "status", label: "Status", render: (r) => <BadgeStatus value={r.status} /> },
+    { name: "kategori", label: "Kategori", render: (r) => (
+      <BadgeMini text={r.kategori || "—"} tone={r.kategori === "KONSULTAN" || r.kategori === "AGENCY" ? "green" : r.kategori === "JASA" || r.kategori === "PRODUK" ? "amber" : "gray"} />
+    ), hideOnMobile: true },
+    { name: "tier", label: "Tier", render: (r) => <BadgeMini text={r.tier} tone={r.tier === "INTI" ? "green" : r.tier === "GATEWAY" ? "amber" : "gray"} />, hideOnMobile: true },
+    { name: "status", label: "Status", render: (r) => <BadgeStatus value={r.status} />, hideOnMobile: true },
+    { name: "regStatus", label: "Status Registrar", render: (r) => (
+      <BadgeMini text={r.regStatus || "—"} tone={r.regStatus === "AKTIF" ? "green" : r.regStatus === "MENUNGGU" ? "amber" : "red"} />
+    ) },
+    { name: "berakhir", label: "Berakhir", type: "date", render: (r) => fmtDate(r.berakhir), hideOnMobile: true },
+    { name: "jatuhTempo", label: "Jatuh Tempo", type: "date", render: (r) => fmtDate(r.jatuhTempo), hideOnMobile: true },
+    { name: "hargaPerpanjangan", label: "Biaya/Thn", render: (r) => rupiahShort(r.hargaPerpanjangan), hideOnMobile: true },
+    { name: "potensiRp", label: "Potensi/Bln", render: (r) => rupiahShort(r.potensiRp) },
     { name: "peran", label: "Peran", hideOnMobile: true },
   ],
 };

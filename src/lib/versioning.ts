@@ -47,6 +47,31 @@ export const APP_CHANNEL: ReleaseChannel = "stable";
 // ─────────────────────────────────────────────────────────────────────
 export const RELEASES: ReleaseEntry[] = [
   {
+    version: "9.3.0",
+    date: "2026-10-22",
+    codename: "Domain Money Engine",
+    title: "49 Domain · 49 Mesin Uang — Portfolio Monetisasi Penuh",
+    channel: "stable",
+    summary:
+      "Seluruh portfolio domain (48 dari registrar + prabudanling.web.id) kini terdata lengkap dengan status registrar asli, tanggal kedaluwarsa, biaya perpanjangan, dan BLUEPRINT 'apa isi website & cara menghasilkan uang' per domain — potensi gabungan Rp 266,5 juta/bulan dengan biaya Rp 3,96 juta/tahun (ROI ×806).",
+    added: [
+      "Skema Domain diperluas: regStatus (AKTIF/MENUNGGU/REDEMPTION), berakhir, jatuhTempo, hargaPerpanjangan, autoKredit, kategori (7 cluster bisnis), isiWebsite, monetisasi, potensiRp",
+      "Seed Domain Money Engine (scripts/seed-domains-money.ts) — 49 domain upsert dengan data registrar asli + blueprint konten + strategi monetisasi + estimasi revenue per domain",
+      "Section Domain Money Engine total baru: hero + 6 KPI live (Total, Aktif, Perlu Bayar, Biaya/Tahun, Potensi/Bulan, ROI tahunan), alert aksi segera (REDEMPTION + tagihan menunggu + kedaluwarsa ≤90 hari), 3 tab (Blueprint Uang / Dewan Monetisasi / Kelola Data)",
+      "Tab Blueprint Uang: kartu per domain dalam 7 kelompok bisnis dengan subtotal potensi + dialog blueprint lengkap (isi website, cara menghasilkan uang, angka, countdown kedaluwarsa, tombol salin)",
+      "Tab Dewan Monetisasi: 7 sistem uang lintas domain (Mesin Leads Konsultan, Agency Chain, AdSense Media Network, Kuartal Umrah, Jasa Lokal WA-Landing, Produk & F&B, Personal Brand) + Aturan Emas + checklist Aksi Cepat Minggu Ini",
+      "Tab Kelola Data: tabel kelola 49 domain dengan 10 kolom (kategori, status registrar, berakhir, jatuh tempo, biaya, potensi) — semua editable via form",
+      "Kolom 'apa isi website ini' menjawab langsung kebutuhan monetisasi maksimal tiap domain",
+    ],
+    changed: [
+      "DOMAIN_CONFIG di-upgrade: +9 field form & 10 kolom tabel dengan format rupiah/tanggal/badge berwarna",
+      "Semua label '43 Domain' di seluruh aplikasi (nav, i18n EN, vault, guide, app-shell, brand signature) → '49 Domain Money Engine'",
+    ],
+    fixed: [
+      "Data portfolio tidak sinkron dengan registrar: 6 domain hilang (bambuwater, degerasia, gohajj, gopijat, gorefleksi, juragankompresor) kini terdata; status riil 3 tagihan MENUNGGU + 1 REDEMPTION (pppbisnis.com) terlihat jelas di UI",
+    ],
+  },
+  {
     version: "9.2.0",
     date: "2026-10-22",
     codename: "Version Control",

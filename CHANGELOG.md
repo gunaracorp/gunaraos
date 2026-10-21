@@ -12,6 +12,30 @@ Kategori: **Added** (ditambah) · **Changed** (disempurnakan) · **Deprecated** 
 
 ## [Unreleased]
 
+## [9.3.0] - 2026-10-22 — Domain Money Engine
+
+### Added
+- **Portfolio Domain Lengkap (49 domain)** — seluruh domain registrar (48) + `prabudanling.web.id` (domain utama, LIVE) kini terdata satu per satu dengan data asli: status registrar, tanggal kedaluwarsa, jatuh tempo tagihan, biaya perpanjangan/tahun, dan auto-kredit.
+  - 45 AKTIF · 3 MENUNGGU pembayaran (mehudi.or.id, juragankompresor.web.id, gopijat.web.id) · 1 REDEMPTION (pppbisnis.com — ⚠️ tebus Rp 215rb sekarang atau hilang).
+  - 6 domain yang sebelumnya hilang dari sistem kini terdata: bambuwater.web.id, degerasia.web.id, gohajj.web.id, gopijat.web.id, gorefleksi.web.id, juragankompresor.web.id.
+- **Kolom "Apa Isi Website Ini" + Strategi Monetisasi** (blueprint uang per domain) — setiap domain kini punya: blueprint konten (halaman, fitur, konten apa yang diisi), strategi cara menghasilkan uang, dan estimasi potensi revenue/bulan. Total potensi gabungan **Rp 266,5 juta/bulan** vs biaya perawatan **Rp 3,96 juta/tahun** (ROI tahunan ×806).
+- **Skema Prisma Domain diperluas** — field baru: `regStatus`, `berakhir`, `jatuhTempo`, `hargaPerpanjangan`, `autoKredit`, `kategori` (7 cluster bisnis), `isiWebsite`, `monetisasi`, `potensiRp`.
+- **Seed `scripts/seed-domains-money.ts`** — penanam 49 domain + blueprint (aman diulang, opsi `--force`).
+- **Section "Domain Money Engine"** (grup Arsenal) — antarmuka monetisasi portofolio total baru:
+  - Hero + **6 KPI live** dari database: Total Domain, Aktif, Perlu Bayar, Biaya/Tahun, Potensi/Bulan, ROI Tahunan.
+  - **Alert Aksi Segera**: chip REDEMPTION (tebus pppbisnis.com), chip tagihan menunggu (total Rp 165rb), chip kedaluwarsa ≤90 hari.
+  - Tab **💰 Blueprint Uang**: kartu per domain dalam 7 kelompok bisnis (Konsultan & Perizinan, Agency Digital, Jasa & Otomotif, Produk & F&B, Media & Portal, Umrah & Spiritual, Personal Brand) dengan subtotal potensi per cluster + dialog blueprint lengkap (angka, countdown kedaluwarsa, blok "apa isi website", blok "cara menghasilkan uang", tombol salin).
+  - Tab **💡 Dewan Monetisasi**: 7 sistem uang lintas domain — Mesin Leads Konsultan, Agency Chain, AdSense Media Network, Kuartal Umrah, Jasa Lokal WA-Landing, Produk & F&B, Personal Brand — plus kartu Aturan Emas dan checklist **Aksi Cepat Minggu Ini**.
+  - Tab **📋 Kelola Data**: tabel 49 domain 10 kolom (kategori, status registrar, berakhir, jatuh tempo, biaya, potensi) — semua field editable via form.
+- **Kalkulasi live anti-hydration**: KPI & countdown dihitung dari data DB dengan pola mounted-safe (aman SSR + semua perangkat).
+
+### Changed
+- `DOMAIN_CONFIG` di-upgrade: +9 field form dan 10 kolom tabel dengan format rupiah, tanggal, dan badge berwarna (AKTIF hijau / MENUNGGU amber / REDEMPTION merah).
+- Semua label "43 Domain" di seluruh aplikasi diperbarui menjadi "49 Domain Money Engine" (nav, i18n EN, vault, guide, app-shell header, brand signature).
+
+### Fixed
+- Data portofolio tidak sinkron dengan registrar (6 domain hilang, status tagihan tidak terlihat) — kini 100% terdata dan status kritis tampil di UI dengan instruksi aksi.
+
 ## [9.2.0] - 2026-10-22 — Version Control
 
 ### Added

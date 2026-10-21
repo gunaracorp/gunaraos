@@ -126,7 +126,7 @@ export function BrandMark() {
             </div>
 
             <p className="text-center text-[10px] leading-relaxed text-muted-foreground/70">
-              Gunara Corp · 2 PT · 43 Domain — &ldquo;Prak burukeun, segerakan kesadaran.&rdquo;
+              Gunara Corp · 2 PT · 49 Domain — &ldquo;Prak burukeun, segerakan kesadaran.&rdquo;
             </p>
           </div>
         </DialogContent>

@@ -71,7 +71,7 @@ export const NAV_EN: Record<string, { label: string; desc: string }> = {
   mingguan: { label: "Weekly Review", desc: "Sunday night, 30 minutes" },
   backlog: { label: "Backlog", desc: "Idea prison" },
   keputusan: { label: "Decisions Log", desc: "History of decisions" },
-  domain: { label: "43 Domains", desc: "Portfolio & missions" },
+  domain: { label: "49 Domains", desc: "Portfolio & missions" },
   agents: { label: "15 AI Agents", desc: "Ready-to-copy role activation" },
   sistem: { label: "System", desc: "Rules · Rituals · Stack" },
   roadmap: { label: "90-Day Roadmap", desc: "Grand Build" },
