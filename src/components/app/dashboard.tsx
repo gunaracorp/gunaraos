@@ -20,7 +20,7 @@ import { Label } from "@/components/ui/label";
 import {
   Flame, Trophy, HeartPulse, Landmark, HandCoins, Users, Sparkles, ArrowRight,
   Sun, ShieldCheck, Quote, ListChecks, CalendarClock, Clock, Swords, MessagesSquare,
-  Rocket, ScanSearch, DatabaseBackup, HardDrive,
+  Rocket, ScanSearch, DatabaseBackup, HardDrive, Tag,
 } from "lucide-react";
 import { useRecords, useSettings } from "./use-records";
 import {
@@ -276,6 +276,33 @@ export function Dashboard({ onNavigate }: { onNavigate: (section: string) => voi
             )}
           </span>
           <ArrowRight className="size-4 flex-none text-sky-600 dark:text-sky-400 group-hover:translate-x-1 transition-transform" />
+        </button>
+      </FadeUp>
+
+      {/* ═══ VERSION — RELEASE CENTER v9.2 ═══ */}
+      <FadeUp delay={0.095}>
+        <button
+          onClick={() => onNavigate("release")}
+          className="w-full group rounded-xl border border-amber-500/25 bg-gradient-to-r from-amber-400/10 via-card to-card p-4 flex items-center gap-4 text-left transition-colors hover:border-amber-500/60 hover:bg-amber-400/[0.06]"
+        >
+          <span className="size-11 flex-none rounded-xl bg-gradient-to-br from-amber-500 to-emerald-950 text-emerald-50 flex items-center justify-center shadow">
+            <Tag className="size-5" />
+          </span>
+          <span className="flex-1 min-w-0">
+            <span className="flex items-center gap-1.5 flex-wrap">
+              <span className="block text-sm font-black tracking-tight">Release Center — Kontrol Versi</span>
+              <span className="rounded-full bg-amber-500 text-emerald-950 px-1.5 py-0.5 text-[9px] font-black tracking-wider">BARU v9.2</span>
+            </span>
+            <span className="block text-xs text-muted-foreground truncate">
+              Version control berstandar internasional — SemVer, timeline rilis, panduan merilis, manifest API.
+            </span>
+          </span>
+          <span className="hidden sm:flex flex-none items-center gap-2 text-[11px] font-semibold">
+            <span className="inline-flex items-center gap-1 rounded-full bg-amber-400/15 text-amber-700 dark:text-amber-300 px-2.5 py-1 border border-amber-400/30">
+              SemVer 2.0.0 · Keep a Changelog
+            </span>
+          </span>
+          <ArrowRight className="size-4 flex-none text-amber-600 dark:text-amber-400 group-hover:translate-x-1 transition-transform" />
         </button>
       </FadeUp>
 

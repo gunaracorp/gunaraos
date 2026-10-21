@@ -12,6 +12,7 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import type { SectionId } from "@/components/app/nav";
+import { BRAND } from "./branding";
 
 export type Lang = "id" | "en";
 
@@ -37,6 +38,7 @@ export const GROUP_EN: Record<string, string> = {
   "⚙️ MESIN — Dirawat Mingguan": "⚙️ ENGINE — Maintained Weekly",
   "🏃 HILIR — Dijalankan Harian": "🏃 DOWNSTREAM — Run Daily",
   "🛡️ ARSENAL — Senjata": "🛡️ ARSENAL — Weapons",
+  "🏷️ VERSION — Kontrol Rilis": "🏷️ VERSION — Release Control",
   "⚡ GOD MODE — v9.0": "⚡ GOD MODE — v9.0",
   "🏛️ DEWAN — Nalar Kolektif": "🏛️ COUNCIL — Collective Reason",
   "💼 BISNIS HUB — Gunara Group": "💼 BUSINESS HUB — Gunara Group",
@@ -58,6 +60,7 @@ export const NAV_EN: Record<string, { label: string; desc: string }> = {
   "seo-clients": { label: "Clients & Proposals", desc: "Projects + AI proposals" },
   "seo-academy": { label: "SEO Academy", desc: "Masterclass + 100-step checklist" },
   vault: { label: "Data Vault & Diagnostics", desc: "Backup · Restore · Health Check" },
+  release: { label: "Release Center", desc: "Version control · SemVer · timeline" },
   hulu: { label: "Charter · Vision · OKR", desc: "The source of everything" },
   keuangan: { label: "Finance", desc: "Debt · Receivables · Cash · Kids" },
   klien: { label: "Clients / CRM", desc: "Master + Follow-up" },
@@ -107,7 +110,10 @@ export const UI = {
   },
   sidebarBadge: { id: "SEO MASTERY AKTIF", en: "SEO MASTERY ACTIVE" },
   sidebarBadgeSub: { id: "11 Arsenal · Audit · Rank · AI Proposal", en: "11 Weapons · Audit · Rank · AI Proposals" },
-  version: { id: "v9.0 · SEO Mastery + Data Vault + God Mode", en: "v9.0 · SEO Mastery + Data Vault + God Mode" },
+  version: {
+    id: `v${BRAND.version} · Version Control + SEO Mastery + Data Vault`,
+    en: `v${BRAND.version} · Version Control + SEO Mastery + Data Vault`,
+  },
   langAria: { id: "Ganti bahasa", en: "Switch language" },
 } as const;
 

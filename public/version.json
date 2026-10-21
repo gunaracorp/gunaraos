@@ -1,0 +1,37 @@
+{
+  "name": "GUNARA OS",
+  "version": "9.2.0",
+  "versionShort": "v9.2",
+  "codename": "Version Control",
+  "channel": "stable",
+  "releaseDate": "2026-10-22",
+  "generatedAt": "2026-10-21T21:55:29.947Z",
+  "semver": {
+    "major": 9,
+    "minor": 2,
+    "patch": 0,
+    "prerelease": null,
+    "build": null
+  },
+  "releaseCount": 5,
+  "latestRelease": {
+    "version": "9.2.0",
+    "date": "2026-10-22",
+    "codename": "Version Control",
+    "title": "Sistem Kontrol Versi Berstandar Internasional",
+    "summary": "Seluruh proyek kini punya sistem version control penuh — SemVer 2.0.0 + Keep a Changelog + Conventional Commits — dengan CLI satu perintah, API manifest, Release Center di dalam aplikasi, dan single source of truth anti-drift."
+  },
+  "notesComplete": true,
+  "standards": [
+    "SemVer 2.0.0",
+    "Keep a Changelog 1.1.0",
+    "Conventional Commits 1.0.0"
+  ],
+  "links": {
+    "api": "/api/version",
+    "staticManifest": "/version.json",
+    "changelog": "/CHANGELOG.md",
+    "policy": "/VERSIONING.md",
+    "ui": "ARSENAL → Release Center"
+  }
+}

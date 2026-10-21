@@ -1,6 +1,6 @@
 {
   "name": "nextjs_tailwind_shadcn_ts",
-  "version": "9.1.0",
+  "version": "9.2.0",
   "private": true,
   "scripts": {
     "dev": "next dev -p 3000 2>&1 | tee dev.log",
@@ -10,7 +10,13 @@
     "db:push": "prisma db push --accept-data-loss",
     "db:generate": "prisma generate",
     "db:migrate": "prisma migrate dev",
-    "db:reset": "prisma migrate reset"
+    "db:reset": "prisma migrate reset",
+    "version:show": "bun scripts/version.ts show",
+    "version:check": "bun scripts/version.ts check",
+    "version:patch": "bun scripts/version.ts bump patch",
+    "version:minor": "bun scripts/version.ts bump minor",
+    "version:major": "bun scripts/version.ts bump major",
+    "version:sync": "bun scripts/version.ts sync"
   },
   "dependencies": {
     "@dnd-kit/core": "^6.3.1",

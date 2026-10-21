@@ -39,6 +39,7 @@ import { MetaForgeSection } from "@/components/app/seo/seo-forge";
 import { SeoClientsSection } from "@/components/app/seo/seo-clients";
 import { SeoAcademySection } from "@/components/app/seo/seo-academy";
 import { VaultSection } from "@/components/app/vault";
+import { ReleaseCenterSection } from "@/components/app/release-center";
 import { BrandMark, BrandConsole, BrandSignatureLine } from "./brand-signature";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -47,6 +48,7 @@ import { NAV, ALL_ITEMS, COMMAND_CENTER, type NavItem, type SectionId } from "./
 import { PageTransition, useNow, useMounted, EASE } from "./motion";
 import { CommandPalette } from "./command-palette";
 import { useI18n, GROUP_EN, NAV_EN, ui, type Lang } from "@/lib/i18n";
+import { VERSION_SHORT } from "@/lib/branding";
 
 // ── Navigasi cepat satu jempol — bottom bar ala aplikasi mobile kelas dunia ──
 const QUICK_NAV: { id: SectionId; icon: LucideIcon; label: string; labelEn: string }[] = [
@@ -88,7 +90,7 @@ function SidebarContent({
           <BrandMark />
           <div>
             <p className="font-extrabold tracking-tight text-amber-50 leading-none">GUNARA OS</p>
-            <p className="text-[11px] text-emerald-200/70 mt-1">v9.1 · Full Responsive · SEO Mastery + Data Vault</p>
+            <p className="text-[11px] text-emerald-200/70 mt-1">v{VERSION_SHORT} · Version Control · SEO Mastery + Data Vault</p>
           </div>
         </motion.div>
       </div>
@@ -298,6 +300,7 @@ export function AppShell() {
       case "seo-clients": return <SeoClientsSection />;
       case "seo-academy": return <SeoAcademySection />;
       case "vault": return <VaultSection />;
+      case "release": return <ReleaseCenterSection />;
       default: return <Dashboard onNavigate={go} />;
     }
   };
@@ -428,7 +431,7 @@ export function AppShell() {
 
         <footer className="border-t bg-card/60 mt-auto footer-safe">
           <div className="max-w-6xl mx-auto px-6 py-4 flex flex-wrap items-center justify-between gap-2 text-xs text-muted-foreground">
-            <p><strong className="text-emerald-800 dark:text-emerald-400">GUNARA OS v9.1</strong> — {ui("footer", lang)}</p>
+            <p><strong className="text-emerald-800 dark:text-emerald-400">GUNARA OS v{VERSION_SHORT}</strong> — {ui("footer", lang)}</p>
             <p>{ui("footerDedication", lang)}</p>
           </div>
           {/* Signature senyap — tersembunyi di permukaan, utuh di dalam sistem */}

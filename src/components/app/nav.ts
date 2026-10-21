@@ -7,7 +7,7 @@ import {
   Sun, CalendarCheck, Inbox, Scale, Globe, Bot, ShieldCheck, Target,
   Briefcase, ScrollText, Lock, GraduationCap, Landmark, Brain, Swords,
   MessagesSquare, Rocket, ScanSearch, KeyRound, TrendingUp, FilePenLine,
-  Link2, Radar, Code2, DatabaseBackup,
+  Link2, Radar, Code2, DatabaseBackup, Tag,
   type LucideIcon,
 } from "lucide-react";
 
@@ -22,7 +22,8 @@ export type SectionId =
   | "seo-hub" | "seo-audit" | "seo-keywords" | "seo-ranks" | "seo-content"
   | "seo-calendar" | "seo-backlinks" | "seo-competitor" | "seo-forge"
   | "seo-clients" | "seo-academy"
-  | "vault";
+  | "vault"
+  | "release";
 
 export interface NavItem { id: SectionId; label: string; icon: LucideIcon; desc?: string }
 export interface NavGroup { title: string; items: NavItem[] }
@@ -72,6 +73,11 @@ export const NAV: NavGroup[] = [
       { id: "sistem", label: "Sistem", icon: ShieldCheck, desc: "Aturan · Ritual · Stack" },
       { id: "roadmap", label: "Roadmap 90 Hari", icon: Target, desc: "Grand Build" },
       { id: "vault", label: "Data Vault & Diagnostik", icon: DatabaseBackup, desc: "Backup · Restore · Health Check" },
+    ],
+  },
+  {
+    title: "🏷️ VERSION — Kontrol Rilis", items: [
+      { id: "release", label: "Release Center", icon: Tag, desc: "SemVer · Timeline · Panduan rilis" },
     ],
   },
   {

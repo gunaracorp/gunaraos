@@ -227,3 +227,51 @@ Stage Summary:
 - GUNARA OS v9.1 "Full Responsive" — 35 section lolos audit 4 viewport (360/768/1024/1440), interaksi mobile terverifikasi end-to-end
 - Fondasi anti-overflow permanen: 3 aturan global CSS membunuh 3 kelas bug sekaligus (grid min-width, flex interactive, tabs exception) — section baru apapun di masa depan otomatis ikut aman
 - UX mobile naik kelas: top bar kontekstual, bottom nav satu jempol, FAB, dialog anti-potong, anti auto-zoom, safe-area notch, keyboard Android resizes-content
+---
+Task ID: 7-b
+Agent: Z.ai (Release Center UI subagent)
+Task: Membuat section Release Center — pusat kendali versi GUNARA OS
+
+Work Log:
+- Baca worklog.md (Task 5, 6, 6-b-tables) untuk konvensi: Card rounded-xl p-4/p-6 tanpa double padding, grid gap-4, anti-overflow 360px (break-words/overflow-x-auto), semantic token + dark:, toast pattern useToast, FadeUp per blok
+- Baca kontrak penuh src/lib/versioning.ts (APP_VERSION, APP_CHANNEL, RELEASES, SEMVER_RULES, CHANGELOG_CATEGORIES, getRelease, sortedReleases, releaseStats), motion.tsx (FadeUp/FloatingOrbs/PulseDot), vault.tsx + seo-hub.tsx (style hero), ui accordion/badge/button/card (ekspor tersedia)
+- Buat src/components/app/release-center.tsx (FILE BARU, "use client", ekspor tunggal ReleaseCenterSection) — 7 blok sesuai spec:
+  · HERO gradient emerald-950→800 + FloatingOrbs: eyebrow amber "🏷️ VERSION CONTROL — STANDAR INTERNASIONAL", judul "Release Center", display besar v{APP_VERSION} font-mono font-black + codename + tanggal id-ID (Asia/Jakarta, anti hydration-mismatch) dari getRelease(APP_VERSION), Badge channel {APP_CHANNEL.toUpperCase()} dengan PulseDot + 3 badge standar (SemVer 2.0.0 / Keep a Changelog / Conventional Commits), tombol "📋 Salin Info Versi" → clipboard JSON {name, version, codename, date, channel} + toast "Info versi disalin" (dengan fallback execCommand)
+  · STATS ROW grid-cols-2 lg:grid-cols-4: Total Rilis (Tag), Fitur Ditambahkan (Plus emerald), Penyempurnaan (RefreshCw amber), Bug Diperbaiki (Wrench sky) — angka font-mono text-2xl tabular-nums dari releaseStats()
+  · ANATOMI VERSI: 3 kartu SEMVER_RULES (MAJOR merah / MINOR emerald / PATCH sky, dark: variants) + strip "Contoh dibedah — v9.1.2" dengan digit raksasa per-warna + 3 baris caption (9 generasi arsitektur kesembilan, 1 rilis fitur ke-1 sejak v9.0, 2 patch ke-2)
+  · TIMELINE RILIS: ol border-l-2 + dot marker (emerald solid + ring utk versi terpasang), satu Accordion type="multiple" defaultValue=[APP_VERSION] membungkus semua rilis; tiap rilis = Card berisi Badge versi font-mono (emerald jika = APP_VERSION, else outline) + badge "TERPASANG" + tanggal + codename — title + summary + AccordionTrigger "N perubahan tercatat" + grup kategori urutan resmi CHANGELOG_CATEGORIES dengan Badge berwarna {added emerald+Plus, changed amber+RefreshCw, fixed sky+Wrench, removed red+Trash2, security violet+ShieldCheck, deprecated zinc+Archive} + ul list-disc text-sm text-muted-foreground
+  · CARA MERILIS: 5 langkah (lingkaran nomor bg-primary) — bun run lint; version:patch/minor/major (3 CodeRow terpisah, CLI sync 4 file); catat ReleaseEntry di versioning.ts + [Unreleased] CHANGELOG.md (file chips); bun run version:check; git tag -a vX.Y.Z — tiap kode punya tombol salin size="icon" size-7 → toast "Perintah disalin"
+  · MANIFEST API: useEffect fetch("/api/version") try/catch → <pre> JSON.stringify(data,null,2) max-h-72 overflow-auto nice-scroll font-mono text-xs; loading = 5 Skeleton, error = box merah + tombol "Coba lagi", tombol "Salin JSON" (disabled sampai ready) + toast; 3 link chip /version.json /CHANGELOG.md /VERSIONING.md (target=_blank rel=noopener noreferrer underline)
+  · FOOTER NOTE: rantai 5 chip mono worklog.md → CHANGELOG.md → versioning.ts → version.json → git tag vX.Y.Z + kalimat "Setiap perubahan tercatat di rantai ini — tidak ada yang hilang."
+- STYLE COMPLIANCE: root <section aria-label> space-y-8; semua Card rounded-xl dengan p-4/p-6 (tailwind-merge menimpa py-6 default, tanpa double padding); grid gap-4; anti-overflow 360px (break-words pada teks panjang, overflow-x-auto + whitespace-nowrap pada <code> perintah, pre overflow-auto, semua flex row diberi min-w-0); dark mode pakai token semantik + dark: eksplisit utk aksen warna; tombol salin inline size-7 sesuai spec, CTA & tombol lain h-9/w-full di mobile; FadeUp membungkus tiap blok besar; toast pattern { title, description } + variant destructive
+- FIX: lucide-react versi repo tidak punya ekspor "GitTag" (terdeteksi tsc) → diganti ikon "Tag" utk KPI Total Rilis
+- VERIFIKASI: Bun.Transpiler scan → SYNTAX OK (imports 11 modul, exports ["ReleaseCenterSection"]); bunx tsc --noEmit → 0 error di release-center.tsx (error tersisa hanya pre-existing di examples/, scripts/, skills/ — di luar scope); bun run lint → 0 error di file baru (3 error pre-existing scripts/version.ts, bukan file ini); re-read penuh 819 baris → JSX seimbang, tidak ada import terpakai; dev.log sehat (GET / 200, compile OK)
+
+Stage Summary:
+- 1 file baru: src/components/app/release-center.tsx — section "Release Center" lengkap 7 blok (hero versi + salin info, 4 KPI, anatomi SemVer + contoh dibedah, timeline changelog interaktif dengan accordion terbuka otomatis di versi terpasang, panduan rilis 5 langkah dengan salin perintah, manifest API live + retry + salin JSON, rantai dokumentasi)
+- Zero hardcoded versi aplikasi — semua tampil dari APP_VERSION / APP_CHANNEL / releaseStats() / sortedReleases() / getRelease(); placeholder vX.Y.Z & contoh didaktis v9.1.2 sesuai spec
+- Siap di-wiring orchestrator: import { ReleaseCenterSection } dari "./release-center" + case nav id baru (file lain TIDAK disentuh)
+
+---
+Task ID: 7
+Agent: Z.ai (orchestrator) + subagent 7-b
+Task: v9.2.0 — Sistem Version Control Berstandar Internasional (SemVer 2.0.0 + Keep a Changelog + Conventional Commits)
+
+Work Log:
+- AUDIT: package.json 9.1.0; riwayat v7→v9.1 direkonstruksi dari worklog; 1 file SSOT versi (branding.ts) + 6 titik hardcode ditemukan (app-shell×2, i18n, nav, dashboard, branding desc/title)
+- VERSIONING.md — kebijakan rilis internasional: format MAJOR.MINOR.PATCH(-pre+build), tabel kapan naik (contoh v9.1.2 dibedah), codename wajib per MAJOR/MINOR, 6 kategori Keep a Changelog, tabel file sistem, alur rilis 7 langkah, mapping Conventional Commits, template worklog §7, Definition of Done, aturan emas anti-drift
+- CHANGELOG.md — format Keep a Changelog 1.1.0; rekonstruksi penuh: [9.2.0] Version Control · [9.1.0] Full Responsive · [9.0.0] Data Vault · [8.0.0] SEO Mastery · [7.0.0] Fondasi; [Unreleased] kosong untuk siklus berikut
+- src/lib/versioning.ts — registry rilis terstruktur: RELEASES (5 entri lengkap kategori), APP_VERSION derive dari BRAND, SEMVER_RE resmi semver.org, parseVersion/compareVersions (precedence prerelease penuh)/bumpVersion (major/minor/patch/alpha/beta/rc + finalisasi), sortedReleases/getRelease/latestRelease/releaseStats/versionManifest
+- scripts/version.ts — CLI version control (bun run version:*): show · check (7 validasi) · bump (sync 4 file + checklist rilis tercetak) · set · sync; fix lint no-require-imports (dynamic import) + fix tsc import.meta.dir → fileURLToPath(import.meta.url)
+- SINGLE SOURCE OF TRUTH: branding.ts → export const VERSION (satu-satunya tempat angka versi); VERSION_SHORT derive; BRAND_DESCRIPTION/TITLE template literal; app-shell sidebar+footer, i18n UI.version semua derive — nol hardcode v9.x tersisa
+- public/version.json — manifest machine-readable (digenerate CLI); API GET /api/version — metadata runtime + header X-Gunara-Version, Cache-Control no-store
+- SUBAGENT 7-b: section Release Center (src/components/app/release-center.tsx, 819 baris) — hero v{APP_VERSION}+codename+STABLE, 4 KPI stats, anatomi SemVer 3 kartu + v9.1.2 dibedah, timeline 5 rilis (Accordion, kategori berwarna, TERPASANG badge), panduan merilis 5 langkah dengan tombol salin, penampil manifest /api/version live (skeleton/error/retry/copy), rantai dokumentasi 5 chip
+- WIRING: nav.ts SectionId "release" + grup baru "🏷️ VERSION — Kontrol Rilis"; app-shell import+case; i18n NAV_EN/GROUP_EN; dashboard banner amber "Release Center — Kontrol Versi BARU v9.2"
+- RILIS NYATA via CLI: bun scripts/version.ts bump minor --codename "Version Control" → 9.1.0→9.2.0, 4 file tersinkron otomatis; ReleaseEntry 9.2.0 ditulis manual; CHANGELOG [Unreleased]→[9.2.0]; version:sync + version:check → SEMUA OK
+- VERIFIKASI: lint 0 error; tsc src 0 error; /api/version & /version.json 200 (9.2.0); fix chunk Turbopack stale (trigger HMR branding.ts — pola sama Task 6); Agent Browser: judul tab "GUNARA OS v9.2" (SSOT→metadata), Release Center render penuh (hero/stats/anatomi/timeline 5 rilis/panduan/manifest live JSON 9.2.0), copy+toast OK, accordion expand OK, console bersih; responsif 360px scrollWidth PERSIS 360 · 768 · 1440; dark mode sidebar+footer v9.2; bottom-nav hidden di desktop
+- GIT: commit chore(release): v9.2.0 — Version Control + tag annotated v9.2.0
+
+Stage Summary:
+- GUNARA OS v9.2.0 "Version Control" — sistem version control berstandar internasional AKTIF dan TERPAKAI (rilis ini sendiri dilahirkan lewat sistemnya)
+- Rantai dokumentasi lengkap permanen: worklog.md → CHANGELOG.md → versioning.ts RELEASES → version.json → git tag vX.Y.Z
+- Workflow rilis ke depan = 1 perintah (bun run version:patch|minor|major) + catat perubahan + version:check + git tag
