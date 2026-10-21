@@ -13,7 +13,7 @@
 
 export const BRAND = {
   siteName: "GUNARA OS",
-  version: "9.0.0",
+  version: "9.1.0",
   siteUrl: "https://gunara.web.id",
   tagline: "Sistem Operasi Hidup & Bisnis — Hulu → Mesin → Hilir · Dewan 46 · God Mode",
 
@@ -141,7 +141,7 @@ export const BRAND_LOCALES = [
 
 /** Deskripsi default situs — nama brand ditenun alami dalam kalimat. */
 export const BRAND_DESCRIPTION =
-  "GUNARA OS v9.0 — super app personal & bisnis (Hulu → Mesin → Hilir) dengan God Mode: Ultimate Solver & Dewan 46, " +
+  "GUNARA OS v9.1 — super app personal & bisnis (Hulu → Mesin → Hilir) dengan God Mode: Ultimate Solver & Dewan 46, " +
   "Arena Debat Dewan (46 dewan saling berdebat lalu diarbitrase), Sage Console (ngobrol langsung dengan " +
   "Master Polymath, Sage Universal, The Ultimate Problem Solver), arsenal SEO Mastery 11 modul, dan " +
   "Data Vault (backup & diagnostik) yang berstandard internasional. " +
@@ -153,7 +153,7 @@ export const BRAND_DESCRIPTION =
   "Master Polymath · Sage Universal · The Ultimate Problem Solver.";
 
 export const BRAND_TITLE =
-  "GUNARA OS v9.0 — Sistem Operasi Hidup & Bisnis · Dewan 46 · God Mode · SEO Mastery by Gugun Gunara (Muhammad Lutfi Azmi)";
+  "GUNARA OS v9.1 — Sistem Operasi Hidup & Bisnis · Dewan 46 · God Mode · SEO Mastery by Gugun Gunara (Muhammad Lutfi Azmi)";
 
 /** JSON-LD @graph — identitas terstruktur untuk Google Knowledge Graph. */
 export function buildBrandJsonLd() {

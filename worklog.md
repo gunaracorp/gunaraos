@@ -170,3 +170,60 @@ Stage Summary:
 - GUNARA OS v9.0 — "Data aman, link sehat, metadata lengkap, dua bahasa, desain naik kelas"
 - Jawaban pertanyaan user: data TERSAVE OTOMATIS ke SQLite server (db/custom.db) setiap tombol Simpan; ekspor/impor JSON mengamankan saat pindah hosting; health check 14 endpoint bisa diulang kapan pun pasca-install
 - 3 endpoint baru (/api/backup, /api/health), 1 section baru (vault), 2 file sistem baru (i18n.ts), metadata berstandard internasional lengkap
+
+---
+Task ID: 6-b-tables
+Agent: Z.ai (table-overflow fixer)
+Task: Tambah overflow-x-auto pada 3 kontainer tabel mentah
+
+Work Log:
+- Baca worklog.md (Task 5) + Read area target ±30 baris di 3 file; grep konfirmasi old_str unik per file (seo-audit.tsx:439 & vault.tsx konten lain punya pola mirip tapi beda className — tidak tersentuh)
+- vault.tsx:612 (kontainer tabel Health Check probe endpoint): className "max-h-72 overflow-y-auto nice-scroll rounded-lg border" → "max-h-72 overflow-auto nice-scroll rounded-lg border" (overflow-auto menangani sumbu-x DAN y; tabel w-full text-xs kini bisa scroll horizontal di HP)
+- seo/seo-audit.tsx:469 (kontainer tabel Riwayat Audit): className "nice-scroll max-h-96 overflow-y-auto rounded-lg border" → "nice-scroll max-h-96 overflow-auto rounded-lg border" (tabel w-full text-sm scroll horizontal aman)
+- seo/seo-keywords.tsx:345 (kontainer tabel hasil Keyword Studio): className "nice-scroll max-h-96 overflow-y-auto rounded-lg border" → "nice-scroll max-h-96 overflow-auto rounded-lg border" (tabel w-full text-sm scroll horizontal aman)
+- Verifikasi: Read ulang ketiga bagian — className benar, <table> tetap anak langsung kontainer, div/table/thead/tbody seimbang; grep sisa "overflow-y-auto rounded-lg border" = 0 di 3 file target
+
+Stage Summary:
+- 3 file diperbaiki (vault.tsx, seo-audit.tsx, seo-keywords.tsx) — kontainer langsung di sekitar <table> kini overflow-auto (x+y); sticky thead tetap berfungsi; TANPA perubahan lain, tanpa file lain disentuh
+
+---
+Task ID: 6
+Agent: Z.ai (orchestrator)
+Task: v9.1 — Audit & Upgrade Responsivitas Total (semua halaman, semua ikon, semua perangkat: Android kecil 320-360px, iPhone 390px, tablet 768px, desktop)
+
+Work Log:
+- AUDIT KODE: pindai 33 section — temukan 3 tabel mentah tanpa overflow-x-auto (vault, seo-audit, seo-keywords), ~9 dialog tanpa scroll-guard, tidak ada safe-area, tidak ada mobile top bar, belum ada bottom-nav/FAB
+- SUBAGENT 6-b-tables: perbaiki 3 kontainer tabel → overflow-auto (overflow-x + y sekaligus); tabel kini scroll di dalam kartu, bukan merobek halaman
+- GLOBALS.CSS Responsive Foundation v9.1:
+  · .grid > * { min-width: 0 } — membunuh bug klasik "grid item menolak menyusut" yang memaksa halaman melebar (akar masalah utama: .truncate di dalam grid item → min-content 748px merambat sampai body)
+  · button/a/summary { min-width: 0 } — kelas bug sama di sumbu flex (AccordionTrigger dll); + PENGECUALIAN [data-slot=tabs-trigger]/[role=tab] { min-width: max-content } agar pill tab tetap nowrap-by-design (ditemukan via regression: trigger menyusut di bawah teks → teks meluap 8-28px)
+  · -webkit-text-size-adjust 100% + touch-action: manipulation (anti delay tap, teks stabil saat rotasi)
+  · Anti auto-zoom iOS/Android: input/textarea/select ≥16px via @media (pointer:coarse) — terverifikasi computed 16px
+  · Safe-area utilities: .pt-safe/.pb-safe/.footer-safe (env(safe-area-inset-*), aktif via viewport-fit=cover)
+  · Tipografi fluid: .text-fluid-hero/.text-fluid-title (clamp), text-wrap balance/pretty
+  · @media (hover:none): matikan .card-lift sticky-hover di layar sentuh
+  · .scrollbar-hide + .scroll-x-snap (strip chip/tab mobile)
+- LAYOUT.TSX: viewportFit:"cover" + interactiveWidget:"resizes-content" (keyboard Android mengecilkan konten → input dialog tetap terlihat)
+- UI/DIALOG.TSX + ALERT-DIALOG.TSX: max-h-[calc(100dvh-2rem)] + overflow-y-auto nice-scroll global (dialog tak pernah terpotong di layar pendek/landscape); tombol close size-8 grid place-items-center (touch target lebih besar)
+- APP-SHELL.TSX (refactor besar):
+  · Root min-h-dvh, sidebar h-dvh (anti dynamic-toolbar mobile)
+  · MOBILE TOP BAR baru (lg:hidden sticky): menu, pencarian, ikon+judul section aktif (animate), ThemeToggle, LangToggle — user selalu tahu posisinya; ganti 2 tombol melayang lama yang menutupi konten
+  · BOTTOM QUICK-NAV baru (lg:hidden fixed): Beranda/SEO Hub/Solver/Vault/Lainnya, pill aktif layoutId, min-h 56px per item, pb-safe — navigasi satu jempol ala aplikasi kelas dunia
+  · SCROLL-TO-TOP FAB (semua perangkat): muncul setelah scroll >480px, smooth scroll, aman dari bottom-nav via calc(4.5rem+safe-area)
+  · footer + .footer-safe (tak tertutup bottom-nav), SheetContent pb-safe + max-w-[86vw]
+- BUG HUNT MENDEEP (Agent Browser 360px): dashboard meluas 780px → akar: (1) min-content grid via truncate, (2) kontainer max-w-6xl mx-auto adalah flex item ber-margin-auto → margin auto menonaktifkan stretch → width jadi fit-content. Fix: .grid>* min-width 0 + tambah w-full pada kontainer
+- LEARNED: chunk CSS Turbopack stale setelah edit globals.css — wajib rm -rf .next + restart agar rule ter-serve (diverifikasi via curl stylesheet)
+- FIX LATEN: 7 error tsc lama (crm.tsx useRecords<any>, hilir.tsx i1done signature) — src kini bersih
+- VERSION BUMP: 9.0.0 → 9.1.0 (package.json, branding.ts, sidebar, footer) "v9.1 · Full Responsive"
+
+VERIFIKASI (Agent Browser):
+- 360px: 35/35 section body.scrollWidth=360 PERSIS, nol overflow nyata (tes scroll paksa scrollX=0)
+- 768px: 35/35 sempurna; 1024px sidebar muncul; 1440px mode desktop penuh (bottom-nav & top-bar mobile otomatis hilang)
+- Interaksi: bottom-nav pindah section ✓, sheet 288px ✓, dialog muat (358×454 < 844, maxH 812, ovY auto) ✓, input 16px anti-zoom ✓, FAB scroll-to-top ✓, command palette 356px ✓
+- Dark mode 1440px render sempurna; console & page errors BERSIH; lint 0 error; tsc src 0 error; dev.log sehat
+- Screenshot: dashboard 390px (hero wrap rapi, chip melipat), SEO Hub 390px & 768px (KPI grid adaptif, pill aktif)
+
+Stage Summary:
+- GUNARA OS v9.1 "Full Responsive" — 35 section lolos audit 4 viewport (360/768/1024/1440), interaksi mobile terverifikasi end-to-end
+- Fondasi anti-overflow permanen: 3 aturan global CSS membunuh 3 kelas bug sekaligus (grid min-width, flex interactive, tabs exception) — section baru apapun di masa depan otomatis ikut aman
+- UX mobile naik kelas: top bar kontekstual, bottom nav satu jempol, FAB, dialog anti-potong, anti auto-zoom, safe-area notch, keyboard Android resizes-content

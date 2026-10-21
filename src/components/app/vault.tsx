@@ -609,7 +609,7 @@ function HealthTab({ toast }: { toast: ReturnType<typeof useToast>["toast"] }) {
                 {probes.length === 0 ? (
                   <p className="text-xs text-muted-foreground">Belum diuji — tekan tombol Health Check.</p>
                 ) : (
-                  <div className="max-h-72 overflow-y-auto nice-scroll rounded-lg border">
+                  <div className="max-h-72 overflow-auto nice-scroll rounded-lg border">
                     <table className="w-full text-xs">
                       <thead className="sticky top-0 bg-muted/95 backdrop-blur">
                         <tr className="text-left text-muted-foreground">

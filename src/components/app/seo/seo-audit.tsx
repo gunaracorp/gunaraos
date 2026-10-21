@@ -466,7 +466,7 @@ export function SeoAuditSection() {
               Belum ada riwayat. Jalankan audit pertamamu di atas.
             </p>
           ) : (
-            <div className="nice-scroll max-h-96 overflow-y-auto rounded-lg border">
+            <div className="nice-scroll max-h-96 overflow-auto rounded-lg border">
               <table className="w-full text-sm">
                 <thead className="sticky top-0 bg-muted/90 backdrop-blur">
                   <tr>

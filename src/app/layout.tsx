@@ -139,6 +139,11 @@ export const viewport: Viewport = {
   initialScale: 1,
   maximumScale: 5,
   colorScheme: "light dark",
+  // viewport-fit=cover → env(safe-area-inset-*) aktif di perangkat notch
+  viewportFit: "cover",
+  // Keyboard Android mengecilkan konten (bukan hanya visual) → dialog &
+  // input di bagian bawah layar tetap terlihat saat mengetik
+  interactiveWidget: "resizes-content",
 };
 
 export default function RootLayout({

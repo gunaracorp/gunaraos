@@ -190,7 +190,7 @@ export function DailySection() {
   );
 }
 
-function i1done(log: { done1: boolean }) { return log.done1 ? "✓" : ""; }
+function i1done(log: { done1?: boolean | null }) { return log.done1 ? "✓" : ""; }
 
 // ═════════ WEEKLY REVIEW ═════════
 export function WeeklySection() {

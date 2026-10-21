@@ -11,7 +11,8 @@ import { useState, useEffect } from "react";
 import { motion, useScroll, useSpring, useReducedMotion, AnimatePresence } from "framer-motion";
 import { useTheme } from "next-themes";
 import {
-  Menu, X, Search, Sun, Moon, Landmark, Clock, Command, Languages,
+  Menu, Search, Sun, Moon, Landmark, Clock, Command, Languages, ArrowUp,
+  LayoutDashboard, Rocket, Brain, DatabaseBackup, type LucideIcon,
 } from "lucide-react";
 import { Dashboard } from "@/components/app/dashboard";
 import { HuluSection } from "@/components/app/hulu";
@@ -41,11 +42,19 @@ import { VaultSection } from "@/components/app/vault";
 import { BrandMark, BrandConsole, BrandSignatureLine } from "./brand-signature";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
-import { Sheet, SheetContent, SheetTitle, SheetDescription, SheetTrigger } from "@/components/ui/sheet";
+import { Sheet, SheetContent, SheetTitle, SheetDescription } from "@/components/ui/sheet";
 import { NAV, ALL_ITEMS, COMMAND_CENTER, type NavItem, type SectionId } from "./nav";
 import { PageTransition, useNow, useMounted, EASE } from "./motion";
 import { CommandPalette } from "./command-palette";
 import { useI18n, GROUP_EN, NAV_EN, ui, type Lang } from "@/lib/i18n";
+
+// ── Navigasi cepat satu jempol — bottom bar ala aplikasi mobile kelas dunia ──
+const QUICK_NAV: { id: SectionId; icon: LucideIcon; label: string; labelEn: string }[] = [
+  { id: "dashboard", icon: LayoutDashboard, label: "Beranda", labelEn: "Home" },
+  { id: "seo-hub", icon: Rocket, label: "SEO Hub", labelEn: "SEO Hub" },
+  { id: "solver", icon: Brain, label: "Solver", labelEn: "Solver" },
+  { id: "vault", icon: DatabaseBackup, label: "Vault", labelEn: "Vault" },
+];
 
 function SidebarContent({
   active,
@@ -79,7 +88,7 @@ function SidebarContent({
           <BrandMark />
           <div>
             <p className="font-extrabold tracking-tight text-amber-50 leading-none">GUNARA OS</p>
-            <p className="text-[11px] text-emerald-200/70 mt-1">v9.0 · SEO Mastery + Data Vault + God Mode</p>
+            <p className="text-[11px] text-emerald-200/70 mt-1">v9.1 · Full Responsive · SEO Mastery + Data Vault</p>
           </div>
         </motion.div>
       </div>
@@ -293,8 +302,18 @@ export function AppShell() {
     }
   };
 
+  const [showTop, setShowTop] = useState(false);
+
+  // Tombol kembali ke atas muncul setelah menggulir cukup jauh
+  useEffect(() => {
+    const onScroll = () => setShowTop(window.scrollY > 480);
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
   return (
-    <div className="min-h-screen flex bg-background">
+    <div className="min-h-dvh flex bg-background">
       {/* Scroll progress — standar aplikasi kelas dunia */}
       <motion.div
         className="fixed top-0 left-0 right-0 h-[3px] z-[60] origin-left bg-gradient-to-r from-emerald-600 via-emerald-500 to-amber-400"
@@ -303,26 +322,13 @@ export function AppShell() {
       />
 
       {/* Sidebar desktop */}
-      <aside className="hidden lg:block w-72 flex-none bg-sidebar text-sidebar-foreground border-r border-sidebar-border sticky top-0 h-screen">
+      <aside className="hidden lg:block w-72 flex-none bg-sidebar text-sidebar-foreground border-r border-sidebar-border sticky top-0 h-dvh">
         <SidebarContent active={active} onNavigate={setActive} animated />
       </aside>
 
       {/* Sidebar mobile */}
       <Sheet open={mobileOpen} onOpenChange={setMobileOpen}>
-        <SheetTrigger asChild>
-          <Button
-            size="icon"
-            className="lg:hidden fixed top-3 left-3 z-50 bg-emerald-950 text-amber-200 shadow-lg hover:bg-emerald-900"
-            aria-label="Buka menu navigasi"
-            // aria-controls dari useId Radix bisa bergeser saat hydration stale
-            // (upstream React 19.2 — radix#3700); atribut ini harmless saat sheet
-            // tertutup & dihitung ulang Radix saat dibuka → diamkan saja.
-            suppressHydrationWarning
-          >
-            {mobileOpen ? <X className="size-4" /> : <Menu className="size-4" />}
-          </Button>
-        </SheetTrigger>
-        <SheetContent side="left" className="p-0 w-72 bg-sidebar text-sidebar-foreground border-sidebar-border">
+        <SheetContent side="left" className="p-0 w-72 max-w-[86vw] bg-sidebar text-sidebar-foreground border-sidebar-border pb-safe">
           <SheetTitle className="sr-only">Navigasi GUNARA OS</SheetTitle>
           {/* Deskripsi sr-only: wajib Radix agar tidak ada warning aria-describedby */}
           <SheetDescription className="sr-only">Menu navigasi seluruh section GUNARA OS</SheetDescription>
@@ -330,18 +336,45 @@ export function AppShell() {
         </SheetContent>
       </Sheet>
 
-      {/* Tombol command palette — mobile */}
-      <Button
-        size="icon"
-        className="lg:hidden fixed top-3 left-14 z-50 size-9 bg-emerald-950/90 text-amber-200 shadow-lg hover:bg-emerald-900"
-        onClick={() => setPaletteOpen(true)}
-        aria-label="Buka pencarian cepat"
-      >
-        <Search className="size-4" />
-      </Button>
-
       {/* Konten */}
       <main id="gunara-main" className="flex-1 min-w-0 flex flex-col">
+        {/* Top bar mobile — konteks section aktif selalu terlihat + akses cepat */}
+        <header className="lg:hidden sticky top-0 z-40 flex h-14 items-center gap-1 border-b bg-card/85 pl-2 pr-3 pt-safe backdrop-blur-md">
+          <Button
+            size="icon"
+            variant="ghost"
+            className="size-10 touch-manipulation"
+            onClick={() => setMobileOpen(true)}
+            aria-label="Buka menu navigasi"
+          >
+            <Menu className="size-5" />
+          </Button>
+          <Button
+            size="icon"
+            variant="ghost"
+            className="size-10 touch-manipulation"
+            onClick={() => setPaletteOpen(true)}
+            aria-label="Buka pencarian cepat"
+          >
+            <Search className="size-5" />
+          </Button>
+          <AnimatePresence mode="wait" initial={false}>
+            <motion.div
+              key={headerItem.label}
+              initial={reduce ? false : { opacity: 0, y: 6 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={reduce ? { opacity: 0 } : { opacity: 0, y: -6 }}
+              transition={{ duration: 0.22, ease: EASE }}
+              className="flex min-w-0 flex-1 items-center gap-1.5"
+            >
+              <headerItem.icon className="size-4 flex-none text-emerald-700 dark:text-emerald-400" aria-hidden />
+              <span className="truncate text-sm font-bold tracking-tight">{headerItem.label}</span>
+            </motion.div>
+          </AnimatePresence>
+          <ThemeToggle />
+          <LangToggle />
+        </header>
+
         <header className="hidden lg:flex items-center justify-between px-8 py-4 border-b bg-card/60 backdrop-blur sticky top-0 z-40">
           <AnimatePresence mode="wait" initial={false}>
             <motion.div
@@ -389,13 +422,13 @@ export function AppShell() {
           </div>
         </header>
 
-        <div className="px-4 sm:px-6 lg:px-8 py-6 lg:py-8 max-w-6xl mx-auto pb-16">
+        <div className="w-full px-4 sm:px-6 lg:px-8 py-6 lg:py-8 max-w-6xl mx-auto pb-16">
           <PageTransition sectionKey={active}>{content()}</PageTransition>
         </div>
 
-        <footer className="border-t bg-card/60 mt-auto">
+        <footer className="border-t bg-card/60 mt-auto footer-safe">
           <div className="max-w-6xl mx-auto px-6 py-4 flex flex-wrap items-center justify-between gap-2 text-xs text-muted-foreground">
-            <p><strong className="text-emerald-800 dark:text-emerald-400">GUNARA OS v9.0</strong> — {ui("footer", lang)}</p>
+            <p><strong className="text-emerald-800 dark:text-emerald-400">GUNARA OS v9.1</strong> — {ui("footer", lang)}</p>
             <p>{ui("footerDedication", lang)}</p>
           </div>
           {/* Signature senyap — tersembunyi di permukaan, utuh di dalam sistem */}
@@ -406,6 +439,59 @@ export function AppShell() {
       </main>
 
       <CommandPalette open={paletteOpen} onOpenChange={setPaletteOpen} onNavigate={go} />
+
+      {/* Navigasi cepat satu jempol — bottom bar mobile (hilang di desktop) */}
+      <nav aria-label="Navigasi cepat" className="lg:hidden fixed inset-x-0 bottom-0 z-40 border-t bg-card/95 pb-safe backdrop-blur-md">
+        <div className="grid grid-cols-5">
+          {QUICK_NAV.map(({ id, icon: QIcon, label, labelEn }) => {
+            const on = active === id;
+            return (
+              <button
+                key={id}
+                onClick={() => go(id)}
+                aria-current={on ? "page" : undefined}
+                className="relative flex min-h-[56px] touch-manipulation flex-col items-center justify-center gap-0.5 px-1 py-1.5 text-[10px] font-semibold text-muted-foreground transition-colors"
+              >
+                {on && (
+                  <motion.span
+                    layoutId="gunara-quick-pill"
+                    className="absolute inset-x-2 inset-y-1 rounded-xl bg-emerald-950/5 dark:bg-amber-400/10"
+                    transition={reduce ? { duration: 0 } : { type: "spring", stiffness: 380, damping: 32 }}
+                  />
+                )}
+                <QIcon className={cn("relative z-10 size-5", on && "text-emerald-700 dark:text-amber-300")} aria-hidden />
+                <span className={cn("relative z-10", on && "text-emerald-800 dark:text-amber-200")}>{lang === "en" ? labelEn : label}</span>
+              </button>
+            );
+          })}
+          <button
+            onClick={() => setMobileOpen(true)}
+            className="relative flex min-h-[56px] touch-manipulation flex-col items-center justify-center gap-0.5 px-1 py-1.5 text-[10px] font-semibold text-muted-foreground transition-colors"
+            aria-label={lang === "en" ? "Open full menu" : "Buka menu lengkap"}
+          >
+            <Menu className="relative z-10 size-5" aria-hidden />
+            <span className="relative z-10">{lang === "en" ? "More" : "Lainnya"}</span>
+          </button>
+        </div>
+      </nav>
+
+      {/* Kembali ke atas — muncul setelah menggulir jauh, semua perangkat */}
+      <AnimatePresence>
+        {showTop && (
+          <motion.button
+            type="button"
+            onClick={() => window.scrollTo({ top: 0, behavior: reduce ? "auto" : "smooth" })}
+            initial={reduce ? { opacity: 0 } : { opacity: 0, y: 14, scale: 0.85 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={reduce ? { opacity: 0 } : { opacity: 0, y: 14, scale: 0.85 }}
+            transition={{ duration: 0.25, ease: EASE }}
+            className="fixed bottom-[calc(4.5rem+env(safe-area-inset-bottom))] right-3 z-40 grid size-11 place-items-center rounded-full bg-emerald-950 text-amber-200 shadow-xl transition-colors hover:bg-emerald-900 lg:bottom-6 lg:right-6"
+            aria-label="Kembali ke atas"
+          >
+            <ArrowUp className="size-5" aria-hidden />
+          </motion.button>
+        )}
+      </AnimatePresence>
 
       {/* Banner signature di DevTools console — senyap, tak terlihat di UI */}
       <BrandConsole />

@@ -24,7 +24,7 @@ import { cn } from "@/lib/utils";
 // ── Section CRM: Master Klien + Follow-Up ──
 export function CrmSection() {
   const client = useRecords("client");
-  const followUp = useRecords("followUp");
+  const followUp = useRecords<any>("followUp");
   const [fuOpen, setFuOpen] = useState(false);
   const [fuEditing, setFuEditing] = useState<Record<string, unknown> | null>(null);
 
