@@ -1,0 +1,619 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// ═══════════════════════════════════════════════════════
+// 🌊 HULU — Diisi sekali, dibaca tiap Senin
+// ═══════════════════════════════════════════════════════
+
+model Setting {
+  key   String @id
+  value String
+}
+
+// ═══════════════════════════════════════════════════════
+// ⚙️ MESIN 1 — KEUANGAN
+// ═══════════════════════════════════════════════════════
+
+model Debt {
+  id              String        @id @default(cuid())
+  tanggal         String        @default("")
+  kepada          String
+  nilaiAwal       Float         @default(0)
+  cicilanPerBulan Float         @default(0)
+  tenggat         String        @default("")
+  prioritas       String        @default("RINGAN") // BUNGA-TINGGI | TENGGAT-DEKAT | RINGAN
+  status          String        @default("AKTIF") // AKTIF | LUNAS | NEGOSIASI
+  catatan         String        @default("")
+  payments        DebtPayment[]
+  createdAt       DateTime      @default(now())
+}
+
+model DebtPayment {
+  id        String   @id @default(cuid())
+  debtId    String
+  debt      Debt     @relation(fields: [debtId], references: [id], onDelete: Cascade)
+  tanggal   String   @default("")
+  jumlah    Float    @default(0)
+  catatan   String   @default("")
+  createdAt DateTime @default(now())
+}
+
+model Receivable {
+  id           String   @id @default(cuid())
+  klien        String
+  proyek       String   @default("")
+  nilaiKontrak Float    @default(0)
+  dpDiterima   Float    @default(0)
+  jatuhTempo   String   @default("")
+  status       String   @default("MENUNGGU") // LUNAS | MENUNGGU | TERLAMBAT | MACET
+  catatan      String   @default("")
+  createdAt    DateTime @default(now())
+}
+
+model Cashflow {
+  id         String   @id @default(cuid())
+  tanggal    String   @default("")
+  jenis      String   @default("MASUK") // MASUK | KELUAR
+  pt         String   @default("DIGIMAN") // TKI | DIGIMAN | PRIBADI
+  kategori   String   @default("")
+  nilai      Float    @default(0)
+  keterangan String   @default("")
+  createdAt  DateTime @default(now())
+}
+
+model ChildSaving {
+  id        String   @id @default(cuid())
+  tanggal   String   @default("")
+  nilai     Float    @default(0)
+  catatan   String   @default("")
+  createdAt DateTime @default(now())
+}
+
+// ═══════════════════════════════════════════════════════
+// ⚙️ MESIN 2 — KLIEN / CRM
+// ═══════════════════════════════════════════════════════
+
+model Client {
+  id                String     @id @default(cuid())
+  nama              String
+  kontak            String     @default("")
+  segmen            String     @default("UMKM") // UMKM | PRODUSEN | PMA | BIRO | LAINNYA
+  layanan           String     @default("")
+  status            String     @default("PIPIN") // PIPIN | NEGOSIASI | KLIEN | RETAINER | ARSIP
+  nilaiTotal        Float      @default(0)
+  sumber            String     @default("")
+  tglKontakTerakhir String     @default("")
+  catatan           String     @default("")
+  followUps         FollowUp[]
+  createdAt         DateTime   @default(now())
+}
+
+model FollowUp {
+  id        String   @id @default(cuid())
+  clientId  String
+  client    Client   @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  tindakan  String
+  tenggat   String   @default("")
+  status    String   @default("TERJADWAL") // TERJADWAL | SELESAI | TELAT
+  hasil     String   @default("")
+  createdAt DateTime @default(now())
+}
+
+// ═══════════════════════════════════════════════════════
+// ⚙️ MESIN 3 — RELASI & POLITIK
+// ═══════════════════════════════════════════════════════
+
+model Relation {
+  id             String   @id @default(cuid())
+  nama           String
+  domainRelasi   String   @default("Bisnis") // PPP | Bisnis | Pemerintahan | Media | Agama
+  kekuatan       String   @default("AKTIVIS") // TOKOH | PENGARUH | AKTIVIS | CALON KLIEN
+  sayaBantu      String   @default("")
+  diaBantu       String   @default("")
+  kontakTerakhir String   @default("")
+  prioritas      String   @default("B") // A | B | C
+  catatan        String   @default("")
+  createdAt      DateTime @default(now())
+}
+
+model PoliticalActivity {
+  id         String   @id @default(cuid())
+  tanggal    String   @default("")
+  kegiatan   String
+  peran      String   @default("")
+  relasiBaru String   @default("")
+  peluang    String   @default("")
+  createdAt  DateTime @default(now())
+}
+
+// ═══════════════════════════════════════════════════════
+// ⚙️ MESIN 4 — BELAJAR
+// ═══════════════════════════════════════════════════════
+
+model LearningJournal {
+  id          String   @id @default(cuid())
+  tanggal     String   @default("")
+  judul       String
+  dipelajari  String   @default("")
+  mengejutkan String   @default("")
+  bisaDipakai String   @default("")
+  jadiKonten  String   @default("")
+  createdAt   DateTime @default(now())
+}
+
+// ═══════════════════════════════════════════════════════
+// ⚙️ MESIN 5 — DOKUMENTASI KEMENANGAN
+// ═══════════════════════════════════════════════════════
+
+model WinLog {
+  id         String   @id @default(cuid())
+  tanggal    String   @default("")
+  kemenangan String
+  bukti      String   @default("")
+  jadiKonten String   @default("")
+  createdAt  DateTime @default(now())
+}
+
+model CaseStudy {
+  id        String   @id @default(cuid())
+  judul     String
+  klien     String   @default("")
+  masalah   String   @default("")
+  langkah   String   @default("")
+  hasil     String   @default("")
+  testimoni String   @default("")
+  buktiLink String   @default("")
+  createdAt DateTime @default(now())
+}
+
+// ═══════════════════════════════════════════════════════
+// 🏃 HILIR — Ritme Operasi Harian
+// ═══════════════════════════════════════════════════════
+
+model DailyLog {
+  id        String   @id @default(cuid())
+  tanggal   String   @unique
+  mit1      String   @default("")
+  mit2      String   @default("")
+  mit3      String   @default("")
+  done1     Boolean  @default(false)
+  done2     Boolean  @default(false)
+  done3     Boolean  @default(false)
+  refleksi  String   @default("")
+  energi    Int      @default(5)
+  createdAt DateTime @default(now())
+}
+
+model WeeklyReview {
+  id         String   @id @default(cuid())
+  minggu     String
+  mitSelesai Int      @default(0)
+  mitTotal   Int      @default(21)
+  leads      Int      @default(0)
+  ditindak   Int      @default(0)
+  closing    Int      @default(0)
+  progres    String   @default("")
+  energi     Int      @default(5)
+  hentikan   String   @default("")
+  janji      String   @default("")
+  target     String   @default("")
+  fokus1     String   @default("")
+  fokus2     String   @default("")
+  fokus3     String   @default("")
+  jadwalAnak String   @default("")
+  createdAt  DateTime @default(now())
+}
+
+model BacklogItem {
+  id        String   @id @default(cuid())
+  tanggal   String   @default("")
+  ide       String
+  kenapa    String   @default("")
+  ditinjau  String   @default("")
+  status    String   @default("MENUNGGU") // MENUNGGU | NAIK PRIORITAS | CORET
+  createdAt DateTime @default(now())
+}
+
+model DecisionLog {
+  id        String   @id @default(cuid())
+  tanggal   String   @default("")
+  keputusan String
+  alasan    String   @default("")
+  hasil     String   @default("")
+  createdAt DateTime @default(now())
+}
+
+// ═══════════════════════════════════════════════════════
+// 🛡️ ARSENAL — Domain Portfolio & AI Agent Army
+// ═══════════════════════════════════════════════════════
+
+model Domain {
+  id      String  @id @default(cuid())
+  nama    String  @unique
+  tier    String  @default("PARKED") // INTI | GATEWAY | FUTURE | PARKED
+  peran   String  @default("")
+  status  String  @default("PLAN")
+  catatan String  @default("")
+  urutan  Int     @default(0)
+}
+
+model Agent {
+  id        String   @id @default(cuid())
+  nomor     Int      @default(0)
+  nama      String
+  platform  String   @default("")
+  gelombang Int      @default(1)
+  tupoksi   String   @default("")
+  prompt    String   @default("")
+}
+
+// ═══════════════════════════════════════════════════════
+// 💼 BISNIS HUB — Metadata Terlengkap Gunara Group
+// (pelanggan · perusahaan · izin · sosmed · kredensial)
+// ═══════════════════════════════════════════════════════
+
+// ── 1. AKUN PENGGUNA (user id · email · password · Google) ──
+model AppUser {
+  id                String    @id @default(cuid())
+  nama              String
+  email             String    @unique
+  googleEmail       String    @default("") // akun Google terhubung (SSO/Gmail)
+  googleId          String    @default("")
+  phone             String    @default("")
+  avatar            String    @default("")
+  passwordHash      String    @default("") // scrypt "iterations:salt:hash" — TIDAK pernah dikirim ke klien
+  passwordHint      String    @default("") // pengingat non-sensitif (bukan password!)
+  passwordStrength  String    @default("") // LEMAH | SEDANG | KUAT | SANGAT KUAT
+  passwordChangedAt String    @default("")
+  role              String    @default("OWNER") // OWNER | ADMIN | STAFF | KONSULTAN | VIEWER
+  status            String    @default("AKTIF") // AKTIF | DINONAKTIFKAN | TERKUNCI | UNDANGAN
+  twoFactorType     String    @default("NONE") // NONE | APP | SMS | EMAIL | HARDWARE
+  lastLoginAt       String    @default("")
+  failedAttempts    Int       @default(0)
+  companyId         String    @default("") // perusahaan tempat user bekerja
+  jabatan           String    @default("")
+  notes             String    @default("")
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+}
+
+// ── 2. DATABASE PELANGGAN (metadata 360°) ──
+model Customer {
+  id           String   @id @default(cuid())
+  nama         String
+  jenis        String   @default("INDIVIDU") // INDIVIDU | BADAN_USAHA
+  email        String   @default("")
+  googleEmail  String   @default("")
+  phone        String   @default("")
+  waPhone      String   @default("")
+  ktpNo        String   @default("")
+  npwpNo       String   @default("")
+  birthDate    String   @default("")
+  gender       String   @default("") // L | P | -
+  pekerjaan    String   @default("")
+  address      String   @default("")
+  city         String   @default("")
+  province     String   @default("")
+  postalCode   String   @default("")
+  sumber       String   @default("") // WA | IG | FB | TIKTOK | WEB | SEO | REFERRAL | OFFLINE
+  referralBy   String   @default("")
+  status       String   @default("LEAD") // LEAD | PROSPEK | KLIEN | RETAINER | LAPSED | CHURN
+  tags         String   @default("")
+  preferensi   String   @default("WA") // WA | EMAIL | TELEPON | KUNJUNGAN
+  waktuKontak  String   @default("") // pagi / siang / sore / malam
+  totalBelanja Float    @default(0)
+  lastDealAt   String   @default("")
+  companyId    String   @default("") // perusahaan miliknya (jika badan usaha)
+  notes        String   @default("")
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+// ── 3. DATABASE PERUSAHAAN (badan usaha klien & grup sendiri) ──
+model Company {
+  id             String   @id @default(cuid())
+  nama           String
+  legalName      String   @default("") // nama resmi di akta
+  entityType     String   @default("PT") // PT | CV | PMA | PO-UPTA | FIRMA | KOPERASI | YAYASAN | PERSEORANGAN
+  nib            String   @default("")
+  npwp           String   @default("")
+  skAhu          String   @default("") // SK Kemenkumham, contoh AHU-038293.AH.01.30.Tahun 2024
+  sbuNo          String   @default("")
+  kblis          String   @default("") // daftar KBLI, pisah koma
+  bidangUsaha    String   @default("")
+  deskripsi      String   @default("")
+  directorName   String   @default("") // direktur/pemilik
+  shareholders   String   @default("")
+  modalDasar     Float    @default(0)
+  modalDisetor   Float    @default(0)
+  omzetTahunan   Float    @default(0)
+  employeeCount  Int      @default(0)
+  address        String   @default("")
+  city           String   @default("")
+  province       String   @default("")
+  website        String   @default("")
+  email          String   @default("")
+  phone          String   @default("")
+  establishedAt  String   @default("") // tanggal berdiri
+  customerId     String   @default("") // pemilik (link pelanggan)
+  isGrupSendiri  Boolean  @default(false) // true = perusahaan grup Gunara sendiri
+  status         String   @default("AKTIF") // PROSPEK | AKTIF | SELESAI | NONAKTIF
+  notes          String   @default("")
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+}
+
+// ── 4. DATABASE SOSIAL MEDIA (aset digital + kredensial terenkripsi) ──
+model SocialAccount {
+  id             String   @id @default(cuid())
+  platform       String   @default("INSTAGRAM") // INSTAGRAM | FACEBOOK | TIKTOK | YOUTUBE | X | LINKEDIN | WA_BUSINESS | GOOGLE_BISNIS | SHOPEE | TOKOPEDIA | TELEGRAM | LAINNYA
+  handle         String   @default("") // @username
+  displayName    String   @default("")
+  url            String   @default("")
+  kategori       String   @default("BISNIS") // BISNIS | PRIBADI | PORTFOLIO | KOMUNITAS | LAINNYA
+  emailUsed      String   @default("") // email login
+  phoneUsed      String   @default("")
+  passwordEnc    String   @default("") // AES-256-GCM — TIDAK dikirim saat list
+  recoveryEmail  String   @default("")
+  recoveryPhone  String   @default("")
+  twoFactor      Boolean  @default(false)
+  followers      Int      @default(0)
+  following      Int      @default(0)
+  postCount      Int      @default(0)
+  engagementPct  Float    @default(0)
+  niche          String   @default("")
+  cadencePerWeek Int      @default(0) // target posting per minggu
+  lastPostAt     String   @default("")
+  linkedCompanyId String  @default("")
+  status         String   @default("AKTIF") // AKTIF | DORMAN | DITANGGUHKAN | DIJUAL | KOMPROMI | DITUTUP
+  tags           String   @default("")
+  notes          String   @default("")
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+}
+
+// ── 5. BRANKAS KREDENSIAL UNIVERSAL (email Google & semua akun) ──
+model VaultEntry {
+  id             String   @id @default(cuid())
+  label          String   // nama akun, contoh "Google Workspace — pusatperizinan.com"
+  category       String   @default("EMAIL_GOOGLE") // EMAIL_GOOGLE | EMAIL_LAIN | SOSMED | MARKETPLACE | BANK | PAYMENT | OSS | PAJAK | HOSTING | AI_TOOLS | LAINNYA
+  identifier     String   @default("") // email / username
+  passwordEnc    String   @default("") // AES-256-GCM
+  pinEnc         String   @default("") // PIN banking, AES-256-GCM
+  backupCodesEnc String   @default("") // kode cadangan 2FA, AES-256-GCM
+  url            String   @default("")
+  recoveryEmail  String   @default("")
+  recoveryPhone  String   @default("")
+  twoFactorType  String   @default("NONE") // NONE | APP | SMS | EMAIL | HARDWARE
+  ownerName      String   @default("") // a.n. siapa
+  linkedCompanyId String  @default("")
+  strength       String   @default("") // LEMAH | SEDANG | KUAT | SANGAT KUAT (dihitung server saat simpan)
+  lastRotatedAt  String   @default("") // terakhir ganti password
+  status         String   @default("AKTIF") // AKTIF | DINONAKTIFKAN | KOMPROMI
+  notes          String   @default("") // catatan aman (bukan password)
+  tags           String   @default("")
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+}
+
+// ── 6. TRACKER PERIZINAN (alur 5 langkah ISO gunara.web.id) ──
+model PermitApplication {
+  id            String   @id @default(cuid())
+  layananKode   String   @default("") // kode ServiceCatalog (NIB, PT, AMDAL…)
+  namaLayanan   String
+  kategori      String   @default("")
+  customerId    String   @default("")
+  customerName  String   @default("")
+  companyId     String   @default("")
+  companyName   String   @default("")
+  tahap         Int      @default(1) // 1-KONSULTASI 2-PENAWARAN 3-KONTRAK 4-PROSES 5-GARANSI
+  status        String   @default("PENAWARAN") // PENAWARAN | KONTRAK | PROSES | TERBIT | GAGAL | BATAL
+  instansi      String   @default("") // OSS RBA | Kemenkumham | BPOM | BSN | BPJPH | BKPM | Kemenaker | DLH | …
+  harga         Float    @default(0)  // nilai deal ke klien
+  biayaPemerintah Float  @default(0)  // biaya resmi (PNBP dll)
+  dpDiterima    Float    @default(0)
+  tanggalMasuk  String   @default("")
+  targetSelesai String   @default("")
+  tanggalTerbit String   @default("")
+  dokumenUrl    String   @default("")
+  notes         String   @default("")
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
+
+// ── 7. KATALOG LAYANAN (46 layanan gunara.web.id — seeded) ──
+model ServiceCatalog {
+  kode       String  @id // NIB, PT, AMDAL, …
+  nama       String
+  kategori   String
+  deskripsi  String  @default("")
+  instansi   String  @default("")
+  durasiMin  Int     @default(1)   // hari kerja (approx)
+  durasiMaks Int     @default(1)
+  hargaMulai Float   @default(0)
+  aktif      Boolean @default(true)
+}
+
+// ═══════════════════════════════════════════════════════
+// 🏛️ DEWAN 46 — Ultimate Solver (v6.0)
+// ═══════════════════════════════════════════════════════
+
+model Consultation {
+  id        String   @id @default(cuid())
+  problem   String                    // masalah yang diajukan
+  kategori  String   @default("umum") // bisnis | keuangan | hukum | teknologi | marketing | sdm | operasional | hidup | spiritual | umum
+  urgensi   String   @default("rutinitas") // rutinitas | krusial | eksistensial
+  dewan     String   @default("[]")   // JSON array id dewan yang dipanggil
+  putusan   String   @default("")     // putusan lengkap dari Dewan 46 (AI)
+  status    String   @default("selesai")
+  createdAt DateTime @default(now())
+}
+
+// ═══════════════════════════════════════════════════════
+// ⚡ GOD MODE — Arena Debat & Sage Console (v7.0)
+// ═══════════════════════════════════════════════════════
+
+model Debate {
+  id        String   @id @default(cuid())
+  problem   String                    // permasalahan yang didebat
+  topik     String   @default("umum") // kategori topik debat
+  dewan     String   @default("[]")   // JSON array id dewan peserta (2–4)
+  transkrip String   @default("")     // transkrip debat lengkap ronde 1–2 (markdown)
+  putusan   String   @default("")     // verdict akhir arbiter (markdown)
+  ronde     Int      @default(2)      // jumlah ronde debat
+  status    String   @default("selesai")
+  createdAt DateTime @default(now())
+}
+
+model SageChat {
+  id         String   @id @default(cuid())
+  mode       String   @default("solver") // polymath | sage | solver
+  pertanyaan String                    // pertanyaan user
+  jawaban    String                    // jawaban persona (markdown)
+  createdAt  DateTime @default(now())
+}
+
+// ═══════════════════════════════════════════════════════
+// 🚀 SEO MASTERY — Arsenal Konsultan SEO #1 (v8.0)
+// ═══════════════════════════════════════════════════════
+
+// Proyek SEO — satu baris per website klien / milik sendiri
+model SeoProject {
+  id            String   @id @default(cuid())
+  nama          String
+  domain        String
+  industri      String   @default("")
+  targetPasaran String   @default("Indonesia") // Indonesia | Lokal Kota | Global
+  bahasa        String   @default("id") // id | en | id+en
+  kompetitor    String   @default("") // pisah koma
+  tujuan        String   @default("") // target bisnis: leads, traffic, dsb
+  status        String   @default("AKTIF") // AKTIF | PAUSED | SELESAI
+  warna         String   @default("emerald") // aksen UI
+  notes         String   @default("")
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
+
+// Hasil audit SEO otomatis (mesin analisis + AI)
+model SeoAudit {
+  id           String   @id @default(cuid())
+  projectId    String   @default("")
+  url          String
+  skorTotal    Int      @default(0) // 0-100
+  skorTeknik   Int      @default(0)
+  skorOnpage   Int      @default(0)
+  skorKonten   Int      @default(0)
+  skorMobile   Int      @default(0)
+  metrics      String   @default("{}") // JSON: title length, h1, images, links, dsb
+  issues       String   @default("[]") // JSON array temuan
+  ringkasan    String   @default("")  // markdown rekomendasi AI
+  createdAt    DateTime @default(now())
+}
+
+// Posisi keyword per tanggal (rank tracker)
+model KeywordRank {
+  id        String   @id @default(cuid())
+  projectId String   @default("")
+  keyword   String
+  posisi    Int      @default(0) // 0 = tidak ada di top 100
+  posisiSebelumnya Int @default(0)
+  volume    Int      @default(0)
+  url       String   @default("")
+  negara    String   @default("id")
+  perangkat String   @default("desktop") // desktop | mobile
+  catatan   String   @default("")
+  createdAt DateTime @default(now())
+}
+
+// Ide keyword hasil riset AI (clustered)
+model KeywordIdea {
+  id        String   @id @default(cuid())
+  projectId String   @default("")
+  seed      String   @default("")
+  keyword   String
+  intent    String   @default("informational") // informational | commercial | transactional | navigational
+  cluster   String   @default("")
+  difficulty Int     @default(0) // 0-100
+  volume    Int      @default(0)
+  prioritas String   @default("SEDANG") // TINGGI | SEDANG | RENDAH
+  dipakai   Boolean  @default(false)
+  createdAt DateTime @default(now())
+}
+
+// Kalender konten editorial
+model ContentPlan {
+  id              String   @id @default(cuid())
+  projectId       String   @default("")
+  judul           String
+  keywordUtama    String   @default("")
+  keywordSekunder String   @default("") // pisah koma
+  tipe            String   @default("ARTIKEL") // ARTIKEL | PILLAR | INFOGRAFIS | VIDEO | STUDI KASUS | LANDING PAGE
+  status          String   @default("IDE") // IDE | BRIEF | DRAFT | REVIEW | PUBLISHED
+  penulis         String   @default("")
+  deadline        String   @default("")
+  urlHasil        String   @default("")
+  outline         String   @default("") // outline AI
+  catatan         String   @default("")
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
+
+// Monitor backlink
+model Backlink {
+  id         String   @id @default(cuid())
+  projectId  String   @default("")
+  sourceUrl  String
+  targetUrl  String   @default("")
+  anchorText String   @default("")
+  dofollow   Boolean  @default(true)
+  kualitas   String   @default("SEDANG") // TINGGI | SEDANG | RENDAH | TOXIC
+  status     String   @default("AKTIF") // AKTIF | HILANG | PENDING
+  domainAuth Int      @default(0) // 0-100 estimasi otoritas
+  ditemukan  String   @default("")
+  catatan    String   @default("")
+  createdAt  DateTime @default(now())
+}
+
+// Laporan analisis kompetitor (AI)
+model CompetitorReport {
+  id        String   @id @default(cuid())
+  projectId String   @default("")
+  domain    String
+  myDomain  String   @default("")
+  hasil     String   @default("") // markdown analisis AI
+  createdAt DateTime @default(now())
+}
+
+// Preset meta tag + schema JSON-LD (forge)
+model MetaPreset {
+  id          String   @id @default(cuid())
+  projectId   String   @default("")
+  halaman     String   // nama halaman
+  url         String   @default("")
+  title       String   @default("")
+  description String   @default("")
+  keywords    String   @default("")
+  og          String   @default("{}")
+  twitter     String   @default("{}")
+  schemaJson  String   @default("{}")
+  createdAt   DateTime @default(now())
+}
+
+// Proposal SEO untuk klien (AI)
+model SeoProposal {
+  id        String   @id @default(cuid())
+  projectId String   @default("")
+  klien     String
+  domain    String   @default("")
+  masalah   String   @default("")
+  anggaran  String   @default("")
+  layanan   String   @default("[]") // JSON array layanan dipilih
+  hasil     String   @default("") // markdown proposal AI
+  createdAt DateTime @default(now())
+}

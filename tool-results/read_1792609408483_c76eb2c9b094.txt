@@ -1,0 +1,915 @@
+     1→"use client";
+     2→
+     3→// ═══════════════════════════════════════════════════
+     4→// GUNARA OS v7.0 — SEO MASTERY (Bagian 2)
+     5→// seo-ranks.tsx — Rank Tracker + Backlink Monitor
+     6→// Task ID: 2-c
+     7→// ═══════════════════════════════════════════════════
+     8→
+     9→import { useMemo, useState } from "react";
+    10→import { Button } from "@/components/ui/button";
+    11→import { Badge } from "@/components/ui/badge";
+    12→import {
+    13→  Card, CardContent, CardDescription, CardHeader, CardTitle,
+    14→} from "@/components/ui/card";
+    15→import { Input } from "@/components/ui/input";
+    16→import { Label } from "@/components/ui/label";
+    17→import {
+    18→  Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
+    19→} from "@/components/ui/select";
+    20→import { Switch } from "@/components/ui/switch";
+    21→import {
+    22→  Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
+    23→} from "@/components/ui/table";
+    24→import { FadeUp } from "../motion";
+    25→import { useRecords } from "../use-records";
+    26→import { useToast } from "@/hooks/use-toast";
+    27→import { cn } from "@/lib/utils";
+    28→import {
+    29→  ArrowDown,
+    30→  ArrowUp,
+    31→  Crown,
+    32→  ExternalLink,
+    33→  FolderPlus,
+    34→  Gauge,
+    35→  Lightbulb,
+    36→  Link2,
+    37→  Minus,
+    38→  Monitor,
+    39→  MousePointerClick,
+    40→  Radar,
+    41→  Search,
+    42→  ShieldCheck,
+    43→  Smartphone,
+    44→  Target,
+    45→  Trash2,
+    46→  TrendingUp,
+    47→  type LucideIcon,
+    48→} from "lucide-react";
+    49→
+    50→// ── Tipe data lokal ──
+    51→type SeoProjectT = { id: string; nama: string; domain: string; status?: string };
+    52→type RankT = {
+    53→  id: string;
+    54→  keyword: string;
+    55→  posisi: number;
+    56→  posisiSebelumnya: number;
+    57→  volume: number;
+    58→  url: string;
+    59→  perangkat: string;
+    60→};
+    61→type BacklinkT = {
+    62→  id: string;
+    63→  sourceUrl: string;
+    64→  targetUrl: string;
+    65→  anchorText: string;
+    66→  dofollow: boolean;
+    67→  kualitas: string;
+    68→  status: string;
+    69→  domainAuth: number;
+    70→};
+    71→
+    72→// ── Helper ──
+    73→const fmtNum = (n: number) => new Intl.NumberFormat("id-ID").format(n);
+    74→
+    75→function posisiBadgeCls(pos: number): { label: string; cls: string } {
+    76→  if (pos >= 1 && pos <= 3)
+    77→    return { label: `#${pos}`, cls: "bg-emerald-600 text-white border-emerald-600" };
+    78→  if (pos >= 4 && pos <= 10)
+    79→    return { label: `#${pos}`, cls: "bg-lime-500/20 text-lime-800 dark:text-lime-300 border-lime-500/50" };
+    80→  if (pos >= 11 && pos <= 30)
+    81→    return { label: `#${pos}`, cls: "bg-amber-400/25 text-amber-800 dark:text-amber-300 border-amber-400/50" };
+    82→  if (pos >= 31 && pos <= 99)
+    83→    return { label: `#${pos}`, cls: "bg-orange-300/25 text-orange-800 dark:text-orange-300 border-orange-400/50" };
+    84→  return { label: "Tidak ada", cls: "bg-muted text-muted-foreground border-border" };
+    85→}
+    86→
+    87→// ═══════════════════════════════════════════════════
+    88→// Komponen lokal bersama
+    89→// ═══════════════════════════════════════════════════
+    90→
+    91→function KpiCard({
+    92→  icon: Icon, label, value, sub, tone,
+    93→}: {
+    94→  icon: LucideIcon; label: string; value: string; sub?: string; tone?: string;
+    95→}) {
+    96→  return (
+    97→    <Card className="rounded-xl">
+    98→      <CardContent className="p-4">
+    99→        <div className="flex items-center justify-between gap-2">
+   100→          <span className="text-xs font-medium text-muted-foreground">{label}</span>
+   101→          <Icon className={cn("size-4 shrink-0", tone ?? "text-emerald-600 dark:text-emerald-400")} aria-hidden />
+   102→        </div>
+   103→        <p className="mt-1.5 text-2xl font-extrabold tabular-nums tracking-tight">{value}</p>
+   104→        {sub ? <p className="mt-0.5 text-xs text-muted-foreground">{sub}</p> : null}
+   105→      </CardContent>
+   106→    </Card>
+   107→  );
+   108→}
+   109→
+   110→function EmptyState({ icon: Icon, title, desc }: { icon: LucideIcon; title: string; desc: string }) {
+   111→  return (
+   112→    <div className="flex flex-col items-center justify-center gap-2 px-6 py-12 text-center">
+   113→      <div className="rounded-full bg-emerald-500/10 p-3" aria-hidden>
+   114→        <Icon className="size-6 text-emerald-600 dark:text-emerald-400" />
+   115→      </div>
+   116→      <p className="text-sm font-semibold">{title}</p>
+   117→      <p className="max-w-sm text-xs text-muted-foreground">{desc}</p>
+   118→    </div>
+   119→  );
+   120→}
+   121→
+   122→function ProjectPicker({
+   123→  id, projects, loading, value, onChange,
+   124→}: {
+   125→  id: string; projects: SeoProjectT[]; loading: boolean; value: string; onChange: (v: string) => void;
+   126→}) {
+   127→  return (
+   128→    <div className="w-full space-y-1.5 sm:max-w-sm">
+   129→      <Label htmlFor={id}>Proyek SEO</Label>
+   130→      <Select value={value} onValueChange={onChange}>
+   131→        <SelectTrigger id={id} aria-label="Pilih proyek SEO">
+   132→          <SelectValue placeholder={loading ? "Memuat proyek…" : "Pilih proyek SEO"} />
+   133→        </SelectTrigger>
+   134→        <SelectContent>
+   135→          {projects.map((p) => (
+   136→            <SelectItem key={p.id} value={p.id}>
+   137→              {p.nama} · {p.domain}
+   138→            </SelectItem>
+   139→          ))}
+   140→        </SelectContent>
+   141→      </Select>
+   142→    </div>
+   143→  );
+   144→}
+   145→
+   146→function DeltaCell({ pos, prev }: { pos: number; prev: number }) {
+   147→  if (!prev || prev <= 0) {
+   148→    return (
+   149→      <span className="inline-flex items-center gap-1 text-xs text-muted-foreground">
+   150→        <Minus className="size-3.5" aria-hidden /> —
+   151→      </span>
+   152→    );
+   153→  }
+   154→  if (pos < prev) {
+   155→    return (
+   156→      <span className="inline-flex items-center gap-1 text-xs font-semibold text-emerald-600 dark:text-emerald-400">
+   157→        <ArrowUp className="size-3.5" aria-hidden /> {prev - pos}
+   158→      </span>
+   159→    );
+   160→  }
+   161→  if (pos > prev) {
+   162→    return (
+   163→      <span className="inline-flex items-center gap-1 text-xs font-semibold text-red-600 dark:text-red-400">
+   164→        <ArrowDown className="size-3.5" aria-hidden /> {pos - prev}
+   165→      </span>
+   166→    );
+   167→  }
+   168→  return (
+   169→    <span className="inline-flex items-center gap-1 text-xs text-muted-foreground">
+   170→      <Minus className="size-3.5" aria-hidden /> Sama
+   171→    </span>
+   172→  );
+   173→}
+   174→
+   175→const KUALITAS_OPTS = ["TINGGI", "SEDANG", "RENDAH", "TOXIC"] as const;
+   176→
+   177→const KUALITAS_BADGE: Record<string, string> = {
+   178→  TINGGI: "bg-emerald-500/15 text-emerald-700 dark:text-emerald-400 border-emerald-500/40",
+   179→  SEDANG: "bg-amber-400/20 text-amber-800 dark:text-amber-300 border-amber-400/50",
+   180→  RENDAH: "bg-orange-300/25 text-orange-800 dark:text-orange-300 border-orange-400/50",
+   181→  TOXIC: "bg-red-500/15 text-red-700 dark:text-red-400 border-red-500/40",
+   182→};
+   183→
+   184→const KUALITAS_BAR: Record<string, string> = {
+   185→  TINGGI: "bg-emerald-500",
+   186→  SEDANG: "bg-amber-400",
+   187→  RENDAH: "bg-orange-300",
+   188→  TOXIC: "bg-red-500",
+   189→};
+   190→
+   191→// ═══════════════════════════════════════════════════
+   192→// A) RankTrackerSection — Pemantau Posisi Keyword
+   193→// ═══════════════════════════════════════════════════
+   194→
+   195→export function RankTrackerSection() {
+   196→  const { toast } = useToast();
+   197→  const projects = useRecords<SeoProjectT>("seoProject");
+   198→  const [projectId, setProjectId] = useState("");
+   199→  const ranks = useRecords<RankT>("keywordRank", projectId ? { key: "projectId", value: projectId } : undefined);
+   200→
+   201→  // Form tambah keyword
+   202→  const [fKeyword, setFKeyword] = useState("");
+   203→  const [fPosisi, setFPosisi] = useState("");
+   204→  const [fPrev, setFPrev] = useState("");
+   205→  const [fVolume, setFVolume] = useState("");
+   206→  const [fUrl, setFUrl] = useState("");
+   207→  const [fPerangkat, setFPerangkat] = useState("desktop");
+   208→  const [saving, setSaving] = useState(false);
+   209→
+   210→  const stats = useMemo(() => {
+   211→    const items = ranks.items;
+   212→    const positioned = items.filter((r) => r.posisi > 0);
+   213→    const avg = positioned.length
+   214→      ? positioned.reduce((s, r) => s + r.posisi, 0) / positioned.length
+   215→      : 0;
+   216→    return {
+   217→      total: items.length,
+   218→      avg,
+   219→      top3: items.filter((r) => r.posisi >= 1 && r.posisi <= 3).length,
+   220→      top10: items.filter((r) => r.posisi >= 1 && r.posisi <= 10).length,
+   221→    };
+   222→  }, [ranks.items]);
+   223→
+   224→  const sorted = useMemo(
+   225→    () => [...ranks.items].sort((a, b) => (a.posisi || 101) - (b.posisi || 101)),
+   226→    [ranks.items]
+   227→  );
+   228→
+   229→  async function handleAdd() {
+   230→    if (!projectId) {
+   231→      toast({ title: "Pilih proyek dulu", description: "Pilih proyek SEO sebelum melacak keyword.", variant: "destructive" });
+   232→      return;
+   233→    }
+   234→    const kw = fKeyword.trim();
+   235→    if (!kw) {
+   236→      toast({ title: "Keyword wajib diisi", description: "Tulis keyword yang ingin dilacak posisinya.", variant: "destructive" });
+   237→      return;
+   238→    }
+   239→    setSaving(true);
+   240→    try {
+   241→      await ranks.create({
+   242→        projectId,
+   243→        keyword: kw,
+   244→        posisi: Math.max(0, Math.min(100, Math.round(Number(fPosisi) || 0))),
+   245→        posisiSebelumnya: Math.max(0, Math.round(Number(fPrev) || 0)),
+   246→        volume: Math.max(0, Math.round(Number(fVolume) || 0)),
+   247→        url: fUrl.trim(),
+   248→        perangkat: fPerangkat,
+   249→      });
+   250→      toast({ title: "✅ Keyword dilacak", description: `“${kw}” masuk ke pemantauan posisi.` });
+   251→      setFKeyword(""); setFPosisi(""); setFPrev(""); setFVolume(""); setFUrl("");
+   252→    } catch (e) {
+   253→      toast({ title: "Gagal menambah keyword", description: e instanceof Error ? e.message : "Coba lagi.", variant: "destructive" });
+   254→    } finally {
+   255→      setSaving(false);
+   256→    }
+   257→  }
+   258→
+   259→  async function handleDelete(id: string, kw: string) {
+   260→    try {
+   261→      await ranks.remove(id);
+   262→      toast({ title: "🗑️ Keyword dihapus", description: kw });
+   263→    } catch {
+   264→      toast({ title: "Gagal menghapus", description: "Keyword tidak terhapus, coba lagi.", variant: "destructive" });
+   265→    }
+   266→  }
+   267→
+   268→  const hasProjects = projects.items.length > 0;
+   269→
+   270→  return (
+   271→    <div className="space-y-4">
+   272→      <FadeUp>
+   273→        <div className="rounded-xl border-2 border-emerald-800/20 bg-gradient-to-br from-emerald-50 to-amber-50 p-5 dark:border-emerald-700/30 dark:from-emerald-950/40 dark:to-amber-950/30">
+   274→          <h2 className="text-lg font-extrabold tracking-tight">🎯 SEO RANK TRACKER — Pemantau Posisi Keyword</h2>
+   275→          <p className="mt-1 max-w-3xl text-sm text-muted-foreground">
+   276→            Pantau pergerakan posisi keyword di Google per perangkat. Hijau = naik, merah = turun.
+   277→            Fokuskan tenaga mendorong keyword di posisi 11–30 ke halaman pertama.
+   278→          </p>
+   279→        </div>
+   280→      </FadeUp>
+   281→
+   282→      {projects.loading ? (
+   283→        <Card className="rounded-xl"><CardContent className="p-6 text-sm text-muted-foreground">Memuat proyek…</CardContent></Card>
+   284→      ) : !hasProjects ? (
+   285→        <Card className="rounded-xl">
+   286→          <CardContent className="p-6">
+   287→            <EmptyState
+   288→              icon={FolderPlus}
+   289→              title="Belum ada proyek SEO"
+   290→              desc="Buat proyek dulu di Pusat Kendali SEO (SEO Hub) untuk mulai melacak posisi keyword."
+   291→            />
+   292→          </CardContent>
+   293→        </Card>
+   294→      ) : (
+   295→        <>
+   296→          <FadeUp delay={0.05}>
+   297→            <Card className="rounded-xl">
+   298→              <CardContent className="p-6">
+   299→                <ProjectPicker
+   300→                  id="rank-project-picker"
+   301→                  projects={projects.items}
+   302→                  loading={projects.loading}
+   303→                  value={projectId}
+   304→                  onChange={setProjectId}
+   305→                />
+   306→              </CardContent>
+   307→            </Card>
+   308→          </FadeUp>
+   309→
+   310→          {!projectId ? (
+   311→            <Card className="rounded-xl">
+   312→              <CardContent className="p-6">
+   313→                <EmptyState
+   314→                  icon={MousePointerClick}
+   315→                  title="Pilih proyek untuk memuat data"
+   316→                  desc="Posisi keyword, statistik, dan riwayat akan tampil setelah proyek dipilih."
+   317→                />
+   318→              </CardContent>
+   319→            </Card>
+   320→          ) : (
+   321→            <>
+   322→              {/* Statistik KPI */}
+   323→              <FadeUp delay={0.1}>
+   324→                <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
+   325→                  <KpiCard icon={Search} label="Total Keyword" value={fmtNum(stats.total)} sub="keyword yang dilacak" />
+   326→                  <KpiCard
+   327→                    icon={Target}
+   328→                    label="Rata-rata Posisi"
+   329→                    value={stats.avg > 0 ? stats.avg.toFixed(1) : "—"}
+   330→                    sub="di luar posisi 100+"
+   331→                    tone="text-amber-500"
+   332→                  />
+   333→                  <KpiCard icon={Crown} label="Top 3" value={fmtNum(stats.top3)} sub="posisi 1–3" tone="text-emerald-600 dark:text-emerald-400" />
+   334→                  <KpiCard icon={TrendingUp} label="Top 10" value={fmtNum(stats.top10)} sub="posisi 1–10" tone="text-lime-600 dark:text-lime-400" />
+   335→                </div>
+   336→              </FadeUp>
+   337→
+   338→              {/* Form tambah keyword */}
+   339→              <FadeUp delay={0.15}>
+   340→                <Card className="rounded-xl">
+   341→                  <CardHeader>
+   342→                    <CardTitle>＋ Lacak Keyword Baru</CardTitle>
+   343→                    <CardDescription>
+   344→                      Catat posisi keyword saat ini di Google. Isi 0 jika keyword belum muncul di 100 besar.
+   345→                    </CardDescription>
+   346→                  </CardHeader>
+   347→                  <CardContent className="space-y-4">
+   348→                    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+   349→                      <div className="space-y-1.5 sm:col-span-2">
+   350→                        <Label htmlFor="rank-kw">Keyword</Label>
+   351→                        <Input
+   352→                          id="rank-kw"
+   353→                          value={fKeyword}
+   354→                          onChange={(e) => setFKeyword(e.target.value)}
+   355→                          placeholder="mis. jasa pembuatan website jakarta"
+   356→                        />
+   357→                      </div>
+   358→                      <div className="space-y-1.5">
+   359→                        <Label htmlFor="rank-pos">Posisi Saat Ini</Label>
+   360→                        <Input
+   361→                          id="rank-pos"
+   362→                          type="number"
+   363→                          min={0}
+   364→                          max={100}
+   365→                          value={fPosisi}
+   366→                          onChange={(e) => setFPosisi(e.target.value)}
+   367→                          placeholder="mis. 4 · 0 = 100+"
+   368→                        />
+   369→                      </div>
+   370→                      <div className="space-y-1.5">
+   371→                        <Label htmlFor="rank-prev">Posisi Sebelumnya</Label>
+   372→                        <Input
+   373→                          id="rank-prev"
+   374→                          type="number"
+   375→                          min={0}
+   376→                          max={100}
+   377→                          value={fPrev}
+   378→                          onChange={(e) => setFPrev(e.target.value)}
+   379→                          placeholder="opsional"
+   380→                        />
+   381→                      </div>
+   382→                      <div className="space-y-1.5">
+   383→                        <Label htmlFor="rank-vol">Volume Pencarian</Label>
+   384→                        <Input
+   385→                          id="rank-vol"
+   386→                          type="number"
+   387→                          min={0}
+   388→                          value={fVolume}
+   389→                          onChange={(e) => setFVolume(e.target.value)}
+   390→                          placeholder="opsional · per bulan"
+   391→                        />
+   392→                      </div>
+   393→                      <div className="space-y-1.5 sm:col-span-2">
+   394→                        <Label htmlFor="rank-url">URL Halaman</Label>
+   395→                        <Input
+   396→                          id="rank-url"
+   397→                          value={fUrl}
+   398→                          onChange={(e) => setFUrl(e.target.value)}
+   399→                          placeholder="opsional · https://…"
+   400→                        />
+   401→                      </div>
+   402→                      <div className="space-y-1.5">
+   403→                        <Label>Perangkat</Label>
+   404→                        <Select value={fPerangkat} onValueChange={setFPerangkat}>
+   405→                          <SelectTrigger aria-label="Pilih perangkat">
+   406→                            <SelectValue />
+   407→                          </SelectTrigger>
+   408→                          <SelectContent>
+   409→                            <SelectItem value="desktop">🖥️ Desktop</SelectItem>
+   410→                            <SelectItem value="mobile">📱 Mobile</SelectItem>
+   411→                          </SelectContent>
+   412→                        </Select>
+   413→                      </div>
+   414→                    </div>
+   415→                    <div className="flex justify-end">
+   416→                      <Button onClick={handleAdd} disabled={saving} className="gap-1.5">
+   417→                        {saving ? "Menyimpan…" : "＋ Lacak Keyword"}
+   418→                      </Button>
+   419→                    </div>
+   420→                  </CardContent>
+   421→                </Card>
+   422→              </FadeUp>
+   423→
+   424→              {/* Tabel posisi */}
+   425→              <FadeUp delay={0.2}>
+   426→                <Card className="overflow-hidden rounded-xl">
+   427→                  <CardHeader>
+   428→                    <div className="flex items-center justify-between gap-2">
+   429→                      <div>
+   430→                        <CardTitle>Daftar Posisi Keyword</CardTitle>
+   431→                        <CardDescription>Diurutkan dari posisi terbaik.</CardDescription>
+   432→                      </div>
+   433→                      <Badge variant="secondary" className="tabular-nums">{sorted.length} keyword</Badge>
+   434→                    </div>
+   435→                  </CardHeader>
+   436→                  <CardContent className="p-0">
+   437→                    <div className="max-h-96 overflow-y-auto nice-scroll">
+   438→                      <Table>
+   439→                        <TableHeader className="sticky top-0 z-10 bg-card">
+   440→                          <TableRow>
+   441→                            <TableHead>Keyword</TableHead>
+   442→                            <TableHead className="text-center">Posisi</TableHead>
+   443→                            <TableHead className="text-center">Perubahan</TableHead>
+   444→                            <TableHead className="hidden text-right md:table-cell">Volume</TableHead>
+   445→                            <TableHead className="hidden md:table-cell">Perangkat</TableHead>
+   446→                            <TableHead className="hidden lg:table-cell">URL</TableHead>
+   447→                            <TableHead className="w-12 text-right">Aksi</TableHead>
+   448→                          </TableRow>
+   449→                        </TableHeader>
+   450→                        <TableBody>
+   451→                          {ranks.loading && (
+   452→                            <TableRow>
+   453→                              <TableCell colSpan={7} className="py-8 text-center text-muted-foreground">Memuat data…</TableCell>
+   454→                            </TableRow>
+   455→                          )}
+   456→                          {!ranks.loading && sorted.length === 0 && (
+   457→                            <TableRow>
+   458→                              <TableCell colSpan={7} className="p-0">
+   459→                                <EmptyState
+   460→                                  icon={Radar}
+   461→                                  title="Belum ada keyword yang dilacak"
+   462→                                  desc="Tambahkan keyword pertama lewat form di atas untuk mulai memantau posisi."
+   463→                                />
+   464→                              </TableCell>
+   465→                            </TableRow>
+   466→                          )}
+   467→                          {!ranks.loading && sorted.map((r) => {
+   468→                            const pb = posisiBadgeCls(r.posisi);
+   469→                            return (
+   470→                              <TableRow key={r.id} className="hover:bg-emerald-500/5">
+   471→                                <TableCell className="max-w-[220px] font-medium">
+   472→                                  <span className="block truncate" title={r.keyword}>{r.keyword}</span>
+   473→                                </TableCell>
+   474→                                <TableCell className="text-center">
+   475→                                  <Badge className={cn("border font-semibold tabular-nums", pb.cls)}>{pb.label}</Badge>
+   476→                                </TableCell>
+   477→                                <TableCell className="text-center">
+   478→                                  <DeltaCell pos={r.posisi} prev={r.posisiSebelumnya} />
+   479→                                </TableCell>
+   480→                                <TableCell className="hidden text-right font-mono tabular-nums md:table-cell">
+   481→                                  {r.volume > 0 ? fmtNum(r.volume) : "—"}
+   482→                                </TableCell>
+   483→                                <TableCell className="hidden md:table-cell">
+   484→                                  <span className="inline-flex items-center gap-1.5 text-xs capitalize text-muted-foreground">
+   485→                                    {r.perangkat === "mobile" ? <Smartphone className="size-3.5" aria-hidden /> : <Monitor className="size-3.5" aria-hidden />}
+   486→                                    {r.perangkat || "desktop"}
+   487→                                  </span>
+   488→                                </TableCell>
+   489→                                <TableCell className="hidden lg:table-cell">
+   490→                                  {r.url ? (
+   491→                                    <a
+   492→                                      href={r.url}
+   493→                                      target="_blank"
+   494→                                      rel="noopener noreferrer"
+   495→                                      className="inline-flex max-w-[160px] items-center gap-1 text-xs text-emerald-700 hover:underline dark:text-emerald-400"
+   496→                                      title={r.url}
+   497→                                    >
+   498→                                      <span className="truncate">{r.url}</span>
+   499→                                      <ExternalLink className="size-3 shrink-0" aria-hidden />
+   500→                                    </a>
+   501→                                  ) : (
+   502→                                    <span className="text-xs text-muted-foreground">—</span>
+   503→                                  )}
+   504→                                </TableCell>
+   505→                                <TableCell className="text-right">
+   506→                                  <Button
+   507→                                    variant="ghost"
+   508→                                    size="sm"
+   509→                                    className="size-8 p-0 text-muted-foreground hover:text-red-600"
+   510→                                    onClick={() => handleDelete(r.id, r.keyword)}
+   511→                                    aria-label={`Hapus keyword ${r.keyword}`}
+   512→                                  >
+   513→                                    <Trash2 className="size-4" aria-hidden />
+   514→                                  </Button>
+   515→                                </TableCell>
+   516→                              </TableRow>
+   517→                            );
+   518→                          })}
+   519→                        </TableBody>
+   520→                      </Table>
+   521→                    </div>
+   522→                  </CardContent>
+   523→                </Card>
+   524→              </FadeUp>
+   525→
+   526→              {/* Tips cek manual */}
+   527→              <FadeUp delay={0.25}>
+   528→                <div className="flex items-start gap-3 rounded-xl border border-amber-500/30 bg-amber-50 p-4 dark:bg-amber-950/30">
+   529→                  <Lightbulb className="mt-0.5 size-4 shrink-0 text-amber-600 dark:text-amber-400" aria-hidden />
+   530→                  <p className="text-xs text-amber-900 dark:text-amber-200">
+   531→                    <span className="font-semibold">Cek manual posisi:</span> cek via Google dengan parameter{" "}
+   532→                    <code className="rounded bg-amber-100 px-1 font-mono dark:bg-amber-900/60">uci=1</code> atau gunakan
+   533→                    mode incognito — hindari personalisasi hasil pencarian agar posisi tercatat akurat.
+   534→                  </p>
+   535→                </div>
+   536→              </FadeUp>
+   537→            </>
+   538→          )}
+   539→        </>
+   540→      )}
+   541→    </div>
+   542→  );
+   543→}
+   544→
+   545→// ═══════════════════════════════════════════════════
+   546→// B) BacklinkSection — Monitor Tautan Masuk
+   547→// ═══════════════════════════════════════════════════
+   548→
+   549→export function BacklinkSection() {
+   550→  const { toast } = useToast();
+   551→  const projects = useRecords<SeoProjectT>("seoProject");
+   552→  const [projectId, setProjectId] = useState("");
+   553→  const links = useRecords<BacklinkT>("backlink", projectId ? { key: "projectId", value: projectId } : undefined);
+   554→
+   555→  // Form tambah backlink
+   556→  const [bSource, setBSource] = useState("");
+   557→  const [bTarget, setBTarget] = useState("");
+   558→  const [bAnchor, setBAnchor] = useState("");
+   559→  const [bDofollow, setBDofollow] = useState(true);
+   560→  const [bKualitas, setBKualitas] = useState<string>("SEDANG");
+   561→  const [bDa, setBDa] = useState("");
+   562→  const [saving, setSaving] = useState(false);
+   563→
+   564→  const stats = useMemo(() => {
+   565→    const items = links.items;
+   566→    const total = items.length;
+   567→    const dofollow = items.filter((b) => b.dofollow).length;
+   568→    const avgDa = total ? items.reduce((s, b) => s + (b.domainAuth || 0), 0) / total : 0;
+   569→    const dist: Record<string, number> = { TINGGI: 0, SEDANG: 0, RENDAH: 0, TOXIC: 0 };
+   570→    for (const b of items) dist[b.kualitas] = (dist[b.kualitas] || 0) + 1;
+   571→    return { total, dofollowPct: total ? (dofollow / total) * 100 : 0, avgDa, tinggi: dist.TINGGI, dist };
+   572→  }, [links.items]);
+   573→
+   574→  async function handleAdd() {
+   575→    if (!projectId) {
+   576→      toast({ title: "Pilih proyek dulu", description: "Pilih proyek SEO sebelum mencatat backlink.", variant: "destructive" });
+   577→      return;
+   578→    }
+   579→    const src = bSource.trim();
+   580→    if (!src) {
+   581→      toast({ title: "URL sumber wajib diisi", description: "Masukkan URL situs yang memberi tautan.", variant: "destructive" });
+   582→      return;
+   583→    }
+   584→    setSaving(true);
+   585→    try {
+   586→      await links.create({
+   587→        projectId,
+   588→        sourceUrl: src,
+   589→        targetUrl: bTarget.trim(),
+   590→        anchorText: bAnchor.trim(),
+   591→        dofollow: bDofollow,
+   592→        kualitas: bKualitas,
+   593→        status: "PENDING",
+   594→        domainAuth: Math.max(0, Math.min(100, Math.round(Number(bDa) || 0))),
+   595→      });
+   596→      toast({ title: "✅ Backlink tercatat", description: `Tautan dari ${src} masuk ke portofolio.` });
+   597→      setBSource(""); setBTarget(""); setBAnchor(""); setBDa("");
+   598→      setBDofollow(true); setBKualitas("SEDANG");
+   599→    } catch (e) {
+   600→      toast({ title: "Gagal menyimpan backlink", description: e instanceof Error ? e.message : "Coba lagi.", variant: "destructive" });
+   601→    } finally {
+   602→      setSaving(false);
+   603→    }
+   604→  }
+   605→
+   606→  async function handleDelete(id: string, src: string) {
+   607→    try {
+   608→      await links.remove(id);
+   609→      toast({ title: "🗑️ Backlink dihapus", description: src });
+   610→    } catch {
+   611→      toast({ title: "Gagal menghapus", description: "Backlink tidak terhapus, coba lagi.", variant: "destructive" });
+   612→    }
+   613→  }
+   614→
+   615→  const hasProjects = projects.items.length > 0;
+   616→
+   617→  return (
+   618→    <div className="space-y-4">
+   619→      <FadeUp>
+   620→        <div className="rounded-xl border-2 border-emerald-800/20 bg-gradient-to-br from-emerald-50 to-amber-50 p-5 dark:border-emerald-700/30 dark:from-emerald-950/40 dark:to-amber-950/30">
+   621→          <h2 className="text-lg font-extrabold tracking-tight">🔗 BACKLINK MONITOR — Portofolio Tautan Masuk</h2>
+   622→          <p className="mt-1 max-w-3xl text-sm text-muted-foreground">
+   623→            Kualitas backlink jauh lebih penting daripada kuantitas. Pantau atribut dofollow, otoritas domain (DA),
+   624→            dan segera karantina tautan toxic yang berpotensi merusak.
+   625→          </p>
+   626→        </div>
+   627→      </FadeUp>
+   628→
+   629→      {projects.loading ? (
+   630→        <Card className="rounded-xl"><CardContent className="p-6 text-sm text-muted-foreground">Memuat proyek…</CardContent></Card>
+   631→      ) : !hasProjects ? (
+   632→        <Card className="rounded-xl">
+   633→          <CardContent className="p-6">
+   634→            <EmptyState
+   635→              icon={FolderPlus}
+   636→              title="Belum ada proyek SEO"
+   637→              desc="Buat proyek dulu di Pusat Kendali SEO (SEO Hub) untuk mulai memantau backlink."
+   638→            />
+   639→          </CardContent>
+   640→        </Card>
+   641→      ) : (
+   642→        <>
+   643→          <FadeUp delay={0.05}>
+   644→            <Card className="rounded-xl">
+   645→              <CardContent className="p-6">
+   646→                <ProjectPicker
+   647→                  id="backlink-project-picker"
+   648→                  projects={projects.items}
+   649→                  loading={projects.loading}
+   650→                  value={projectId}
+   651→                  onChange={setProjectId}
+   652→                />
+   653→              </CardContent>
+   654→            </Card>
+   655→          </FadeUp>
+   656→
+   657→          {!projectId ? (
+   658→            <Card className="rounded-xl">
+   659→              <CardContent className="p-6">
+   660→                <EmptyState
+   661→                  icon={MousePointerClick}
+   662→                  title="Pilih proyek untuk memuat data"
+   663→                  desc="Statistik dan daftar backlink akan tampil setelah proyek dipilih."
+   664→                />
+   665→              </CardContent>
+   666→            </Card>
+   667→          ) : (
+   668→            <>
+   669→              {/* Statistik + distribusi kualitas */}
+   670→              <FadeUp delay={0.1}>
+   671→                <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
+   672→                  <KpiCard icon={Link2} label="Total Backlink" value={fmtNum(stats.total)} sub="tautan terpantau" />
+   673→                  <KpiCard
+   674→                    icon={ShieldCheck}
+   675→                    label="Dofollow"
+   676→                    value={`${stats.dofollowPct.toFixed(0)}%`}
+   677→                    sub="porsi tautan dofollow"
+   678→                    tone="text-emerald-600 dark:text-emerald-400"
+   679→                  />
+   680→                  <KpiCard icon={Gauge} label="Rata-rata DA" value={stats.total ? stats.avgDa.toFixed(1) : "—"} sub="otoritas domain 0–100" tone="text-amber-500" />
+   681→                  <KpiCard icon={Crown} label="Kualitas TINGGI" value={fmtNum(stats.tinggi)} sub="backlink berkualitas" tone="text-lime-600 dark:text-lime-400" />
+   682→                </div>
+   683→              </FadeUp>
+   684→
+   685→              <FadeUp delay={0.12}>
+   686→                <Card className="rounded-xl">
+   687→                  <CardContent className="space-y-3 p-6">
+   688→                    <p className="text-sm font-semibold">Distribusi Kualitas</p>
+   689→                    <div
+   690→                      className="flex h-2 w-full overflow-hidden rounded-full bg-muted"
+   691→                      role="img"
+   692→                      aria-label={`Distribusi kualitas backlink: TINGGI ${stats.dist.TINGGI}, SEDANG ${stats.dist.SEDANG}, RENDAH ${stats.dist.RENDAH}, TOXIC ${stats.dist.TOXIC}`}
+   693→                    >
+   694→                      {stats.total > 0 && KUALITAS_OPTS.map((q) => {
+   695→                        const n = stats.dist[q] || 0;
+   696→                        if (!n) return null;
+   697→                        return (
+   698→                          <div
+   699→                            key={q}
+   700→                            className={KUALITAS_BAR[q]}
+   701→                            style={{ width: `${(n / stats.total) * 100}%` }}
+   702→                            title={`${q}: ${n}`}
+   703→                          />
+   704→                        );
+   705→                      })}
+   706→                    </div>
+   707→                    <div className="flex flex-wrap gap-x-4 gap-y-1">
+   708→                      {KUALITAS_OPTS.map((q) => (
+   709→                        <span key={q} className="inline-flex items-center gap-1.5 text-xs text-muted-foreground">
+   710→                          <span className={cn("size-2 rounded-full", KUALITAS_BAR[q])} aria-hidden />
+   711→                          {q} <span className="font-semibold tabular-nums text-foreground">{stats.dist[q] || 0}</span>
+   712→                        </span>
+   713→                      ))}
+   714→                    </div>
+   715→                  </CardContent>
+   716→                </Card>
+   717→              </FadeUp>
+   718→
+   719→              {/* Form tambah backlink */}
+   720→              <FadeUp delay={0.15}>
+   721→                <Card className="rounded-xl">
+   722→                  <CardHeader>
+   723→                    <CardTitle>＋ Catat Backlink Baru</CardTitle>
+   724→                    <CardDescription>Status awal backlink baru otomatis PENDING hingga diverifikasi.</CardDescription>
+   725→                  </CardHeader>
+   726→                  <CardContent className="space-y-4">
+   727→                    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+   728→                      <div className="space-y-1.5 sm:col-span-2">
+   729→                        <Label htmlFor="bl-src">URL Sumber</Label>
+   730→                        <Input
+   731→                          id="bl-src"
+   732→                          value={bSource}
+   733→                          onChange={(e) => setBSource(e.target.value)}
+   734→                          placeholder="https://situs-pemberi-tautan.com/artikel"
+   735→                        />
+   736→                      </div>
+   737→                      <div className="space-y-1.5 sm:col-span-2">
+   738→                        <Label htmlFor="bl-target">URL Target</Label>
+   739→                        <Input
+   740→                          id="bl-target"
+   741→                          value={bTarget}
+   742→                          onChange={(e) => setBTarget(e.target.value)}
+   743→                          placeholder="opsional · halaman situsmu yang ditaut"
+   744→                        />
+   745→                      </div>
+   746→                      <div className="space-y-1.5 sm:col-span-2">
+   747→                        <Label htmlFor="bl-anchor">Anchor Text</Label>
+   748→                        <Input
+   749→                          id="bl-anchor"
+   750→                          value={bAnchor}
+   751→                          onChange={(e) => setBAnchor(e.target.value)}
+   752→                          placeholder="mis. jasa SEO terbaik"
+   753→                        />
+   754→                      </div>
+   755→                      <div className="space-y-1.5">
+   756→                        <Label htmlFor="bl-da">Domain Authority</Label>
+   757→                        <Input
+   758→                          id="bl-da"
+   759→                          type="number"
+   760→                          min={0}
+   761→                          max={100}
+   762→                          value={bDa}
+   763→                          onChange={(e) => setBDa(e.target.value)}
+   764→                          placeholder="0–100"
+   765→                        />
+   766→                      </div>
+   767→                      <div className="space-y-1.5">
+   768→                        <Label>Kualitas</Label>
+   769→                        <Select value={bKualitas} onValueChange={setBKualitas}>
+   770→                          <SelectTrigger aria-label="Pilih kualitas backlink">
+   771→                            <SelectValue />
+   772→                          </SelectTrigger>
+   773→                          <SelectContent>
+   774→                            {KUALITAS_OPTS.map((q) => (
+   775→                              <SelectItem key={q} value={q}>
+   776→                                <span className="flex items-center gap-2">
+   777→                                  <span className={cn("size-2 rounded-full", KUALITAS_BAR[q])} aria-hidden />
+   778→                                  {q}
+   779→                                </span>
+   780→                              </SelectItem>
+   781→                            ))}
+   782→                          </SelectContent>
+   783→                        </Select>
+   784→                      </div>
+   785→                      <div className="flex items-end pb-1">
+   786→                        <div className="flex items-center gap-2">
+   787→                          <Switch id="bl-dofollow" checked={bDofollow} onCheckedChange={setBDofollow} />
+   788→                          <Label htmlFor="bl-dofollow">{bDofollow ? "Dofollow" : "Nofollow"}</Label>
+   789→                        </div>
+   790→                      </div>
+   791→                    </div>
+   792→                    <div className="flex justify-end">
+   793→                      <Button onClick={handleAdd} disabled={saving} className="gap-1.5">
+   794→                        {saving ? "Menyimpan…" : "＋ Catat Backlink"}
+   795→                      </Button>
+   796→                    </div>
+   797→                  </CardContent>
+   798→                </Card>
+   799→              </FadeUp>
+   800→
+   801→              {/* Tabel backlink */}
+   802→              <FadeUp delay={0.2}>
+   803→                <Card className="overflow-hidden rounded-xl">
+   804→                  <CardHeader>
+   805→                    <div className="flex items-center justify-between gap-2">
+   806→                      <div>
+   807→                        <CardTitle>Daftar Backlink</CardTitle>
+   808→                        <CardDescription>Tautan masuk beserta atribut dan statusnya.</CardDescription>
+   809→                      </div>
+   810→                      <Badge variant="secondary" className="tabular-nums">{links.items.length} tautan</Badge>
+   811→                    </div>
+   812→                  </CardHeader>
+   813→                  <CardContent className="p-0">
+   814→                    <div className="max-h-96 overflow-y-auto nice-scroll">
+   815→                      <Table>
+   816→                        <TableHeader className="sticky top-0 z-10 bg-card">
+   817→                          <TableRow>
+   818→                            <TableHead>Source URL</TableHead>
+   819→                            <TableHead className="hidden md:table-cell">Anchor</TableHead>
+   820→                            <TableHead className="text-center">Atribut</TableHead>
+   821→                            <TableHead className="text-center">Kualitas</TableHead>
+   822→                            <TableHead className="text-right">DA</TableHead>
+   823→                            <TableHead className="text-center">Status</TableHead>
+   824→                            <TableHead className="w-12 text-right">Aksi</TableHead>
+   825→                          </TableRow>
+   826→                        </TableHeader>
+   827→                        <TableBody>
+   828→                          {links.loading && (
+   829→                            <TableRow>
+   830→                              <TableCell colSpan={7} className="py-8 text-center text-muted-foreground">Memuat data…</TableCell>
+   831→                            </TableRow>
+   832→                          )}
+   833→                          {!links.loading && links.items.length === 0 && (
+   834→                            <TableRow>
+   835→                              <TableCell colSpan={7} className="p-0">
+   836→                                <EmptyState
+   837→                                  icon={Radar}
+   838→                                  title="Belum ada backlink tercatat"
+   839→                                  desc="Catat tautan masuk pertama lewat form di atas, atau hasil dari guest post & digital PR."
+   840→                                />
+   841→                              </TableCell>
+   842→                            </TableRow>
+   843→                          )}
+   844→                          {!links.loading && links.items.map((b) => (
+   845→                            <TableRow key={b.id} className="hover:bg-emerald-500/5">
+   846→                              <TableCell className="max-w-[220px]">
+   847→                                <a
+   848→                                  href={b.sourceUrl}
+   849→                                  target="_blank"
+   850→                                  rel="noopener noreferrer"
+   851→                                  className="inline-flex max-w-full items-center gap-1 text-xs font-medium text-emerald-700 hover:underline dark:text-emerald-400"
+   852→                                  title={b.sourceUrl}
+   853→                                >
+   854→                                  <span className="truncate">{b.sourceUrl}</span>
+   855→                                  <ExternalLink className="size-3 shrink-0" aria-hidden />
+   856→                                </a>
+   857→                              </TableCell>
+   858→                              <TableCell className="hidden max-w-[160px] md:table-cell">
+   859→                                <span className="block truncate text-xs" title={b.anchorText}>
+   860→                                  {b.anchorText || <span className="text-muted-foreground">—</span>}
+   861→                                </span>
+   862→                              </TableCell>
+   863→                              <TableCell className="text-center">
+   864→                                {b.dofollow ? (
+   865→                                  <Badge className="border-transparent bg-emerald-600 font-semibold text-white">Dofollow</Badge>
+   866→                                ) : (
+   867→                                  <Badge variant="outline" className="bg-muted text-muted-foreground">Nofollow</Badge>
+   868→                                )}
+   869→                              </TableCell>
+   870→                              <TableCell className="text-center">
+   871→                                <Badge className={cn("border font-semibold", KUALITAS_BADGE[b.kualitas] || KUALITAS_BADGE.SEDANG)}>
+   872→                                  {b.kualitas}
+   873→                                </Badge>
+   874→                              </TableCell>
+   875→                              <TableCell className="text-right font-mono tabular-nums">{b.domainAuth}</TableCell>
+   876→                              <TableCell className="text-center">
+   877→                                {b.status === "AKTIF" && (
+   878→                                  <Badge className="border-emerald-500/40 bg-emerald-500/15 font-semibold text-emerald-700 dark:text-emerald-400">AKTIF</Badge>
+   879→                                )}
+   880→                                {b.status === "HILANG" && (
+   881→                                  <Badge className="border-red-500/40 bg-red-500/15 font-semibold text-red-700 dark:text-red-400">HILANG</Badge>
+   882→                                )}
+   883→                                {b.status !== "AKTIF" && b.status !== "HILANG" && (
+   884→                                  <Badge className="border-amber-400/50 bg-amber-400/20 font-semibold text-amber-800 dark:text-amber-300">
+   885→                                    {b.status || "PENDING"}
+   886→                                  </Badge>
+   887→                                )}
+   888→                              </TableCell>
+   889→                              <TableCell className="text-right">
+   890→                                <Button
+   891→                                  variant="ghost"
+   892→                                  size="sm"
+   893→                                  className="size-8 p-0 text-muted-foreground hover:text-red-600"
+   894→                                  onClick={() => handleDelete(b.id, b.sourceUrl)}
+   895→                                  aria-label="Hapus backlink"
+   896→                                >
+   897→                                  <Trash2 className="size-4" aria-hidden />
+   898→                                </Button>
+   899→                              </TableCell>
+   900→                            </TableRow>
+   901→                          ))}
+   902→                        </TableBody>
+   903→                      </Table>
+   904→                    </div>
+   905→                  </CardContent>
+   906→                </Card>
+   907→              </FadeUp>
+   908→            </>
+   909→          )}
+   910→        </>
+   911→      )}
+   912→    </div>
+   913→  );
+   914→}
+   915→

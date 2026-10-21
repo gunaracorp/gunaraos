@@ -1,0 +1,150 @@
+# GUNARA OS — Worklog Proyek
+
+---
+
+Task ID: 1 + 1b
+Agent: Z.ai (orchestrator)
+Task: Integrasi repo github.com/prabudanling/gunara-os ke /home/z/my-project + perluasan skema DB untuk SEO Mastery
+
+Work Log:
+- Clone repo gunara-os ke /tmp/gunara-os-inspect dan analisis struktur (Next.js 16 App Router, single-page AppShell, 24 section, nav via src/components/app/nav.ts)
+- Salin src/, prisma/schema.prisma, public/site.webmanifest, scripts/seed.ts, scripts/seed-bisnis.ts, db/custom.db, next.config.ts, tailwind.config.ts, components.json
+- Package.json identik — tidak perlu install ulang
+- Tambah 10 model Prisma: SeoProject, SeoAudit, KeywordRank, KeywordIdea, ContentPlan, Backlink, CompetitorReport, MetaPreset, SeoProposal
+- Extend MODELS + ORDERED di src/app/api/data/[resource]/route.ts untuk semua resource SEO
+- bun run db:push — sukses, Prisma Client v6.19.2 ter-generate
+
+Stage Summary:
+- Repo terintegrasi penuh; DB siap dengan 34 model
+- Kontrak API untuk subagent:
+  - POST /api/seo/audit {url, projectId?} → {item:{skorTotal,skorTeknik,skorOnpage,skorKonten,skorMobile,metrics,issues,ringkasan}}
+  - GET /api/seo/audit?projectId= → {items}
+  - POST /api/seo/keywords {seed, projectId?, industri?} → {items:[{keyword,intent,cluster,difficulty,volume,prioritas}]}
+  - GET /api/seo/keywords?projectId= → {items}
+  - PATCH /api/seo/keywords {id, dipakai} → toggle
+  - POST /api/seo/optimize {content, keyword, judul?} → {skor, readability, density, saran, metaTitle, metaDescription, outline}
+  - POST /api/seo/competitor {domain, myDomain?, projectId?} → {item:{domain,hasil}}
+  - GET /api/seo/competitor?projectId= → {items}
+  - POST /api/seo/proposal {klien, domain, masalah, anggaran, layanan[], projectId?} → {item:{hasil}}
+  - GET /api/seo/proposal?projectId= → {items}
+  - CRUD /api/data/{seoProject,seoAudit,keywordRank,keywordIdea,contentPlan,backlink,competitorReport,metaPreset,seoProposal}
+- Komponen baru di src/components/app/seo/: seo-hub.tsx (SeoHubSection), seo-audit.tsx (SeoAuditSection), seo-keywords.tsx (KeywordStudioSection), seo-ranks.tsx (RankTrackerSection), seo-content.tsx (ContentOptimizerSection, ContentCalendarSection), seo-backlinks.tsx (BacklinkSection), seo-competitor.tsx (CompetitorRadarSection), seo-forge.tsx (MetaForgeSection), seo-clients.tsx (SeoClientsSection), seo-academy.tsx (SeoAcademySection)
+- SectionId baru: seo-hub, seo-audit, seo-keywords, seo-ranks, seo-content, seo-calendar, seo-backlinks, seo-competitor, seo-forge, seo-clients, seo-academy
+- wiring nav/shell/dashboard dilakukan orchestrator di Task 3
+
+---
+Task ID: 2-a
+Agent: Z.ai (subagent — SEO API Routes)
+Task: Membuat 5 API route SEO Mastery (audit, keywords, optimize, competitor, proposal)
+
+Work Log:
+- Baca worklog.md + prisma/schema.prisma + pola src/app/api/solver/route.ts sebagai referensi gaya
+- Buat src/app/api/seo/audit/route.ts — POST: normalisasi URL (auto https://), fetch server-side (UA GunaraOS-AuditBot/1.0, redirect follow, AbortSignal.timeout(15000), 502 bila unreachable/HTTP error), parsing HTML 100% regex tanpa dependensi eksternal (title, meta desc/robots/viewport, canonical, lang, h1/h2, img+alt coverage, link internal/eksternal, word count, OG tags, JSON-LD, favicon, form, inline style), skor 4 pilar (Teknik 7 cek @15/10, Onpage title30+desc25+h120+og25, Konten threshold 300/600/1000+alt 80%, Mobile viewport50+inline25+hints25), skorTotal = round(0.3T+0.3O+0.25K+0.15M), issues ≥8 item {severity KRITIS/PERINGATAN/BAIK, judul, detail, saran} (maks 4 BAIK), rekomendasi AI (GUNARA OS v8.0 Dewan 46, seksi 🩺🚨📈💎, wajib kutip metrik nyata) dengan fallback markdown dari issues bila AI gagal, simpan SeoAudit; GET ?projectId= take 20; DELETE ?id=
+- Buat src/app/api/seo/keywords/route.ts — POST {seed≥2, projectId?, industri?, negara?=id}: AI diminta 30 keyword STRICT JSON array, parser tahan banting (strip fence → first [ last ] → JSON.parse), sanitasi per item (whitelist intent 4 nilai, clamp difficulty 0-100 & volume, prioritas di-derive diff<40&&vol>500→TINGGI / diff>70→RENDAH / else SEDANG bila invalid), take max 30, createMany ke KeywordIdea bila projectId; GET ?projectId= take 100; PATCH {id, dipakai} toggle
+- Buat src/app/api/seo/optimize/route.ts — POST {content≥50, keyword≥2, judul?}: metrik server-side (wordCount, keywordCount case-insensitive regex-escaped, density 2 desimal, avgSentenceLength, paragraphCount, hasHeadings md/h-tag, readingTime w200), AI output STRICT JSON {skor, readability, masalah[], saran(md 📊🔧✨🏗️), metaTitle≤60, metaDescription≤155, outline[] 4-8}; robust parse + fallback lengkap (skor 60, metaTitle naive judul|keyword, desc = 155 char pertama); response gabungan metrik+AI, tidak simpan DB
+- Buat src/app/api/seo/competitor/route.ts — POST {domain valid, myDomain?, projectId?}: AI Competitor Radar (WAJIB menyatakan analisis estimasi tanpa data live), markdown 7 seksi (🎯💪🕳️🔑 tabel keyword gap 8-10 baris, 🔗📅 90 hari ⚠️), simpan CompetitorReport; GET take 20; DELETE ?id=
+- Buat src/app/api/seo/proposal/route.ts — POST {klien≥2, domain?, masalah?, anggaran?, layanan[] non-kosong, projectId?}: AI direktur PT Top Konsultan Internasional, proposal markdown lengkap (ringkasan eksekutif s/d investasi paket), scope HANYA layanan terpilih, simpan SeoProposal (layanan JSON.stringify); GET take 20; DELETE ?id=
+- Fix 2 error tsc: noUncheckedIndexedAccess di h1Tags[0] (audit) + union type prioritas (keywords)
+- Verifikasi: `bunx tsc --noEmit` → 0 error untuk src/app/api/seo/*; smoke test curl → audit/keywords/competitor/proposal GET 200, optimize POST 200 dengan metrik nyata (density 9.3%, 43 kata, kalimat 10.8 kata) + saran AI mengutip angka tersebut
+
+Stage Summary:
+- 5 API route SEO Mastery selesai & terverifikasi kompilasi + runtime (semua komentar Bahasa Indonesia, gaya solver/route.ts)
+- Kontrak terpenuhi sesuai spesifikasi Task 1 (worklog): POST/GET/DELETE tiap route + PATCH keywords; audit 502 bila situs unreachable; keywords & optimize tahan output AI rusak (fallback 502 / fallback nilai)
+- Siap dikonsumsi komponen UI seo-* (Task 2-b) dan wiring nav (Task 3) oleh orchestrator
+
+---
+Task ID: 2-b
+Agent: Z.ai (SEO suite UI subagent)
+Task: Membangun 3 komponen UI SEO Mastery — SeoHubSection, SeoAuditSection, KeywordStudioSection
+
+Work Log:
+- Baca worklog.md + kontrak API (Task 1) + use-records.ts + use-toast.ts + motion.tsx + card.tsx sebelum coding
+- Catatan: init-fullstack script TIDAK dijalankan ulang — environment sudah diinisialisasi orchestrator (Task 1); menjalankan ulang berisiko menimpa repo terintegrasi
+- Buat src/components/app/seo/seo-hub.tsx — SEO Command Center: hero gradient (emerald→amber) + FloatingOrbs + Skor SEO Rata-rata (avg audit terbaru per proyek, null → "—"), 5 KPI card (Proyek Aktif, Keyword Dilacak, Rata-rata Posisi 1 desimal koma, Backlink Aktif dofollow+AKTIF, Konten Terjadwal ≠PUBLISHED), grid 8 kartu arsenal (HoverLift + keyboard-accessible role=button) → onNavigate(id), empty-state callout "Tambah Proyek Pertama" → seo-clients, daftar Audit Terakhir top-5 dengan badge skor (≥80 emerald / ≥60 amber / else red) + relTime Intl.RelativeTimeFormat id-ID
+- Buat src/components/app/seo/seo-audit.tsx — AI Audit Engine: form (url + Select proyek opsional sentinel "__none"), fetch history GET /api/seo/audit?projectId= auto-reload saat proyek ganti, POST audit dengan step indicator 3 langkah beranimasi (setTimeout 900/1900ms, timer dibersihkan via ref + unmount cleanup), ScoreRing SVG motion.circle strokeDashoffset (reduced-motion aware, EASE dari ../motion), 4 sub-skor Progress dengan override warna [&>div]:bg-*, parse issues JSON defensif → Badge severity KRITIS/PERINGATAN/BAIK, ringkasan ReactMarkdown dengan class .gunara-prose (dari globals.css) max-h-96 nice-scroll, riwayat tabel klik-baris-load + DELETE per-row (stopPropagation, optimistis remove), semua fetch try/catch + toast destructive
+- Buat src/components/app/seo/seo-keywords.tsx — Keyword Studio: form seed/industri/proyek, POST /api/seo/keywords → 30 item, stats row (total, avg difficulty, volume fmt "1,2rb"/"2,4jt"), filter cluster pills (aria-pressed), tabel keyword dengan Intent badge 4 warna, mini Progress difficulty, Prioritas badge, "📋 Salin CSV" via navigator.clipboard (escape kutip ganda), kartu "Ide Tersimpan (N)" via useRecords("keywordIdea",{key:"projectId",value}) hanya saat proyek dipilih + Checkbox toggle dipakai (PATCH via useRecords.update) + tombol hapus (remove), badge "✓ Tersimpan ke proyek"
+- FIX self-review #1: TDZ bug di seo-keywords (useRecords memakai projectId sebelum useState deklarasi) → reorder hooks
+- FIX self-review #2: useCallback hilang dari import react di seo-keywords
+- FIX self-review #3: normalisasi padding Card (default shadcn py-6 + gap-6) → semua Card content-based diberi py-0/gap-4 + CardHeader px-6 pb-0 pt-6 agar konsisten p-6/p-4 tanpa padding ganda
+- Verifikasi sintaks ketiga file via Bun.Transpiler (bukan tsc global sesuai instruksi): 3/3 OK
+- Cek dev.log: /api/seo/keywords & /api/seo/audit sudah merespons 200 (backend agent 2-c sudah deploy); error findMany competitor/proposal = domain agent lain, tidak disentuh
+
+Stage Summary:
+- 3 file baru dibuat persis sesuai scope, TIDAK ada file existing yang diubah (nav/shell/dashboard aman)
+- Kontrak terpenuhi: SeoHubSection({onNavigate}), SeoAuditSection(), KeywordStudioSection() — semuanya "use client", TypeScript strict-friendly, toast via @/hooks/use-toast, animasi framer-motion subtle + useReducedMotion
+- Wiring nav/app-shell/dashboard + Prisma generate (competitor/proposal findMany) diserahkan ke orchestrator Task 3
+
+---
+
+Task ID: 2-c
+Agent: Z.ai (seo-ranks + seo-content builder)
+Task: SEO Mastery Bagian 2 — Rank Tracker, Backlink Monitor, Content Optimizer, Kalender Konten
+
+Work Log:
+- Baca worklog.md + kontrak API (POST /api/seo/optimize → {skor, readability, density, saran, metaTitle, metaDescription, outline}) + skema Prisma (SeoProject, KeywordRank, Backlink, ContentPlan) + use-records.ts + use-toast.ts + pola section lama (crm.tsx) + motion.tsx
+- Buat src/components/app/seo/seo-ranks.tsx:
+  - RankTrackerSection: header banner, project selector (useRecords("seoProject"), empty-state bila belum ada proyek), 4 KPI (Total Keyword, Rata-rata Posisi 1 desimal posisi>0, Top 3, Top 10), form tambah (keyword, posisi 0-100 clamp, posisi sebelumnya, volume, url, perangkat desktop/mobile) → create() + toast + reset field, tabel sort posisi asc (0 diperlakukan 101 → paling bawah), badge posisi berwarna (1-3 emerald solid, 4-10 lime, 11-30 amber, 31-99 orange muted, 0 gray "Tidak ada"), kolom Perubahan (ArrowUp emerald / ArrowDown merah / Minus sama) via posisiSebelumnya, Volume id-ID, Perangkat ikon Monitor/Smartphone, URL truncate + ExternalLink, aksi hapus; tabel + kontainer max-h-96 overflow-y-auto nice-scroll, thead sticky; note card tips uci=1/incognito
+  - BacklinkSection: project selector state terpisah, 4 KPI (Total, Dofollow %, Rata-rata DA, Kualitas TINGGI) + stacked bar distribusi kualitas (TINGGI emerald/SEDANG amber/RENDAH orange-300/TOXIC red) + legend count, form tambah (sourceUrl wajib, targetUrl, anchorText, Switch dofollow default true, Select kualitas berdot, DA 0-100 clamp) status awal PENDING, tabel Source URL (truncate + external link), Anchor, badge Dofollow/Nofollow, badge kualitas, DA mono, badge Status AKTIF/HILANG/PENDING, aksi hapus; max-h-96 overflow
+- Buat src/components/app/seo/seo-content.tsx:
+  - ContentOptimizerSection: form (judul opsional, keyword utama wajib, Textarea rows 8 + counter karakter, tombol disabled sampai ≥50 karakter + keyword), POST /api/seo/optimize via fetch try/catch + toast, hasil: SVG ScoreRing 144px (≥80 emerald / ≥60 amber / merah) + chips metrik (jumlah kata, density % berwarna 0.5-2.5% emerald, waktu baca, keyword muncul ×N, rata-rata kata/kalimat, badge keterbacaan), ReactMarkdown saran (dengan prose tailwind arbitrary), Card "Meta Siap Pakai" (metaTitle + metaDescription + tombol Salin via navigator.clipboard + toast, outline <ol> list-decimal)
+  - ContentCalendarSection: project selector, useRecords("contentPlan"), Dialog "＋ Konten Baru" (judul, keywordUtama, keywordSekunder, tipe 6 opsi, status 5 opsi, penulis, deadline date, catatan) → create() + toast + reset, kanban 5 kolom IDE/BRIEF/DRAFT/REVIEW/PUBLISHED grid-cols-1 md:3 xl:5, kartu (badge tipe + ikon, judul line-clamp-2, keyword utama, deadline dengan highlight "Terlambat" merah bila < hari ini & belum PUBLISHED, penulis, tombol chevron ◀▶ pindah tahap via update(id,{status}), trash hapus, hover:border-emerald-400), chip statistik Total/Terlambat/Published, skeleton loading, empty state per kondisi
+- Pola bersama: FadeUp dari ../motion (animasi halus), useRecords dari ../use-records, useToast dari @/hooks/use-toast, todayISO/fmtDate dari @/lib/gunara, Card rounded-xl p-6/p-4 gap-4, semua fetch try/catch + toast, semua list punya empty state berikon, semua UI copy Bahasa Indonesia
+- Re-read kedua file penuh untuk review sintaks (seimbang JSX, import terpakai semua, deps useMemo benar); tidak menyentuh nav.ts/app-shell/dashboard/file agent lain; tidak menjalankan lint/tsc (sesuai instruksi orchestrator)
+
+Stage Summary:
+- 2 file baru siap wiring (Task 3 orchestrator):
+  - seo-ranks.tsx → export RankTrackerSection (SectionId: seo-ranks) + BacklinkSection (SectionId: seo-backlinks)
+  - seo-content.tsx → export ContentOptimizerSection (SectionId: seo-content) + ContentCalendarSection (SectionId: seo-calendar)
+- Dependensi API: CRUD /api/data/{seoProject,keywordRank,backlink,contentPlan} (sudah ada), POST /api/seo/optimize (kontrak Task 1 — dibuat agent lain)
+- Tanpa file test, tanpa perubahan file milik agent lain
+
+---
+
+Task ID: 2-d
+Agent: Z.ai (SEO UI Agent — part 3/3)
+Task: 4 komponen SEO Mastery di src/components/app/seo/ — Radar Kompetitor, Meta Forge, Klien & Proposal, Akademi SEO
+
+Work Log:
+- seo-competitor.tsx (CompetitorRadarSection): form domain kompetitor + domain saya opsional + Select proyek → POST /api/seo/competitor → hasil render ReactMarkdown dengan wrapper class [&_h2]/[&_h3]/[&_ul]/[&_table]/[&_blockquote] sesuai kontrak; riwayat via useRecords("competitorReport") sort createdAt desc (lihat/hapus), max-h-96 nice-scroll; kartu tips Search Console; hero + FadeUp
+- seo-forge.tsx (MetaForgeSection): generator murni client-side (zero API); 4 tab pratinjau — Serp Google (kartu bg-white permanen, favicon dot + breadcrumb URL, title emerald-700 truncate 60, deskripsi gray-600 truncate 155), Open Graph (aspect-video + Image icon fallback), Twitter Card (handle @), JSON-LD (pre pretty-print + tombol Salin + Simpan Preset via Dialog → useRecords("metaPreset") menyimpan og/twitter/schemaJson JSON string); 8 builder schema valid: WebSite+SearchAction, Organization+sameAs, Article+author/datePublished, Product+offers, LocalBusiness+address/telephone/openingHours/aggregateRating, FAQPage+mainEntity, HowTo+step, BreadcrumbList (crumbs di-derive dari URL); form dinamis compact per tipe (FAQ q/a pairs, HowTo steps, Product harga/mata uang/ketersediaan, Article penulis/tanggal, LocalBusiness 6 field); char counter berwarna (emerald/amber/rose); preset list bawah dengan Muat (reverse-parse schemaJson → isi ulang semua kolom termasuk field dinamis) + hapus
+- seo-clients.tsx (SeoClientsSection): tab 🏢 Proyek SEO — grid kartu useRecords("seoProject") dengan dot warna (emerald/amber/rose/violet), badge status AKTIF/PAUSED/SELESAI, badge industri/pasaran/bahasa, tujuan, chips kompetitor, Edit (Dialog prefilled, form lengkap 9 field) & Hapus via AlertDialog; empty state; tab 📄 Proposal AI — Select proyek auto-isi klien+domain, Textarea masalah, Input anggaran, 9 Checkbox layanan 2-col grid → POST /api/seo/proposal → markdown + tombol Salin; riwayat useRecords("seoProposal") Accordion expand + hapus
+- seo-academy.tsx (SeoAcademySection): statis zero-API; A) Kurikulum Master Accordion single-collapsible 12 bab (Fundamental→AI Era/GEO), tiap bab: 2 paragraf intro + checklist 6 bullet + kotak ⚡ Rumus Emas (border-amber-400/40 bg-amber-400/5 italic), header icon + judul + "N langkah"; B) Checklist 100 Langkah — 10 kategori × 10 item spesifik, Tabs kategori, Checkbox per item dengan state Record<string,boolean> persist localStorage "gunara-seo-checklist" (init {} → load di useEffect, typeof window guarded, anti hydration mismatch), Progress per kategori + total N/100 besar, toast perayaan sekali saat mencapai 100 (di-skip bila sudah 100 saat load), tombol Reset
+- Gaya konsisten: hero gradient emerald-950 + eyebrow amber, Card rounded-xl p-6, grid gap-4, max-h-96 overflow-y-auto nice-scroll, framer-motion FadeUp subtle, toast bahasa Indonesia, fmtDate deterministik timezone Asia/Jakarta (anti hydration mismatch), img preview pakai eslint-disable @next/next/no-img-element
+
+Stage Summary:
+- 4 file baru: seo-competitor.tsx, seo-forge.tsx, seo-clients.tsx, seo-academy.tsx — siap di-wiring oleh orchestrator (Task 3)
+- Ekspor: CompetitorRadarSection, MetaForgeSection, SeoClientsSection, SeoAcademySection — semuanya "use client"
+- Dependensi: ../use-records (competitorReport, metaPreset, seoProject, seoProposal), ../motion (FadeUp), POST /api/seo/competitor, POST /api/seo/proposal, use-toast, react-markdown
+- Tidak menyentuh nav.ts/app-shell.tsx/dashboard.tsx maupun file milik agent lain; tanpa file test
+
+---
+Task ID: 3
+Agent: Z.ai (orchestrator)
+Task: Wiring nav + app-shell + dashboard + seed data
+
+Work Log:
+- nav.ts: SectionId +11 id SEO, NAV group baru "🚀 SEO MASTERY — Konsultan #1" di posisi paling atas (11 item, ikon lucide baru)
+- app-shell.tsx: import 9 file seo/*, 11 case switch, versi v7.0 → v8.0, footer + sidebar footer update
+- dashboard.tsx: banner SEO Mastery v8.0 dengan live stats (proyek aktif + skor audit terakhir) dari useRecords seoProject/seoAudit
+- Seed: 2 proyek SEO (Pusat Perizinan, Gunara Web), 6 keywordRank, 4 backlink, 5 keywordIdea, 3 contentPlan via API
+- Fix lint: setState-in-effect di seo-academy.tsx (defer setTimeout), hapus 2 eslint-disable tak terpakai di seo-forge.tsx
+- Version bump: package.json 8.0.0, branding.ts v8.0, seo-hub MODUL v8.0
+
+Stage Summary:
+- 35 section total aktif (24 lama + 11 SEO), lint bersih, dev server sehat
+
+---
+Task ID: 4
+Agent: Z.ai (orchestrator)
+Task: Verifikasi end-to-end Agent Browser + polish
+
+Work Log:
+- Desktop 1440x900: dashboard, SEO Hub (KPI live: 2 proyek, 6 keyword, posisi rata 5.2, 3 backlink, 2 konten), Audit Engine AUDIT NYATA example.com (skor 25, 14 temuan, rekomendasi AI kutip metrik asli), Keyword Studio AI (30 keyword, cluster pills, CSV), Rank Tracker (tabel + badge + panah), Meta Forge (SERP preview + JSON-LD valid), Content Calendar kanban (terlambat otomatis), Klien & Proposal AI (proposal lengkap Kopi Nusantara), SEO Academy (checklist 1/10 tercentang + persist), Backlink Monitor (75% dofollow, DA 60.8)
+- Mobile iPhone 14: dashboard responsive, drawer nav SEO group lengkap, footer sticky OK
+- Dev log: tanpa error runtime (hanya 2 POST gagal dari seeding manual awal — bukan bug)
+- Smoke test API: competitor AI 7.686 char OK, keywords GET OK, optimize OK (dari 2-a)
+- Browser errors/console: BERSIH. Lint: 0 error.
+
+Stage Summary:
+- MAHAKARYA GUNARA OS v8.0 — SEO Mastery selesai & terverifikasi penuh via browser.
+- 11 section SEO + 5 API AI + 9 model DB baru = fitur bernilai konsultan top.

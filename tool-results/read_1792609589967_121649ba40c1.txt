@@ -1,0 +1,1175 @@
+     1→"use client";
+     2→
+     3→// ═══════════════════════════════════════════════════════════════════
+     4→// GUNARA OS v7.0 — SEO MASTERY · META FORGE
+     5→// Menempa meta tag + schema JSON-LD murni di sisi klien (zero API):
+     6→// pratinjau SERP Google, Open Graph, Twitter Card, dan 8 jenis schema.
+     7→// Preset tersimpan ke MetaPreset untuk dipakai ulang.
+     8→// ═══════════════════════════════════════════════════════════════════
+     9→
+    10→import { useMemo, useState } from "react";
+    11→import { Button } from "@/components/ui/button";
+    12→import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+    13→import { Input } from "@/components/ui/input";
+    14→import { Textarea } from "@/components/ui/textarea";
+    15→import { Label } from "@/components/ui/label";
+    16→import {
+    17→  Select,
+    18→  SelectContent,
+    19→  SelectItem,
+    20→  SelectTrigger,
+    21→  SelectValue,
+    22→} from "@/components/ui/select";
+    23→import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+    24→import {
+    25→  Dialog,
+    26→  DialogContent,
+    27→  DialogDescription,
+    28→  DialogFooter,
+    29→  DialogHeader,
+    30→  DialogTitle,
+    31→} from "@/components/ui/dialog";
+    32→import {
+    33→  FileCode2,
+    34→  Copy,
+    35→  Save,
+    36→  Trash2,
+    37→  FolderOpen,
+    38→  Loader2,
+    39→  Image as ImageIcon,
+    40→  Wand2,
+    41→  HelpCircle,
+    42→  Plus,
+    43→  X,
+    44→  ListOrdered,
+    45→  MapPin,
+    46→  Package,
+    47→  Newspaper,
+    48→} from "lucide-react";
+    49→import { FadeUp } from "../motion";
+    50→import { useRecords } from "../use-records";
+    51→import { useToast } from "@/hooks/use-toast";
+    52→import { cn } from "@/lib/utils";
+    53→
+    54→/* ── Tipe & konstanta ─────────────────────────────────────────────── */
+    55→
+    56→type SchemaType =
+    57→  | "WEBSITE"
+    58→  | "ORGANIZATION"
+    59→  | "ARTICLE"
+    60→  | "PRODUCT"
+    61→  | "LOCAL_BUSINESS"
+    62→  | "FAQ"
+    63→  | "HOW_TO"
+    64→  | "BREADCRUMB";
+    65→
+    66→const SCHEMA_TYPES: { value: SchemaType; label: string }[] = [
+    67→  { value: "WEBSITE", label: "WebSite — Situs Utama" },
+    68→  { value: "ORGANIZATION", label: "Organization — Profil Perusahaan" },
+    69→  { value: "ARTICLE", label: "Article — Artikel / Blog" },
+    70→  { value: "PRODUCT", label: "Product — Produk / Jasa" },
+    71→  { value: "LOCAL_BUSINESS", label: "LocalBusiness — Bisnis Lokal" },
+    72→  { value: "FAQ", label: "FAQPage — Halaman Tanya-Jawab" },
+    73→  { value: "HOW_TO", label: "HowTo — Panduan Langkah" },
+    74→  { value: "BREADCRUMB", label: "BreadcrumbList — Jejak Navigasi" },
+    75→];
+    76→
+    77→const SCHEMA_TO_TYPE: Record<string, SchemaType> = {
+    78→  WebSite: "WEBSITE",
+    79→  Organization: "ORGANIZATION",
+    80→  Article: "ARTICLE",
+    81→  Product: "PRODUCT",
+    82→  LocalBusiness: "LOCAL_BUSINESS",
+    83→  FAQPage: "FAQ",
+    84→  HowTo: "HOW_TO",
+    85→  BreadcrumbList: "BREADCRUMB",
+    86→};
+    87→
+    88→const AVAILABILITY: { value: string; label: string }[] = [
+    89→  { value: "InStock", label: "Tersedia" },
+    90→  { value: "OutOfStock", label: "Habis" },
+    91→  { value: "PreOrder", label: "Pre-Order" },
+    92→  { value: "Discontinued", label: "Dihentikan" },
+    93→];
+    94→
+    95→interface QaPair {
+    96→  q: string;
+    97→  a: string;
+    98→}
+    99→
+   100→interface StepPair {
+   101→  name: string;
+   102→  text: string;
+   103→}
+   104→
+   105→interface ProjectItem {
+   106→  id: string;
+   107→  nama: string;
+   108→  domain: string;
+   109→}
+   110→
+   111→interface MetaPresetItem {
+   112→  id: string;
+   113→  projectId: string;
+   114→  halaman: string;
+   115→  url: string;
+   116→  title: string;
+   117→  description: string;
+   118→  keywords: string;
+   119→  og: string;
+   120→  twitter: string;
+   121→  schemaJson: string;
+   122→  createdAt: string;
+   123→}
+   124→
+   125→/* ── Helper murni ─────────────────────────────────────────────────── */
+   126→
+   127→function trunc(s: string, n: number): string {
+   128→  return s.length > n ? s.slice(0, n).trimEnd() + "…" : s;
+   129→}
+   130→
+   131→function hostOf(u: string): string {
+   132→  const raw = u.trim();
+   133→  if (!raw) return "";
+   134→  try {
+   135→    return new URL(raw.includes("://") ? raw : `https://${raw}`)
+   136→      .hostname.replace(/^www\./, "");
+   137→  } catch {
+   138→    return raw.replace(/^https?:\/\//, "").replace(/^www\./, "").split("/")[0];
+   139→  }
+   140→}
+   141→
+   142→function counterClass(len: number, max: number, warn: number): string {
+   143→  if (len === 0) return "text-muted-foreground";
+   144→  if (len <= max) return "text-emerald-600 dark:text-emerald-400";
+   145→  if (len <= warn) return "text-amber-600 dark:text-amber-400";
+   146→  return "text-rose-500";
+   147→}
+   148→
+   149→function fmtDate(iso?: string): string {
+   150→  if (!iso) return "—";
+   151→  try {
+   152→    return new Date(iso).toLocaleDateString("id-ID", {
+   153→      day: "numeric",
+   154→      month: "short",
+   155→      year: "numeric",
+   156→      timeZone: "Asia/Jakarta",
+   157→    });
+   158→  } catch {
+   159→    return "—";
+   160→  }
+   161→}
+   162→
+   163→/** Buang key bernilai undefined agar JSON-LD tetap rapi */
+   164→function clean<T>(obj: T): T {
+   165→  return JSON.parse(JSON.stringify(obj)) as T;
+   166→}
+   167→
+   168→/** Pecah URL menjadi rantai breadcrumb [Beranda, Segmen, …] */
+   169→function buildCrumbs(u: string): { name: string; item: string }[] {
+   170→  const raw = u.trim();
+   171→  const base = raw.startsWith("http") ? raw : raw ? `https://${raw}` : "";
+   172→  const crumbs: { name: string; item: string }[] = [];
+   173→  try {
+   174→    const url = new URL(base);
+   175→    crumbs.push({ name: "Beranda", item: url.origin });
+   176→    const segs = url.pathname.split("/").filter(Boolean);
+   177→    let acc = url.origin;
+   178→    for (const seg of segs) {
+   179→      acc += `/${seg}`;
+   180→      const label = decodeURIComponent(seg)
+   181→        .replace(/[-_]+/g, " ")
+   182→        .replace(/\.(html?|php|aspx)$/i, "");
+   183→      crumbs.push({
+   184→        name: label.charAt(0).toUpperCase() + label.slice(1),
+   185→        item: acc,
+   186→      });
+   187→    }
+   188→  } catch {
+   189→    crumbs.push({ name: "Beranda", item: raw });
+   190→  }
+   191→  return crumbs;
+   192→}
+   193→
+   194→/* ── Komponen utama ───────────────────────────────────────────────── */
+   195→
+   196→export function MetaForgeSection() {
+   197→  const { toast } = useToast();
+   198→  const { items: projects } = useRecords<ProjectItem>("seoProject");
+   199→  const { items: presets, loading: loadingPresets, create: createPreset, remove: removePreset } =
+   200→    useRecords<MetaPresetItem>("metaPreset");
+   201→
+   202→  /* Kolom dasar */
+   203→  const [title, setTitle] = useState("");
+   204→  const [description, setDescription] = useState("");
+   205→  const [url, setUrl] = useState("");
+   206→  const [imageUrl, setImageUrl] = useState("");
+   207→  const [twitterHandle, setTwitterHandle] = useState("");
+   208→  const [keywords, setKeywords] = useState("");
+   209→  const [schemaType, setSchemaType] = useState<SchemaType>("WEBSITE");
+   210→
+   211→  /* Kolom dinamis per jenis schema */
+   212→  const [qa, setQa] = useState<QaPair[]>([{ q: "", a: "" }]);
+   213→  const [steps, setSteps] = useState<StepPair[]>([{ name: "", text: "" }]);
+   214→  const [harga, setHarga] = useState("");
+   215→  const [mataUang, setMataUang] = useState("IDR");
+   216→  const [ketersediaan, setKetersediaan] = useState("InStock");
+   217→  const [penulis, setPenulis] = useState("");
+   218→  const [tanggalPublish, setTanggalPublish] = useState("");
+   219→  const [namaBisnis, setNamaBisnis] = useState("");
+   220→  const [telepon, setTelepon] = useState("");
+   221→  const [alamat, setAlamat] = useState("");
+   222→  const [jamBuka, setJamBuka] = useState("");
+   223→  const [rating, setRating] = useState("");
+   224→  const [jumlahReview, setJumlahReview] = useState("");
+   225→
+   226→  /* Dialog simpan preset */
+   227→  const [saveOpen, setSaveOpen] = useState(false);
+   228→  const [halaman, setHalaman] = useState("");
+   229→  const [presetProjectId, setPresetProjectId] = useState("none");
+   230→  const [saving, setSaving] = useState(false);
+   231→  const [copied, setCopied] = useState(false);
+   232→
+   233→  const siteName = hostOf(url) || "situsku.com";
+   234→  const displayUrl = url.trim()
+   235→    ? url.trim().replace(/^https?:\/\//, "").replace(/^www\./, "")
+   236→    : "situsku.com/halaman";
+   237→  const handleClean = twitterHandle.trim().replace(/^@/, "");
+   238→  const faviconChar = (siteName.charAt(0) || "G").toUpperCase();
+   239→
+   240→  /* ── Builder JSON-LD per jenis schema ── */
+   241→  const schema = useMemo((): Record<string, unknown> => {
+   242→    const ctx = { "@context": "https://schema.org" as const };
+   243→    const t = title.trim() || "Halaman";
+   244→    const u = url.trim() || undefined;
+   245→    const img = imageUrl.trim() || undefined;
+   246→    const desc = description.trim() || undefined;
+   247→
+   248→    switch (schemaType) {
+   249→      case "WEBSITE":
+   250→        return clean({
+   251→          ...ctx,
+   252→          "@type": "WebSite",
+   253→          name: t,
+   254→          url: u,
+   255→          description: desc,
+   256→          potentialAction: {
+   257→            "@type": "SearchAction",
+   258→            target: `${url.trim().replace(/\/$/, "") || "https://situsku.com"}/?s={search_term_string}`,
+   259→            "query-input": "required name=search_term_string",
+   260→          },
+   261→        });
+   262→      case "ORGANIZATION":
+   263→        return clean({
+   264→          ...ctx,
+   265→          "@type": "Organization",
+   266→          name: namaBisnis.trim() || t,
+   267→          url: u,
+   268→          logo: img,
+   269→          description: desc,
+   270→          sameAs: handleClean ? [`https://twitter.com/${handleClean}`] : undefined,
+   271→        });
+   272→      case "ARTICLE":
+   273→        return clean({
+   274→          ...ctx,
+   275→          "@type": "Article",
+   276→          headline: trunc(t, 110),
+   277→          description: desc,
+   278→          image: img,
+   279→          author: penulis.trim()
+   280→            ? { "@type": "Person", name: penulis.trim() }
+   281→            : undefined,
+   282→          datePublished: tanggalPublish || undefined,
+   283→        });
+   284→      case "PRODUCT":
+   285→        return clean({
+   286→          ...ctx,
+   287→          "@type": "Product",
+   288→          name: t,
+   289→          description: desc,
+   290→          image: img,
+   291→          offers: {
+   292→            "@type": "Offer",
+   293→            price: harga.trim() || "0",
+   294→            priceCurrency: mataUang || "IDR",
+   295→            availability: `https://schema.org/${ketersediaan || "InStock"}`,
+   296→          },
+   297→        });
+   298→      case "LOCAL_BUSINESS":
+   299→        return clean({
+   300→          ...ctx,
+   301→          "@type": "LocalBusiness",
+   302→          name: namaBisnis.trim() || t,
+   303→          url: u,
+   304→          image: img,
+   305→          telephone: telepon.trim() || undefined,
+   306→          address: alamat.trim()
+   307→            ? { "@type": "PostalAddress", streetAddress: alamat.trim() }
+   308→            : undefined,
+   309→          openingHours: jamBuka.trim() || undefined,
+   310→          aggregateRating:
+   311→            rating.trim()
+   312→              ? {
+   313→                  "@type": "AggregateRating",
+   314→                  ratingValue: rating.trim(),
+   315→                  reviewCount: jumlahReview.trim() || "1",
+   316→                }
+   317→              : undefined,
+   318→        });
+   319→      case "FAQ": {
+   320→        const valid = qa.filter((p) => p.q.trim());
+   321→        return clean({
+   322→          ...ctx,
+   323→          "@type": "FAQPage",
+   324→          mainEntity: valid.length
+   325→            ? valid.map((p) => ({
+   326→                "@type": "Question",
+   327→                name: p.q.trim(),
+   328→                acceptedAnswer: { "@type": "Answer", text: p.a.trim() || "-" },
+   329→              }))
+   330→            : [
+   331→                {
+   332→                  "@type": "Question",
+   333→                  name: "Pertanyaan contoh?",
+   334→                  acceptedAnswer: {
+   335→                    "@type": "Answer",
+   336→                    text: "Isi pasangan tanya-jawab di panel kiri.",
+   337→                  },
+   338→                },
+   339→              ],
+   340→        });
+   341→      }
+   342→      case "HOW_TO": {
+   343→        const valid = steps.filter((s) => s.name.trim());
+   344→        return clean({
+   345→          ...ctx,
+   346→          "@type": "HowTo",
+   347→          name: t,
+   348→          description: desc,
+   349→          step: valid.length
+   350→            ? valid.map((s, i) => ({
+   351→                "@type": "HowToStep",
+   352→                position: i + 1,
+   353→                name: s.name.trim(),
+   354→                text: s.text.trim() || undefined,
+   355→              }))
+   356→            : [
+   357→                {
+   358→                  "@type": "HowToStep",
+   359→                  position: 1,
+   360→                  name: "Langkah pertama",
+   361→                  text: "Isi daftar langkah di panel kiri.",
+   362→                },
+   363→              ],
+   364→        });
+   365→      }
+   366→      case "BREADCRUMB": {
+   367→        const crumbs = buildCrumbs(url);
+   368→        return clean({
+   369→          ...ctx,
+   370→          "@type": "BreadcrumbList",
+   371→          itemListElement: crumbs.map((c, i) => ({
+   372→            "@type": "ListItem",
+   373→            position: i + 1,
+   374→            name: c.name,
+   375→            item: c.item,
+   376→          })),
+   377→        });
+   378→      }
+   379→    }
+   380→  }, [
+   381→    schemaType, title, description, url, imageUrl, handleClean,
+   382→    qa, steps, harga, mataUang, ketersediaan, penulis, tanggalPublish,
+   383→    namaBisnis, telepon, alamat, jamBuka, rating, jumlahReview,
+   384→  ]);
+   385→
+   386→  const schemaStr = useMemo(() => JSON.stringify(schema, null, 2), [schema]);
+   387→
+   388→  /* ── Aksi kecil ── */
+   389→  async function copyJsonLd() {
+   390→    try {
+   391→      await navigator.clipboard.writeText(schemaStr);
+   392→      setCopied(true);
+   393→      toast({ title: "📋 JSON-LD tersalin", description: "Tempel sebelum </head> halamanmu." });
+   394→      setTimeout(() => setCopied(false), 2000);
+   395→    } catch {
+   396→      toast({ title: "Gagal menyalin", description: "Browser menolak akses clipboard." });
+   397→    }
+   398→  }
+   399→
+   400→  async function savePreset() {
+   401→    const h = halaman.trim();
+   402→    if (!h) {
+   403→      toast({ title: "Nama halaman wajib diisi", description: "Contoh: Beranda Utama" });
+   404→      return;
+   405→    }
+   406→    setSaving(true);
+   407→    try {
+   408→      await createPreset({
+   409→        projectId: presetProjectId !== "none" ? presetProjectId : "",
+   410→        halaman: h,
+   411→        url: url.trim(),
+   412→        title: title.trim(),
+   413→        description: description.trim(),
+   414→        keywords: keywords.trim(),
+   415→        og: JSON.stringify({ title: title.trim(), description: description.trim(), image: imageUrl.trim(), url: url.trim() }),
+   416→        twitter: JSON.stringify({ handle: handleClean }),
+   417→        schemaJson: JSON.stringify(schema),
+   418→      });
+   419→      toast({ title: "💾 Preset tersimpan", description: `"${h}" bisa dimuat ulang kapan saja.` });
+   420→      setSaveOpen(false);
+   421→      setHalaman("");
+   422→    } catch {
+   423→      toast({ title: "Gagal menyimpan preset" });
+   424→    } finally {
+   425→      setSaving(false);
+   426→    }
+   427→  }
+   428→
+   429→  function loadPreset(p: MetaPresetItem) {
+   430→    setTitle(p.title || "");
+   431→    setDescription(p.description || "");
+   432→    setUrl(p.url || "");
+   433→    setKeywords(p.keywords || "");
+   434→    let ogObj: Record<string, string> = {};
+   435→    let twObj: Record<string, string> = {};
+   436→    try { ogObj = JSON.parse(p.og || "{}"); } catch { ogObj = {}; }
+   437→    try { twObj = JSON.parse(p.twitter || "{}"); } catch { twObj = {}; }
+   438→    setImageUrl(ogObj.image || "");
+   439→    setTwitterHandle(twObj.handle || "");
+   440→
+   441→    let schema: Record<string, unknown> = {};
+   442→    try { schema = JSON.parse(p.schemaJson || "{}"); } catch { schema = {}; }
+   443→    const type = SCHEMA_TO_TYPE[(schema["@type"] as string) || "WebSite"] || "WEBSITE";
+   444→    setSchemaType(type);
+   445→
+   446→    if (type === "LOCAL_BUSINESS") {
+   447→      setNamaBisnis((schema.name as string) || "");
+   448→      setTelepon((schema.telephone as string) || "");
+   449→      const addr = schema.address as { streetAddress?: string } | undefined;
+   450→      setAlamat(addr?.streetAddress || "");
+   451→      setJamBuka((schema.openingHours as string) || "");
+   452→      const ar = schema.aggregateRating as
+   453→        | { ratingValue?: string; reviewCount?: string }
+   454→        | undefined;
+   455→      setRating(ar?.ratingValue || "");
+   456→      setJumlahReview(ar?.reviewCount || "");
+   457→    } else if (type === "PRODUCT") {
+   458→      const offers = schema.offers as
+   459→        | { price?: string; priceCurrency?: string; availability?: string }
+   460→        | undefined;
+   461→      setHarga(offers?.price || "");
+   462→      setMataUang(offers?.priceCurrency || "IDR");
+   463→      setKetersediaan(offers?.availability?.split("/").pop() || "InStock");
+   464→    } else if (type === "ARTICLE") {
+   465→      const author = schema.author as { name?: string } | undefined;
+   466→      setPenulis(author?.name || "");
+   467→      setTanggalPublish((schema.datePublished as string) || "");
+   468→    } else if (type === "FAQ") {
+   469→      const me = (schema.mainEntity as { name?: string; acceptedAnswer?: { text?: string } }[] | undefined) || [];
+   470→      setQa(me.length ? me.map((q) => ({ q: q.name || "", a: q.acceptedAnswer?.text || "" })) : [{ q: "", a: "" }]);
+   471→    } else if (type === "HOW_TO") {
+   472→      const st = (schema.step as { name?: string; text?: string }[] | undefined) || [];
+   473→      setSteps(st.length ? st.map((s) => ({ name: s.name || "", text: s.text || "" })) : [{ name: "", text: "" }]);
+   474→    }
+   475→
+   476→    toast({
+   477→      title: `Preset "${p.halaman}" dimuat`,
+   478→      description: "Semua kolom terisi ulang — lanjutkan penyempurnaan.",
+   479→    });
+   480→  }
+   481→
+   482→  async function delPreset(id: string) {
+   483→    try {
+   484→      await removePreset(id);
+   485→      toast({ title: "Preset dihapus" });
+   486→    } catch {
+   487→      toast({ title: "Gagal menghapus preset" });
+   488→    }
+   489→  }
+   490→
+   491→  const sortedPresets = useMemo(
+   492→    () =>
+   493→      [...presets].sort((a, b) =>
+   494→        (b.createdAt || "").localeCompare(a.createdAt || "")
+   495→      ),
+   496→    [presets]
+   497→  );
+   498→
+   499→  const labelCls = "text-[10px] font-bold uppercase tracking-widest text-muted-foreground";
+   500→
+   501→  /* ── Render ── */
+   502→  return (
+   503→    <div className="space-y-5">
+   504→      {/* ── Hero ── */}
+   505→      <FadeUp>
+   506→        <div className="relative overflow-hidden rounded-2xl border bg-gradient-to-br from-emerald-950 via-[#1a231e] to-emerald-950 p-6 sm:p-8 text-emerald-50">
+   507→          <Wand2 aria-hidden className="absolute -right-8 -top-10 size-56 opacity-[0.06]" />
+   508→          <p className="text-[10px] font-bold uppercase tracking-[0.3em] text-amber-300/90">
+   509→            GUNARA OS v7.0 — SEO MASTERY
+   510→          </p>
+   511→          <h1 className="mt-2 text-2xl sm:text-3xl font-black tracking-tight text-amber-100">
+   512→            🔨 Meta Forge
+   513→          </h1>
+   514→          <p className="mt-2 max-w-2xl text-sm text-emerald-100/80 leading-relaxed">
+   515→            Menempa title, meta description, kartu sosial, dan schema JSON-LD — dengan
+   516→            pratinjau langsung ala Google. Semua digenerate di perangkatmu, instan tanpa
+   517→            server.
+   518→          </p>
+   519→        </div>
+   520→      </FadeUp>
+   521→
+   522→      <div className="grid gap-4 lg:grid-cols-[420px,1fr] items-start">
+   523→        {/* ── Kolom Input ── */}
+   524→        <FadeUp delay={0.05}>
+   525→          <Card className="rounded-xl lg:sticky lg:top-20">
+   526→            <CardHeader className="p-6 pb-3">
+   527→              <CardTitle className="flex items-center gap-2 text-base">
+   528→                <FileCode2 className="size-4 text-emerald-600" /> Bahan Tempa
+   529→              </CardTitle>
+   530→              <CardDescription className="text-xs">
+   531→                Hitungan karakter mengikuti batas tampilan SERP Google.
+   532→              </CardDescription>
+   533→            </CardHeader>
+   534→            <CardContent className="p-6 pt-3 space-y-4">
+   535→              {/* Title */}
+   536→              <div className="space-y-1.5">
+   537→                <div className="flex items-center justify-between">
+   538→                  <Label htmlFor="forge-title">Title Tag</Label>
+   539→                  <span className={cn("text-[11px] font-bold tabular-nums", counterClass(title.length, 60, 70))}>
+   540→                    {title.length}/60
+   541→                  </span>
+   542→                </div>
+   543→                <Input
+   544→                  id="forge-title"
+   545→                  value={title}
+   546→                  onChange={(e) => setTitle(e.target.value)}
+   547→                  placeholder="Jasa SEO Terbaik – Naik Peringkat – GUNARA"
+   548→                  maxLength={120}
+   549→                />
+   550→              </div>
+   551→              {/* Description */}
+   552→              <div className="space-y-1.5">
+   553→                <div className="flex items-center justify-between">
+   554→                  <Label htmlFor="forge-desc">Meta Description</Label>
+   555→                  <span className={cn("text-[11px] font-bold tabular-nums", counterClass(description.length, 155, 170))}>
+   556→                    {description.length}/155
+   557→                  </span>
+   558→                </div>
+   559→                <Textarea
+   560→                  id="forge-desc"
+   561→                  value={description}
+   562→                  onChange={(e) => setDescription(e.target.value)}
+   563→                  placeholder="Ringkas manfaat + ajakan. Muncul di bawah judul hasil pencarian Google…"
+   564→                  rows={3}
+   565→                  maxLength={320}
+   566→                />
+   567→              </div>
+   568→              {/* URL & gambar */}
+   569→              <div className="grid gap-3 sm:grid-cols-2">
+   570→                <div className="space-y-1.5">
+   571→                  <Label htmlFor="forge-url">URL Halaman</Label>
+   572→                  <Input
+   573→                    id="forge-url"
+   574→                    value={url}
+   575→                    onChange={(e) => setUrl(e.target.value)}
+   576→                    placeholder="https://situsku.com/layanan"
+   577→                    autoComplete="off"
+   578→                  />
+   579→                </div>
+   580→                <div className="space-y-1.5">
+   581→                  <Label htmlFor="forge-img">URL Gambar (OG)</Label>
+   582→                  <Input
+   583→                    id="forge-img"
+   584→                    value={imageUrl}
+   585→                    onChange={(e) => setImageUrl(e.target.value)}
+   586→                    placeholder="https://…/cover.jpg"
+   587→                    autoComplete="off"
+   588→                  />
+   589→                </div>
+   590→              </div>
+   591→              <div className="grid gap-3 sm:grid-cols-2">
+   592→                <div className="space-y-1.5">
+   593→                  <Label htmlFor="forge-handle">Handle Twitter/X</Label>
+   594→                  <Input
+   595→                    id="forge-handle"
+   596→                    value={twitterHandle}
+   597→                    onChange={(e) => setTwitterHandle(e.target.value)}
+   598→                    placeholder="@gunaraos"
+   599→                    autoComplete="off"
+   600→                  />
+   601→                </div>
+   602→                <div className="space-y-1.5">
+   603→                  <Label htmlFor="forge-keywords">Keywords</Label>
+   604→                  <Input
+   605→                    id="forge-keywords"
+   606→                    value={keywords}
+   607→                    onChange={(e) => setKeywords(e.target.value)}
+   608→                    placeholder="jasa seo, konsultan seo"
+   609→                    autoComplete="off"
+   610→                  />
+   611→                </div>
+   612→              </div>
+   613→
+   614→              <div className="space-y-1.5 pt-1">
+   615→                <Label>Jenis Schema JSON-LD</Label>
+   616→                <Select value={schemaType} onValueChange={(v) => setSchemaType(v as SchemaType)}>
+   617→                  <SelectTrigger className="w-full" aria-label="Jenis schema">
+   618→                    <SelectValue />
+   619→                  </SelectTrigger>
+   620→                  <SelectContent>
+   621→                    {SCHEMA_TYPES.map((s) => (
+   622→                      <SelectItem key={s.value} value={s.value}>
+   623→                        {s.label}
+   624→                      </SelectItem>
+   625→                    ))}
+   626→                  </SelectContent>
+   627→                </Select>
+   628→              </div>
+   629→
+   630→              {/* ── Form dinamis per schema ── */}
+   631→              {schemaType === "FAQ" && (
+   632→                <div className="space-y-2 rounded-lg border bg-muted/30 p-3">
+   633→                  <p className="flex items-center gap-1.5 text-[11px] font-bold text-emerald-700 dark:text-emerald-400">
+   634→                    <HelpCircle className="size-3.5" /> Pasangan Tanya–Jawab
+   635→                  </p>
+   636→                  <div className="max-h-64 space-y-2 overflow-y-auto nice-scroll pr-1">
+   637→                    {qa.map((pair, i) => (
+   638→                      <div key={i} className="space-y-1.5 rounded-md border bg-card p-2.5">
+   639→                        <div className="flex items-center justify-between">
+   640→                          <span className="text-[10px] font-bold tabular-nums text-muted-foreground">
+   641→                            TANYA #{i + 1}
+   642→                          </span>
+   643→                          <Button
+   644→                            size="icon"
+   645→                            variant="ghost"
+   646→                            className="size-6 text-rose-600 hover:bg-rose-500/10 hover:text-rose-700"
+   647→                            onClick={() => setQa((arr) => arr.filter((_, j) => j !== i))}
+   648→                            disabled={qa.length === 1}
+   649→                            aria-label={`Hapus pertanyaan ${i + 1}`}
+   650→                          >
+   651→                            <X className="size-3.5" />
+   652→                          </Button>
+   653→                        </div>
+   654→                        <Input
+   655→                          value={pair.q}
+   656→                          onChange={(e) =>
+   657→                            setQa((arr) => arr.map((p, j) => (j === i ? { ...p, q: e.target.value } : p)))
+   658→                          }
+   659→                          placeholder="Berapa biaya jasa SEO per bulan?"
+   660→                        />
+   661→                        <Textarea
+   662→                          value={pair.a}
+   663→                          onChange={(e) =>
+   664→                            setQa((arr) => arr.map((p, j) => (j === i ? { ...p, a: e.target.value } : p)))
+   665→                          }
+   666→                          placeholder="Jawaban singkat dan langsung…"
+   667→                          rows={2}
+   668→                        />
+   669→                      </div>
+   670→                    ))}
+   671→                  </div>
+   672→                  <Button
+   673→                    size="sm"
+   674→                    variant="outline"
+   675→                    className="w-full"
+   676→                    onClick={() => setQa((arr) => [...arr, { q: "", a: "" }])}
+   677→                  >
+   678→                    <Plus className="size-3.5 mr-1" /> Tambah Pertanyaan
+   679→                  </Button>
+   680→                </div>
+   681→              )}
+   682→
+   683→              {schemaType === "HOW_TO" && (
+   684→                <div className="space-y-2 rounded-lg border bg-muted/30 p-3">
+   685→                  <p className="flex items-center gap-1.5 text-[11px] font-bold text-emerald-700 dark:text-emerald-400">
+   686→                    <ListOrdered className="size-3.5" /> Langkah Panduan
+   687→                  </p>
+   688→                  <div className="max-h-64 space-y-2 overflow-y-auto nice-scroll pr-1">
+   689→                    {steps.map((step, i) => (
+   690→                      <div key={i} className="space-y-1.5 rounded-md border bg-card p-2.5">
+   691→                        <div className="flex items-center justify-between">
+   692→                          <span className="text-[10px] font-bold tabular-nums text-muted-foreground">
+   693→                            LANGKAH #{i + 1}
+   694→                          </span>
+   695→                          <Button
+   696→                            size="icon"
+   697→                            variant="ghost"
+   698→                            className="size-6 text-rose-600 hover:bg-rose-500/10 hover:text-rose-700"
+   699→                            onClick={() => setSteps((arr) => arr.filter((_, j) => j !== i))}
+   700→                            disabled={steps.length === 1}
+   701→                            aria-label={`Hapus langkah ${i + 1}`}
+   702→                          >
+   703→                            <X className="size-3.5" />
+   704→                          </Button>
+   705→                        </div>
+   706→                        <Input
+   707→                          value={step.name}
+   708→                          onChange={(e) =>
+   709→                            setSteps((arr) => arr.map((s, j) => (j === i ? { ...s, name: e.target.value } : s)))
+   710→                          }
+   711→                          placeholder="Nama langkah — riset keyword"
+   712→                        />
+   713→                        <Input
+   714→                          value={step.text}
+   715→                          onChange={(e) =>
+   716→                            setSteps((arr) => arr.map((s, j) => (j === i ? { ...s, text: e.target.value } : s)))
+   717→                          }
+   718→                          placeholder="Detail singkat langkah ini"
+   719→                        />
+   720→                      </div>
+   721→                    ))}
+   722→                  </div>
+   723→                  <Button
+   724→                    size="sm"
+   725→                    variant="outline"
+   726→                    className="w-full"
+   727→                    onClick={() => setSteps((arr) => [...arr, { name: "", text: "" }])}
+   728→                  >
+   729→                    <Plus className="size-3.5 mr-1" /> Tambah Langkah
+   730→                  </Button>
+   731→                </div>
+   732→              )}
+   733→
+   734→              {schemaType === "PRODUCT" && (
+   735→                <div className="grid gap-3 rounded-lg border bg-muted/30 p-3 sm:grid-cols-2">
+   736→                  <p className="col-span-full flex items-center gap-1.5 text-[11px] font-bold text-emerald-700 dark:text-emerald-400">
+   737→                    <Package className="size-3.5" /> Detail Produk
+   738→                  </p>
+   739→                  <div className="space-y-1.5">
+   740→                    <Label htmlFor="forge-harga" className={labelCls}>Harga</Label>
+   741→                    <Input
+   742→                      id="forge-harga"
+   743→                      value={harga}
+   744→                      onChange={(e) => setHarga(e.target.value)}
+   745→                      placeholder="1500000"
+   746→                      inputMode="numeric"
+   747→                    />
+   748→                  </div>
+   749→                  <div className="space-y-1.5">
+   750→                    <Label className={labelCls}>Mata Uang</Label>
+   751→                    <Select value={mataUang} onValueChange={setMataUang}>
+   752→                      <SelectTrigger className="w-full" aria-label="Mata uang">
+   753→                        <SelectValue />
+   754→                      </SelectTrigger>
+   755→                      <SelectContent>
+   756→                        <SelectItem value="IDR">IDR — Rupiah</SelectItem>
+   757→                        <SelectItem value="USD">USD — Dollar</SelectItem>
+   758→                        <SelectItem value="SGD">SGD — Singapore</SelectItem>
+   759→                        <SelectItem value="EUR">EUR — Euro</SelectItem>
+   760→                      </SelectContent>
+   761→                    </Select>
+   762→                  </div>
+   763→                  <div className="space-y-1.5 sm:col-span-2">
+   764→                    <Label className={labelCls}>Ketersediaan</Label>
+   765→                    <Select value={ketersediaan} onValueChange={setKetersediaan}>
+   766→                      <SelectTrigger className="w-full" aria-label="Ketersediaan">
+   767→                        <SelectValue />
+   768→                      </SelectTrigger>
+   769→                      <SelectContent>
+   770→                        {AVAILABILITY.map((a) => (
+   771→                          <SelectItem key={a.value} value={a.value}>
+   772→                            {a.label}
+   773→                          </SelectItem>
+   774→                        ))}
+   775→                      </SelectContent>
+   776→                    </Select>
+   777→                  </div>
+   778→                </div>
+   779→              )}
+   780→
+   781→              {schemaType === "ARTICLE" && (
+   782→                <div className="grid gap-3 rounded-lg border bg-muted/30 p-3 sm:grid-cols-2">
+   783→                  <p className="col-span-full flex items-center gap-1.5 text-[11px] font-bold text-emerald-700 dark:text-emerald-400">
+   784→                    <Newspaper className="size-3.5" /> Detail Artikel
+   785→                  </p>
+   786→                  <div className="space-y-1.5">
+   787→                    <Label htmlFor="forge-penulis" className={labelCls}>Penulis</Label>
+   788→                    <Input
+   789→                      id="forge-penulis"
+   790→                      value={penulis}
+   791→                      onChange={(e) => setPenulis(e.target.value)}
+   792→                      placeholder="Gunara Pratama"
+   793→                    />
+   794→                  </div>
+   795→                  <div className="space-y-1.5">
+   796→                    <Label htmlFor="forge-tanggal" className={labelCls}>Tanggal Publish</Label>
+   797→                    <Input
+   798→                      id="forge-tanggal"
+   799→                      type="date"
+   800→                      value={tanggalPublish}
+   801→                      onChange={(e) => setTanggalPublish(e.target.value)}
+   802→                    />
+   803→                  </div>
+   804→                </div>
+   805→              )}
+   806→
+   807→              {schemaType === "LOCAL_BUSINESS" && (
+   808→                <div className="grid gap-3 rounded-lg border bg-muted/30 p-3 sm:grid-cols-2">
+   809→                  <p className="col-span-full flex items-center gap-1.5 text-[11px] font-bold text-emerald-700 dark:text-emerald-400">
+   810→                    <MapPin className="size-3.5" /> Detail Bisnis Lokal
+   811→                  </p>
+   812→                  <div className="space-y-1.5">
+   813→                    <Label htmlFor="forge-bisnis" className={labelCls}>Nama Bisnis</Label>
+   814→                    <Input
+   815→                      id="forge-bisnis"
+   816→                      value={namaBisnis}
+   817→                      onChange={(e) => setNamaBisnis(e.target.value)}
+   818→                      placeholder="Kopi Gunara Jakarta"
+   819→                    />
+   820→                  </div>
+   821→                  <div className="space-y-1.5">
+   822→                    <Label htmlFor="forge-telp" className={labelCls}>Telepon</Label>
+   823→                    <Input
+   824→                      id="forge-telp"
+   825→                      value={telepon}
+   826→                      onChange={(e) => setTelepon(e.target.value)}
+   827→                      placeholder="+62 812-3456-7890"
+   828→                    />
+   829→                  </div>
+   830→                  <div className="space-y-1.5 sm:col-span-2">
+   831→                    <Label htmlFor="forge-alamat" className={labelCls}>Alamat</Label>
+   832→                    <Input
+   833→                      id="forge-alamat"
+   834→                      value={alamat}
+   835→                      onChange={(e) => setAlamat(e.target.value)}
+   836→                      placeholder="Jl. Sudirman No. 10, Jakarta Selatan"
+   837→                    />
+   838→                  </div>
+   839→                  <div className="space-y-1.5 sm:col-span-2">
+   840→                    <Label htmlFor="forge-jam" className={labelCls}>Jam Buka</Label>
+   841→                    <Input
+   842→                      id="forge-jam"
+   843→                      value={jamBuka}
+   844→                      onChange={(e) => setJamBuka(e.target.value)}
+   845→                      placeholder="Mo-Fr 08:00-17:00, Sa 08:00-14:00"
+   846→                    />
+   847→                  </div>
+   848→                  <div className="space-y-1.5">
+   849→                    <Label htmlFor="forge-rating" className={labelCls}>Rating (1–5)</Label>
+   850→                    <Input
+   851→                      id="forge-rating"
+   852→                      value={rating}
+   853→                      onChange={(e) => setRating(e.target.value)}
+   854→                      placeholder="4.8"
+   855→                      inputMode="decimal"
+   856→                    />
+   857→                  </div>
+   858→                  <div className="space-y-1.5">
+   859→                    <Label htmlFor="forge-review" className={labelCls}>Jumlah Review</Label>
+   860→                    <Input
+   861→                      id="forge-review"
+   862→                      value={jumlahReview}
+   863→                      onChange={(e) => setJumlahReview(e.target.value)}
+   864→                      placeholder="127"
+   865→                      inputMode="numeric"
+   866→                    />
+   867→                  </div>
+   868→                </div>
+   869→              )}
+   870→            </CardContent>
+   871→          </Card>
+   872→        </FadeUp>
+   873→
+   874→        {/* ── Kolom Pratinjau ── */}
+   875→        <FadeUp delay={0.1}>
+   876→          <Tabs defaultValue="serp" className="w-full">
+   877→            <TabsList className="grid w-full grid-cols-2 sm:grid-cols-4">
+   878→              <TabsTrigger value="serp">Serp Google</TabsTrigger>
+   879→              <TabsTrigger value="og">Open Graph</TabsTrigger>
+   880→              <TabsTrigger value="twitter">Twitter Card</TabsTrigger>
+   881→              <TabsTrigger value="jsonld">JSON-LD</TabsTrigger>
+   882→            </TabsList>
+   883→
+   884→            {/* SERP */}
+   885→            <TabsContent value="serp">
+   886→              <Card className="rounded-xl">
+   887→                <CardHeader className="p-6 pb-3">
+   888→                  <CardTitle className="text-base">Pratinjau Hasil Pencarian</CardTitle>
+   889→                  <CardDescription className="text-xs">
+   890→                    Perkiraan tampilan di hasil pencarian Google — desktop.
+   891→                  </CardDescription>
+   892→                </CardHeader>
+   893→                <CardContent className="p-6 pt-3">
+   894→                  {/* Kartu putih permanen — meniru tampilan Google */}
+   895→                  <div className="rounded-xl border border-neutral-200 bg-white p-5 text-black shadow-sm">
+   896→                    <div className="flex items-center gap-2.5">
+   897→                      <span className="flex size-7 flex-none items-center justify-center rounded-full border border-neutral-200 bg-neutral-100 text-[10px] font-black text-neutral-500">
+   898→                        {faviconChar}
+   899→                      </span>
+   900→                      <div className="min-w-0 leading-tight">
+   901→                        <p className="truncate text-[13px] text-neutral-800">{siteName}</p>
+   902→                        <p className="truncate text-xs text-neutral-600">{trunc(displayUrl, 70)}</p>
+   903→                      </div>
+   904→                    </div>
+   905→                    <p className="mt-1.5 truncate text-xl text-emerald-700 dark:text-emerald-400">
+   906→                      {trunc(title.trim() || "Judul halaman belum ditempa", 60)}
+   907→                    </p>
+   908→                    <p className="mt-1 text-[13px] leading-snug text-neutral-600">
+   909→                      {trunc(
+   910→                        description.trim() ||
+   911→                          "Deskripsi meta belum diisi — Google akan mengambil potongan isi halaman secara otomatis.",
+   912→                        155
+   913→                      )}
+   914→                    </p>
+   915→                  </div>
+   916→                  <p className="mt-3 text-[11px] text-muted-foreground">
+   917→                    Judul terpotong di 60 karakter, deskripsi di 155 — sesuai batas tampilan SERP.
+   918→                  </p>
+   919→                </CardContent>
+   920→              </Card>
+   921→            </TabsContent>
+   922→
+   923→            {/* Open Graph */}
+   924→            <TabsContent value="og">
+   925→              <Card className="rounded-xl">
+   926→                <CardHeader className="p-6 pb-3">
+   927→                  <CardTitle className="text-base">Pratinjau Open Graph</CardTitle>
+   928→                  <CardDescription className="text-xs">
+   929→                    Tampilan saat link dibagikan ke WhatsApp, Facebook, LinkedIn.
+   930→                  </CardDescription>
+   931→                </CardHeader>
+   932→                <CardContent className="p-6 pt-3">
+   933→                  <div className="mx-auto max-w-md overflow-hidden rounded-xl border bg-card shadow-sm">
+   934→                    {imageUrl.trim() ? (
+   935→                      /* eslint-disable-next-line @next/next/no-img-element */
+   936→                      <img
+   937→                        src={imageUrl.trim()}
+   938→                        alt="Pratinjau gambar Open Graph"
+   939→                        className="aspect-video w-full object-cover"
+   940→                      />
+   941→                    ) : (
+   942→                      <div className="flex aspect-video w-full items-center justify-center bg-muted">
+   943→                        <ImageIcon className="size-10 text-muted-foreground/40" aria-hidden />
+   944→                      </div>
+   945→                    )}
+   946→                    <div className="space-y-1 p-4">
+   947→                      <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
+   948→                        {siteName}
+   949→                      </p>
+   950→                      <p className="truncate text-sm font-bold">
+   951→                        {trunc(title.trim() || "Judul halaman", 80)}
+   952→                      </p>
+   953→                      <p className="line-clamp-2 text-xs text-muted-foreground">
+   954→                        {description.trim() || "Deskripsi halaman akan tampil di sini."}
+   955→                      </p>
+   956→                    </div>
+   957→                  </div>
+   958→                  {!imageUrl.trim() && (
+   959→                    <p className="mt-3 text-[11px] text-amber-600 dark:text-amber-400">
+   960→                      ⚠️ Belum ada gambar OG — kartu sosial tampak kosong saat dibagikan.
+   961→                    </p>
+   962→                  )}
+   963→                </CardContent>
+   964→              </Card>
+   965→            </TabsContent>
+   966→
+   967→            {/* Twitter Card */}
+   968→            <TabsContent value="twitter">
+   969→              <Card className="rounded-xl">
+   970→                <CardHeader className="p-6 pb-3">
+   971→                  <CardTitle className="text-base">Pratinjau Twitter / X Card</CardTitle>
+   972→                  <CardDescription className="text-xs">
+   973→                    Kartu summary_large_image dengan handle akunmu.
+   974→                  </CardDescription>
+   975→                </CardHeader>
+   976→                <CardContent className="p-6 pt-3">
+   977→                  <div className="mx-auto max-w-sm space-y-3 rounded-xl border bg-card p-4 shadow-sm">
+   978→                    <div className="flex items-center gap-2.5">
+   979→                      <span className="flex size-9 flex-none items-center justify-center rounded-full bg-emerald-600 text-xs font-black text-white">
+   980→                        {faviconChar}
+   981→                      </span>
+   982→                      <div className="min-w-0 leading-tight">
+   983→                        <p className="truncate text-sm font-bold">{siteName}</p>
+   984→                        <p className="truncate text-xs text-muted-foreground">
+   985→                          {handleClean ? `@${handleClean}` : "@handle-belum-diisi"}
+   986→                        </p>
+   987→                      </div>
+   988→                    </div>
+   989→                    {imageUrl.trim() ? (
+   990→                      /* eslint-disable-next-line @next/next/no-img-element */
+   991→                      <img
+   992→                        src={imageUrl.trim()}
+   993→                        alt="Pratinjau gambar Twitter Card"
+   994→                        className="aspect-[16/9] w-full rounded-lg object-cover"
+   995→                      />
+   996→                    ) : (
+   997→                      <div className="flex aspect-[16/9] w-full items-center justify-center rounded-lg bg-muted">
+   998→                        <ImageIcon className="size-8 text-muted-foreground/40" aria-hidden />
+   999→                      </div>
+  1000→                    )}
+  1001→                    <p className="truncate text-sm font-bold">
+  1002→                      {trunc(title.trim() || "Judul halaman", 70)}
+  1003→                    </p>
+  1004→                    <p className="line-clamp-2 text-xs text-muted-foreground">
+  1005→                      {description.trim() || "Deskripsi halaman akan tampil di sini."}
+  1006→                    </p>
+  1007→                    <p className="truncate text-xs text-muted-foreground/70">{displayUrl}</p>
+  1008→                  </div>
+  1009→                </CardContent>
+  1010→              </Card>
+  1011→            </TabsContent>
+  1012→
+  1013→            {/* JSON-LD */}
+  1014→            <TabsContent value="jsonld">
+  1015→              <Card className="rounded-xl">
+  1016→                <CardHeader className="p-6 pb-3">
+  1017→                  <CardTitle className="flex items-center gap-2 text-base">
+  1018→                    <FileCode2 className="size-4 text-emerald-600" /> Schema JSON-LD
+  1019→                  </CardTitle>
+  1020→                  <CardDescription className="text-xs">
+  1021→                    Tempel blok ini sebelum tag penutup &lt;/head&gt; halamanmu.
+  1022→                  </CardDescription>
+  1023→                </CardHeader>
+  1024→                <CardContent className="p-6 pt-3 space-y-3">
+  1025→                  <pre className="max-h-96 overflow-auto nice-scroll rounded-lg bg-muted p-4 font-mono text-xs leading-relaxed">
+  1026→                    {`<script type="application/ld+json">\n${schemaStr}\n</script>`}
+  1027→                  </pre>
+  1028→                  <div className="flex flex-col gap-2 sm:flex-row">
+  1029→                    <Button
+  1030→                      variant="outline"
+  1031→                      className="flex-1"
+  1032→                      onClick={copyJsonLd}
+  1033→                      aria-label="Salin JSON-LD"
+  1034→                    >
+  1035→                      {copied ? <Copy className="size-4 mr-1 text-emerald-600" /> : <Copy className="size-4 mr-1" />}
+  1036→                      {copied ? "Tersalin!" : "📋 Salin JSON-LD"}
+  1037→                    </Button>
+  1038→                    <Button
+  1039→                      className="flex-1 bg-emerald-600 text-white hover:bg-emerald-700"
+  1040→                      onClick={() => setSaveOpen(true)}
+  1041→                    >
+  1042→                      <Save className="size-4 mr-1" /> 💾 Simpan Preset
+  1043→                    </Button>
+  1044→                  </div>
+  1045→                </CardContent>
+  1046→              </Card>
+  1047→            </TabsContent>
+  1048→          </Tabs>
+  1049→        </FadeUp>
+  1050→      </div>
+  1051→
+  1052→      {/* ── Preset tersimpan ── */}
+  1053→      <FadeUp delay={0.15}>
+  1054→        <Card className="rounded-xl">
+  1055→          <CardHeader className="p-6 pb-3">
+  1056→            <CardTitle className="flex items-center gap-2 text-base">
+  1057→              <FolderOpen className="size-4 text-emerald-600" /> Preset Tersimpan
+  1058→              {!loadingPresets && (
+  1059→                <span className="ml-1 rounded-full border px-2 py-0.5 text-[10px] font-bold tabular-nums">
+  1060→                  {sortedPresets.length}
+  1061→                </span>
+  1062→              )}
+  1063→            </CardTitle>
+  1064→            <CardDescription className="text-xs">
+  1065→              Muat ulang konfigurasi meta kapan pun — semua kolom terisi otomatis.
+  1066→            </CardDescription>
+  1067→          </CardHeader>
+  1068→          <CardContent className="p-6 pt-3">
+  1069→            {loadingPresets ? (
+  1070→              <div className="space-y-2">
+  1071→                {[0, 1, 2].map((i) => (
+  1072→                  <div key={i} className="h-12 animate-pulse rounded-lg bg-muted" />
+  1073→                ))}
+  1074→              </div>
+  1075→            ) : sortedPresets.length === 0 ? (
+  1076→              <p className="text-xs text-muted-foreground">
+  1077→                Belum ada preset — tempa meta pertamamu lalu tekan 💾 Simpan Preset.
+  1078→              </p>
+  1079→            ) : (
+  1080→              <ul className="max-h-96 space-y-2 overflow-y-auto nice-scroll pr-1">
+  1081→                {sortedPresets.map((p) => (
+  1082→                  <li
+  1083→                    key={p.id}
+  1084→                    className="flex items-center gap-3 rounded-lg border bg-card px-3 py-2.5 transition-colors hover:bg-muted/40"
+  1085→                  >
+  1086→                    <span className="size-2 flex-none rounded-full bg-amber-400" aria-hidden />
+  1087→                    <div className="min-w-0 flex-1">
+  1088→                      <p className="truncate text-sm font-semibold">{p.halaman}</p>
+  1089→                      <p className="truncate text-[11px] text-muted-foreground">
+  1090→                        {trunc(p.title || "—", 48)} · {fmtDate(p.createdAt)}
+  1091→                      </p>
+  1092→                    </div>
+  1093→                    <Button
+  1094→                      size="sm"
+  1095→                      variant="outline"
+  1096→                      onClick={() => loadPreset(p)}
+  1097→                      aria-label={`Muat preset ${p.halaman}`}
+  1098→                    >
+  1099→                      <FolderOpen className="size-3.5 mr-1" /> Muat
+  1100→                    </Button>
+  1101→                    <Button
+  1102→                      size="sm"
+  1103→                      variant="ghost"
+  1104→                      className="text-rose-600 hover:bg-rose-500/10 hover:text-rose-700 dark:text-rose-400"
+  1105→                      onClick={() => delPreset(p.id)}
+  1106→                      aria-label={`Hapus preset ${p.halaman}`}
+  1107→                    >
+  1108→                      <Trash2 className="size-3.5" />
+  1109→                    </Button>
+  1110→                  </li>
+  1111→                ))}
+  1112→              </ul>
+  1113→            )}
+  1114→          </CardContent>
+  1115→        </Card>
+  1116→      </FadeUp>
+  1117→
+  1118→      {/* ── Dialog Simpan Preset ── */}
+  1119→      <Dialog open={saveOpen} onOpenChange={setSaveOpen}>
+  1120→        <DialogContent className="sm:max-w-md">
+  1121→          <DialogHeader>
+  1122→            <DialogTitle>Simpan Preset Meta</DialogTitle>
+  1123→            <DialogDescription>
+  1124→              Beri nama halaman agar mudah dicari saat dimuat ulang.
+  1125→            </DialogDescription>
+  1126→          </DialogHeader>
+  1127→          <div className="space-y-3">
+  1128→            <div className="space-y-1.5">
+  1129→              <Label htmlFor="preset-halaman">Nama Halaman</Label>
+  1130→              <Input
+  1131→                id="preset-halaman"
+  1132→                value={halaman}
+  1133→                onChange={(e) => setHalaman(e.target.value)}
+  1134→                placeholder="Beranda Utama"
+  1135→              />
+  1136→            </div>
+  1137→            <div className="space-y-1.5">
+  1138→              <Label>
+  1139→                Proyek SEO{" "}
+  1140→                <span className="font-normal text-muted-foreground">(opsional)</span>
+  1141→              </Label>
+  1142→              <Select value={presetProjectId} onValueChange={setPresetProjectId}>
+  1143→                <SelectTrigger className="w-full" aria-label="Proyek untuk preset">
+  1144→                  <SelectValue placeholder="Tanpa proyek" />
+  1145→                </SelectTrigger>
+  1146→                <SelectContent>
+  1147→                  <SelectItem value="none">Tanpa proyek</SelectItem>
+  1148→                  {projects.map((p) => (
+  1149→                    <SelectItem key={p.id} value={p.id}>
+  1150→                      {p.nama}
+  1151→                    </SelectItem>
+  1152→                  ))}
+  1153→                </SelectContent>
+  1154→              </Select>
+  1155→            </div>
+  1156→          </div>
+  1157→          <DialogFooter>
+  1158→            <Button variant="outline" onClick={() => setSaveOpen(false)}>
+  1159→              Batal
+  1160→            </Button>
+  1161→            <Button
+  1162→              className="bg-emerald-600 text-white hover:bg-emerald-700"
+  1163→              onClick={savePreset}
+  1164→              disabled={saving}
+  1165→            >
+  1166→              {saving && <Loader2 className="size-4 mr-1 animate-spin" />}
+  1167→              Simpan
+  1168→            </Button>
+  1169→          </DialogFooter>
+  1170→        </DialogContent>
+  1171→      </Dialog>
+  1172→    </div>
+  1173→  );
+  1174→}
+  1175→
