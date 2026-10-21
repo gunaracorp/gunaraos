@@ -119,9 +119,12 @@
   }
   html {
     scroll-behavior: smooth;
+    -webkit-tap-highlight-color: transparent;
   }
   body {
     @apply bg-background text-foreground;
+    text-rendering: optimizeLegibility;
+    font-feature-settings: "cv02", "cv03", "cv04", "cv11"; /* Plus Jakarta Sans — bentuk huruf terbaik */
   }
   ::selection {
     background: oklch(0.72 0.11 158 / 0.35);
@@ -131,6 +134,91 @@
     outline-offset: 2px;
     border-radius: 4px;
   }
+
+  /* Scrollbar global tipis — standar aplikasi desktop kelas dunia */
+  ::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: oklch(0.7 0.03 150 / 0.35);
+    border-radius: 8px;
+    border: 2px solid transparent;
+    background-clip: content-box;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: oklch(0.6 0.05 155 / 0.55);
+    border: 2px solid transparent;
+    background-clip: content-box;
+  }
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  html {
+    scrollbar-width: thin;
+    scrollbar-color: oklch(0.7 0.03 150 / 0.35) transparent;
+  }
+}
+
+/* ── GUNARA OS Design Polish (v9.0 — standard internasional) ───── */
+
+/* Teks gradien emas-zamrud untuk hero & angka penting */
+.text-gradient-gold {
+  background: linear-gradient(120deg, oklch(0.66 0.13 75), oklch(0.8 0.14 85) 45%, oklch(0.66 0.12 155));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* Elevasi kartu halus — dipanggil via .card-lift */
+.card-lift {
+  transition: transform 0.25s cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 0.25s cubic-bezier(0.22, 1, 0.36, 1),
+    border-color 0.25s ease;
+}
+.card-lift:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 30px -12px oklch(0.3 0.05 165 / 0.25);
+  border-color: oklch(0.66 0.1 158 / 0.5);
+}
+
+/* Tabel markdown — terbaca di terang & gelap (AI output, proposal, dsb.) */
+.gunara-prose table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.8125rem;
+  margin: 0.75rem 0;
+}
+.gunara-prose th,
+.gunara-prose td {
+  border: 1px solid oklch(0.895 0.01 110);
+  padding: 0.375rem 0.625rem;
+  text-align: left;
+}
+.gunara-prose th {
+  background: oklch(0.945 0.008 100);
+  font-weight: 700;
+}
+.dark .gunara-prose th,
+.dark .gunara-prose td {
+  border-color: oklch(1 0 0 / 14%);
+}
+.dark .gunara-prose th {
+  background: oklch(0.27 0.025 165);
+}
+
+/* Angka tabular — kolom keuangan & statistik sejajar sempurna */
+.tabular-nums {
+  font-variant-numeric: tabular-nums;
+}
+
+/* Animasi fade untuk konten yang dimuat asinkron */
+@keyframes gunara-fade-in {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: none; }
+}
+.fade-in {
+  animation: gunara-fade-in 0.4s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
 /* Shimmer — skeleton loading standar internasional */

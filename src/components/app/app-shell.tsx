@@ -7,11 +7,11 @@
 // dark/light theme, scroll progress, jam live WIB.
 // ═══════════════════════════════════════════════════
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion, useScroll, useSpring, useReducedMotion, AnimatePresence } from "framer-motion";
 import { useTheme } from "next-themes";
 import {
-  Menu, X, Search, Sun, Moon, Landmark, Clock, Command,
+  Menu, X, Search, Sun, Moon, Landmark, Clock, Command, Languages,
 } from "lucide-react";
 import { Dashboard } from "@/components/app/dashboard";
 import { HuluSection } from "@/components/app/hulu";
@@ -37,6 +37,7 @@ import { CompetitorRadarSection } from "@/components/app/seo/seo-competitor";
 import { MetaForgeSection } from "@/components/app/seo/seo-forge";
 import { SeoClientsSection } from "@/components/app/seo/seo-clients";
 import { SeoAcademySection } from "@/components/app/seo/seo-academy";
+import { VaultSection } from "@/components/app/vault";
 import { BrandMark, BrandConsole, BrandSignatureLine } from "./brand-signature";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -44,6 +45,7 @@ import { Sheet, SheetContent, SheetTitle, SheetDescription, SheetTrigger } from 
 import { NAV, ALL_ITEMS, COMMAND_CENTER, type NavItem, type SectionId } from "./nav";
 import { PageTransition, useNow, useMounted, EASE } from "./motion";
 import { CommandPalette } from "./command-palette";
+import { useI18n, GROUP_EN, NAV_EN, ui, type Lang } from "@/lib/i18n";
 
 function SidebarContent({
   active,
@@ -55,6 +57,15 @@ function SidebarContent({
   animated?: boolean;
 }) {
   const reduce = useReducedMotion();
+  const lang = useI18n((s) => s.lang);
+
+  // Lokalisasi item — label EN mengikuti NAV_EN, default tetap ID
+  const loc = (item: NavItem): NavItem =>
+    lang === "en" && NAV_EN[item.id]
+      ? { ...item, label: NAV_EN[item.id].label, desc: NAV_EN[item.id].desc }
+      : item;
+  const groupTitle = (title: string) =>
+    lang === "en" ? (GROUP_EN[title] || title) : title;
   return (
     <div className="h-full flex flex-col">
       <div className="px-4 py-5 border-b border-sidebar-border">
@@ -68,7 +79,7 @@ function SidebarContent({
           <BrandMark />
           <div>
             <p className="font-extrabold tracking-tight text-amber-50 leading-none">GUNARA OS</p>
-            <p className="text-[11px] text-emerald-200/70 mt-1">v8.0 · SEO Mastery + God Mode</p>
+            <p className="text-[11px] text-emerald-200/70 mt-1">v9.0 · SEO Mastery + Data Vault + God Mode</p>
           </div>
         </motion.div>
       </div>
@@ -79,7 +90,7 @@ function SidebarContent({
           animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.45, delay: 0.08, ease: EASE }}
         >
-          <NavButton item={COMMAND_CENTER} active={active === "dashboard"} onClick={() => onNavigate("dashboard")} animated={animated} bold />
+          <NavButton item={loc(COMMAND_CENTER)} active={active === "dashboard"} onClick={() => onNavigate("dashboard")} animated={animated} bold />
         </motion.div>
 
         {NAV.map((group, gi) => (
@@ -89,12 +100,12 @@ function SidebarContent({
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.45, delay: 0.12 + gi * 0.06, ease: EASE }}
           >
-            <p className="px-3 mb-1 text-[10px] font-bold uppercase tracking-widest text-emerald-200/50">{group.title}</p>
+            <p className="px-3 mb-1 text-[10px] font-bold uppercase tracking-widest text-emerald-200/50">{groupTitle(group.title)}</p>
             <div className="space-y-0.5">
               {group.items.map((item) => (
                 <NavButton
                   key={item.id}
-                  item={item}
+                  item={loc(item)}
                   active={active === item.id}
                   onClick={() => onNavigate(item.id)}
                   animated={animated}
@@ -107,12 +118,16 @@ function SidebarContent({
 
       <div className="px-4 py-3 border-t border-sidebar-border">
         <p className="text-[11px] text-emerald-200/60 italic leading-relaxed">
-          &ldquo;Prak burukeun — segerakan kesadaran. Ulah edan, kudu eling.&rdquo;
+          {ui("sidebarQuote", lang)}
         </p>
-        <p className="text-[10px] text-emerald-200/40 mt-1">Jam 17.00: tutup laptop. Anak-anak menunggu.</p>
+        <p className="text-[10px] text-emerald-200/40 mt-1">{ui("sidebarQuoteSub", lang)}</p>
         <div className="mt-2 rounded-lg bg-emerald-900/60 border border-emerald-800 px-2.5 py-2">
-          <p className="text-[10px] font-bold text-amber-300 tracking-wide">SEO MASTERY AKTIF</p>
-          <p className="text-[10px] text-emerald-200/70 mt-0.5">11 Arsenal · Audit · Rank · AI Proposal</p>
+          <p className="text-[10px] font-bold text-amber-300 tracking-wide">{ui("sidebarBadge", lang)}</p>
+          <p className="text-[10px] text-emerald-200/70 mt-0.5">{ui("sidebarBadgeSub", lang)}</p>
+        </div>
+        <div className="mt-2.5 flex items-center justify-between gap-2">
+          <span className="text-[10px] text-emerald-200/50">🌐 {lang === "id" ? "Bahasa Indonesia" : "English"}</span>
+          <LangToggle />
         </div>
       </div>
     </div>
@@ -183,12 +198,39 @@ function ThemeToggle() {
   );
 }
 
+function LangToggle() {
+  const lang = useI18n((s) => s.lang);
+  const setLang = useI18n((s) => s.setLang);
+  const mounted = useMounted();
+  if (!mounted) return <Button variant="ghost" size="icon" className="size-8 opacity-0 pointer-events-none" aria-hidden />;
+  const next: Lang = lang === "id" ? "en" : "id";
+  return (
+    <Button
+      variant="ghost"
+      size="sm"
+      className="h-8 gap-1.5 px-2 font-mono text-[11px] font-bold"
+      onClick={() => setLang(next)}
+      aria-label={ui("langAria", lang)}
+      title={ui("langAria", lang)}
+    >
+      <Languages className="size-4" aria-hidden />
+      <span aria-hidden>{next.toUpperCase()}</span>
+    </Button>
+  );
+}
+
 export function AppShell() {
   const [active, setActive] = useState<SectionId>("dashboard");
   const [mobileOpen, setMobileOpen] = useState(false);
   const [paletteOpen, setPaletteOpen] = useState(false);
   const now = useNow(30_000);
   const reduce = useReducedMotion();
+  const lang = useI18n((s) => s.lang);
+
+  // Sinkron <html lang> — standar internasional (screen reader & SEO)
+  useEffect(() => {
+    document.documentElement.lang = lang === "en" ? "en" : "id";
+  }, [lang]);
 
   const { scrollYProgress } = useScroll();
   const progress = useSpring(scrollYProgress, { stiffness: 120, damping: 26, mass: 0.4 });
@@ -203,6 +245,12 @@ export function AppShell() {
     active === "dashboard"
       ? COMMAND_CENTER
       : ALL_ITEMS[active] || COMMAND_CENTER;
+
+  // Deskripsi header terlokalisasi
+  const headerItem: NavItem =
+    lang === "en" && NAV_EN[item.id]
+      ? { ...item, label: NAV_EN[item.id].label, desc: NAV_EN[item.id].desc }
+      : item;
 
   const content = () => {
     switch (active) {
@@ -240,6 +288,7 @@ export function AppShell() {
       case "seo-forge": return <MetaForgeSection />;
       case "seo-clients": return <SeoClientsSection />;
       case "seo-academy": return <SeoAcademySection />;
+      case "vault": return <VaultSection />;
       default: return <Dashboard onNavigate={go} />;
     }
   };
@@ -292,11 +341,11 @@ export function AppShell() {
       </Button>
 
       {/* Konten */}
-      <main className="flex-1 min-w-0">
+      <main id="gunara-main" className="flex-1 min-w-0 flex flex-col">
         <header className="hidden lg:flex items-center justify-between px-8 py-4 border-b bg-card/60 backdrop-blur sticky top-0 z-40">
           <AnimatePresence mode="wait" initial={false}>
             <motion.div
-              key={item.label}
+              key={headerItem.label}
               initial={reduce ? false : { opacity: 0, y: 8 }}
               animate={{ opacity: 1, y: 0 }}
               exit={reduce ? { opacity: 0 } : { opacity: 0, y: -8 }}
@@ -304,8 +353,8 @@ export function AppShell() {
               className="flex items-center gap-2 text-sm"
             >
               <Landmark className="size-4 text-emerald-800 dark:text-emerald-400" />
-              <span className="font-bold tracking-tight">{item.label}</span>
-              {item.desc && <span className="text-muted-foreground">— {item.desc}</span>}
+              <span className="font-bold tracking-tight">{headerItem.label}</span>
+              {headerItem.desc && <span className="text-muted-foreground">— {headerItem.desc}</span>}
             </motion.div>
           </AnimatePresence>
 
@@ -327,12 +376,13 @@ export function AppShell() {
               className="inline-flex items-center gap-2 rounded-lg border bg-muted/40 hover:bg-muted px-2.5 py-1.5 font-medium transition-colors"
               aria-label="Buka command palette"
             >
-              <Search className="size-3.5" /> Cari…
+              <Search className="size-3.5" /> {ui("search", lang)}
               <kbd className="pointer-events-none inline-flex h-4.5 items-center gap-0.5 rounded border bg-background px-1.5 font-mono text-[10px] font-semibold text-muted-foreground">
                 <Command className="size-2.5" />K
               </kbd>
             </button>
             <ThemeToggle />
+            <LangToggle />
             <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-950 text-amber-200 px-3 py-1.5 font-semibold">
               Gunara Group · 2 PT · 43 Domain
             </span>
@@ -345,8 +395,8 @@ export function AppShell() {
 
         <footer className="border-t bg-card/60 mt-auto">
           <div className="max-w-6xl mx-auto px-6 py-4 flex flex-wrap items-center justify-between gap-2 text-xs text-muted-foreground">
-            <p><strong className="text-emerald-800 dark:text-emerald-400">GUNARA OS v8.0</strong> — SEO Mastery (11 Arsenal Konsultan #1) + Hulu → Mesin → Hilir + Bisnis Hub + Dewan 46 + God Mode (Arena Debat · Sage Console) — Master Polymath · Sage Universal · Ultimate Problem Solver.</p>
-            <p>Untuk 3 wajah yang setiap pagi masih memanggil &ldquo;Ayah&rdquo;. 🏛️</p>
+            <p><strong className="text-emerald-800 dark:text-emerald-400">GUNARA OS v9.0</strong> — {ui("footer", lang)}</p>
+            <p>{ui("footerDedication", lang)}</p>
           </div>
           {/* Signature senyap — tersembunyi di permukaan, utuh di dalam sistem */}
           <div className="max-w-6xl mx-auto px-6 pb-4">

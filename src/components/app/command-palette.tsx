@@ -12,6 +12,7 @@ import {
 } from "@/components/ui/command";
 import { NAV, COMMAND_CENTER, type SectionId } from "./nav";
 import { useMounted } from "./motion";
+import { useI18n, GROUP_EN, NAV_EN, ui } from "@/lib/i18n";
 
 export function CommandPalette({
   open,
@@ -29,6 +30,13 @@ export function CommandPalette({
   // (default tertutup, dibuka via ⌘K/tombol) → render null di server & render
   // pertama klien sehingga ID-nya 100% client-generated dan tak pernah dibandingkan.
   const mounted = useMounted();
+  const lang = useI18n((s) => s.lang);
+  const loc = (item: typeof COMMAND_CENTER) =>
+    lang === "en" && NAV_EN[item.id]
+      ? { ...item, label: NAV_EN[item.id].label, desc: NAV_EN[item.id].desc }
+      : item;
+  const groupTitle = (title: string) =>
+    lang === "en" ? (GROUP_EN[title] || title) : title;
 
   // Global shortcut ⌘K / Ctrl+K — standar aplikasi kelas dunia
   useEffect(() => {
@@ -51,26 +59,26 @@ export function CommandPalette({
 
   return (
     <CommandDialog open={open} onOpenChange={onOpenChange}>
-      <CommandInput placeholder="Ketik perintah atau cari section… (⌘K)" />
+      <CommandInput placeholder={lang === "en" ? "Type a command or search sections… (⌘K)" : "Ketik perintah atau cari section… (⌘K)"} />
       <CommandList className="nice-scroll">
-        <CommandEmpty>Tidak ditemukan. Coba kata lain — sistemmu punya 15 section.</CommandEmpty>
-        <CommandGroup heading="Beranda">
+        <CommandEmpty>{lang === "en" ? "Not found. Try another word — your system has 15 sections." : "Tidak ditemukan. Coba kata lain — sistemmu punya 15 section."}</CommandEmpty>
+        <CommandGroup heading={lang === "en" ? "Home" : "Beranda"}>
           <CommandItem onSelect={() => go(COMMAND_CENTER.id)}>
             <COMMAND_CENTER.icon className="size-4 text-emerald-700 dark:text-emerald-400" />
-            <span>{COMMAND_CENTER.label}</span>
-            <span className="ml-auto text-xs text-muted-foreground">{COMMAND_CENTER.desc}</span>
+            <span>{loc(COMMAND_CENTER).label}</span>
+            <span className="ml-auto text-xs text-muted-foreground">{loc(COMMAND_CENTER).desc}</span>
           </CommandItem>
         </CommandGroup>
         <CommandSeparator />
         {NAV.map((group, gi) => (
           <div key={group.title}>
-            <CommandGroup heading={group.title}>
+            <CommandGroup heading={groupTitle(group.title)}>
               {group.items.map((item) => (
                 <CommandItem key={item.id} onSelect={() => go(item.id)}>
                   <item.icon className="size-4 text-emerald-700 dark:text-emerald-400" />
-                  <span>{item.label}</span>
+                  <span>{loc(item).label}</span>
                   {item.desc && (
-                    <span className="ml-auto text-xs text-muted-foreground truncate max-w-[45%]">{item.desc}</span>
+                    <span className="ml-auto text-xs text-muted-foreground truncate max-w-[45%]">{loc(item).desc}</span>
                   )}
                 </CommandItem>
               ))}

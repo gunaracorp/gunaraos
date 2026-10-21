@@ -148,3 +148,25 @@ Work Log:
 Stage Summary:
 - MAHAKARYA GUNARA OS v8.0 — SEO Mastery selesai & terverifikasi penuh via browser.
 - 11 section SEO + 5 API AI + 9 model DB baru = fitur bernilai konsultan top.
+
+---
+Task ID: 5
+Agent: Z.ai (orchestrator)
+Task: v9.0 — Persistensi data (Backup/Restore/Diagnostik) + audit semua link + metadata super lengkap + standar internasional (ID/EN) + upgrade desain
+
+Work Log:
+- AUDIT LINK (semua sehat): map fetch() frontend vs route backend → 18 pemanggilan ↔ 11 route terdefinisi, cocok semua; uji runtime 42 endpoint GET (38 data + 5 SEO + 3 AI) → 200 semua; konsistensi nav.ts (34 id) ↔ app-shell switch (34 case) → nol orphan; cek 10 link eksternal brand (gunara.web.id/topkonsultan/digiman 200; IG 429 & Reddit 403 = anti-bot normal; pusatperizinan.com resolve DNS baik, hanya jaringan sandbox memblokir)
+- API BARU /api/backup: GET = ekspor 38 tabel (format gunara-os-backup-v1, meta version/counts, Content-Disposition attachment), POST = restore mode merge|replace dengan urutan dependensi FK, PK map (setting→key, serviceCatalog→kode), hydrateDates (ISO→Date), sanitasi computed field, cap 200k baris; uji round-trip 168/168 baris, 0 skipped
+- API BARU /api/health: ping DB, count 38 tabel, checks list, memori/uptime/version/env, latencyMs
+- SECTION BARU "vault" (Data Vault & Diagnostik, src/components/app/vault.tsx): 3 tab — ① Backup & Restore (unduh JSON + toast + timestamp localStorage "gunara-last-backup-at", impor file dengan preview counts, RadioGroup mode Gabung/Timpa, AlertDialog konfirmasi timpa, ringkasan restore), ② Diagnostik (health check 1 klik + probe 14 endpoint dari browser dengan status/latency + tabel isi DB 38 tabel), ③ Panduan Deploy (penjelasan db/custom.db, langkah install hosting, 2 cara migrasi data, checklist pascadeploy); kartu penjelasan "Bagaimana data tersimpan?" menjawab langsung pertanyaan user
+- WIRING: nav.ts SectionId "vault" + item ARSENAL (ikon DatabaseBackup), app-shell case + import + footer/sidebar v9.0, dashboard kartu banner "Data Vault & Diagnostik BARU v9.0" dengan totalRows live dari /api/health
+- METADATA SUPER LENGKAP: layout.tsx (referrer, formatDetection, appleWebApp, alternates hreflang id-ID/en/x-default, twitter images, OG images + alt + locale alternates, classification, viewport dual themeColor + maximumScale + colorScheme, skip link WCAG "Lewati ke konten utama" + id="gunara-main"); robots.txt diperluas (30+ user-agent: mesin cari, social preview bots, AI crawlers GPTBot/PerplexityBot/ClaudeBot dst., sitemap+host); sitemap.ts (daily + alternates hreflang); site.webmanifest (display_override, launch_handler, 4 shortcuts: Beranda/SEO Hub/Solver/Backup); branding.ts (version 9.0.0, BRAND_FAQ 6 Q&A, BRAND_LOCALES, keywords +13, JSON-LD +SoftwareApplication featureList/offers +FAQPage +WebPage)
+- STANDAR INTERNASIONAL (ID/EN): src/lib/i18n.ts (zustand persist "gunara-lang", NAV_EN 35 item, GROUP_EN 9 grup, UI strings); LangToggle (ikon Languages, header desktop + footer sidebar mobile); SidebarContent/CommandPalette/header/footer terlokalisasi; <html lang> tersinkron via useEffect; verifikasi browser: switch EN → nav "43 Domains"/"Data Vault & Diagnostics"/"COUNCIL — COLLECTIVE REASON", persist setelah reload
+- DESAIN UPGRADE (globals.css): scrollbar global tipis (webkit+firefox), text-rendering + font-feature-settings Jakarta Sans, .text-gradient-gold, .card-lift, tabel markdown .gunara-prose (light+dark), .fade-in, tap-highlight transparent; fix sticky footer (main → flex flex-col sehingga mt-auto footer benar-benar menempel)
+- VERIFIKASI BROWSER (Agent Browser): desktop — vault 3 tab render, health check "14/14 endpoint OK" (tabel endpoint+latency), status server SEHAT, backup unduh + toast "Backup berhasil diunduh", localStorage timestamp tercatat, panduan deploy tampil; mobile iPhone 14 — dashboard kartu v9.0 + drawer + vault responsive, "Backup terakhir: 22 Okt 2026 02.39" tampil; footer sticky OK; console errors BERSIH; lint 0 error; tsc file baru 0 error; restore fresh 168/168 skipped 0
+- CATATAN TEKNIS: fix 1 bug path import (../motion → ./motion), fix 1 bug PK restore (setting/serviceCatalog natural key), MultiEdit nav.ts terbukti non-atomik di environment ini (edit sukses tersimpan sebelum gagal — hati-hati saat retry)
+
+Stage Summary:
+- GUNARA OS v9.0 — "Data aman, link sehat, metadata lengkap, dua bahasa, desain naik kelas"
+- Jawaban pertanyaan user: data TERSAVE OTOMATIS ke SQLite server (db/custom.db) setiap tombol Simpan; ekspor/impor JSON mengamankan saat pindah hosting; health check 14 endpoint bisa diulang kapan pun pasca-install
+- 3 endpoint baru (/api/backup, /api/health), 1 section baru (vault), 2 file sistem baru (i18n.ts), metadata berstandard internasional lengkap

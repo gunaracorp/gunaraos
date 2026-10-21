@@ -13,7 +13,7 @@
 
 export const BRAND = {
   siteName: "GUNARA OS",
-  version: "7.0.0",
+  version: "9.0.0",
   siteUrl: "https://gunara.web.id",
   tagline: "Sistem Operasi Hidup & Bisnis — Hulu → Mesin → Hilir · Dewan 46 · God Mode",
 
@@ -52,6 +52,34 @@ export const BRAND = {
     { name: "Reddit", handle: "prabudanling", url: "https://www.reddit.com/user/prabudanling/" },
   ],
 } as const;
+
+/** FAQ — dipakai untuk JSON-LD FAQPage + sumber jawaban Google. */
+export const BRAND_FAQ: { q: string; a: string }[] = [
+  {
+    q: "Apa itu GUNARA OS?",
+    a: "GUNARA OS adalah super app sistem operasi hidup dan bisnis karya Gugun Gunara (Muhammad Lutfi Azmi). Ia menggabungkan manajemen keuangan, CRM, produktivitas harian, kecerdasan kolektif Dewan 46 (46 dewan pakar lintas bidang), God Mode AI, dan arsenal SEO Mastery dalam satu aplikasi web.",
+  },
+  {
+    q: "Siapa pencipta GUNARA OS?",
+    a: "GUNARA OS ditempa oleh Gugun Gunara — nama lengkap Muhammad Lutfi Azmi — Master Polymath, Sage Universal, dan The Ultimate Problem Solver, dikenal sebagai prabudanling dan Santri Angon, di bawah PT Top Konsultan Internasional dan PT Digital Bisnis Manajemen.",
+  },
+  {
+    q: "Apa itu Dewan 46?",
+    a: "Dewan 46 adalah dewan kecerdasan kolektif berisi 46 dewan pakar lintas bidang dengan pengalaman simulasi 150+ tahun per dewan — mulai dari bisnis, keuangan, hukum, teknologi, pemasaran, hingga keluarga — yang disidangkan via AI untuk memecahkan masalah apa pun.",
+  },
+  {
+    q: "Apakah data di GUNARA OS tersimpan permanen?",
+    a: "Ya. Seluruh data tersimpan otomatis ke database SQLite (via Prisma ORM) di server setiap kali Anda menambah atau mengubah data — tidak hilang saat browser ditutup. Untuk keamanan ekstra, tersedia fitur Backup & Restore: ekspor seluruh data ke file JSON dan impor kembali kapan pun, termasuk saat memindahkan situs ke hosting baru.",
+  },
+  {
+    q: "Fitur apa saja yang ada di GUNARA OS?",
+    a: "Lebih dari 35 modul: Command Center, Piagam & OKR, Keuangan (hutang, piutang, kas), CRM, Relasi & Politik, Jurnal Belajar, Ritual Harian, Review Mingguan, Backlog, Decisions Log, 43 Domain Portfolio, 15 AI Agents, Roadmap 90 Hari, Arena Debat Dewan, Sage Console, Ultimate Solver, Database Bisnis, Perizinan, Aset Digital, 11 modul SEO Mastery (audit, keyword, rank tracker, backlink, competitor, meta forge, proposal), hingga Data Vault & Diagnostik.",
+  },
+  {
+    q: "Apakah GUNARA OS gratis digunakan?",
+    a: "GUNARA OS adalah sistem privat milik Gunara Group yang dapat di-install sendiri (self-hosted). Anda dapat menjalankannya di server, VPS, maupun hosting Node.js, dan seluruh data tetap berada di kendali Anda.",
+  },
+];
 
 /** Kalimat signature lengkap — dipakai di footer, vault, dan manifest. */
 export const BRAND_SIGNATURE =
@@ -92,13 +120,31 @@ export const BRAND_KEYWORDS: string[] = [
   "productivity app indonesia",
   "notion alternative indonesia",
   "super app bisnis",
+  "seo mastery indonesia",
+  "seo audit tool",
+  "keyword research tool indonesia",
+  "rank tracker",
+  "backlink monitor",
+  "konsultan seo terbaik",
+  "jasa seo profesional",
+  "backup restore database",
+  "self hosted productivity",
+  "ai dewan pakar",
+  "problem solver indonesia",
 ];
+
+/** Bahasa yang didukung situs — standar internasional (hreflang). */
+export const BRAND_LOCALES = [
+  { code: "id", hreflang: "id-ID", label: "Bahasa Indonesia" },
+  { code: "en", hreflang: "en", label: "English" },
+] as const;
 
 /** Deskripsi default situs — nama brand ditenun alami dalam kalimat. */
 export const BRAND_DESCRIPTION =
-  "GUNARA OS v8.0 — super app personal & bisnis (Hulu → Mesin → Hilir) dengan God Mode: Ultimate Solver & Dewan 46, " +
-  "Arena Debat Dewan (46 dewan saling berdebat lalu diarbitrase), dan Sage Console (ngobrol langsung dengan " +
-  "Master Polymath, Sage Universal, The Ultimate Problem Solver). " +
+  "GUNARA OS v9.0 — super app personal & bisnis (Hulu → Mesin → Hilir) dengan God Mode: Ultimate Solver & Dewan 46, " +
+  "Arena Debat Dewan (46 dewan saling berdebat lalu diarbitrase), Sage Console (ngobrol langsung dengan " +
+  "Master Polymath, Sage Universal, The Ultimate Problem Solver), arsenal SEO Mastery 11 modul, dan " +
+  "Data Vault (backup & diagnostik) yang berstandard internasional. " +
   "46 dewan pakar lintas bidang berpengalaman 150+ tahun untuk memecahkan masalah bisnis, keuangan, hukum, " +
   "teknologi, hingga keluarga. Ditempa khusus oleh " +
   "Gugun Gunara (Muhammad Lutfi Azmi · prabudanling · Santri Angon) di bawah " +
@@ -107,7 +153,7 @@ export const BRAND_DESCRIPTION =
   "Master Polymath · Sage Universal · The Ultimate Problem Solver.";
 
 export const BRAND_TITLE =
-  "GUNARA OS v8.0 — Sistem Operasi Hidup & Bisnis · Dewan 46 · God Mode by Gugun Gunara (Muhammad Lutfi Azmi)";
+  "GUNARA OS v9.0 — Sistem Operasi Hidup & Bisnis · Dewan 46 · God Mode · SEO Mastery by Gugun Gunara (Muhammad Lutfi Azmi)";
 
 /** JSON-LD @graph — identitas terstruktur untuk Google Knowledge Graph. */
 export function buildBrandJsonLd() {
@@ -160,10 +206,46 @@ export function buildBrandJsonLd() {
         name: BRAND.siteName,
         applicationCategory: "BusinessApplication",
         operatingSystem: "Web",
+        softwareVersion: BRAND.version,
         description: BRAND_DESCRIPTION,
         author: { "@id": personId },
         publisher: { "@id": orgIds[0] },
         isPartOf: { "@id": websiteId },
+        offers: { "@type": "Offer", price: "0", priceCurrency: "IDR" },
+        featureList: [
+          "Command Center Dashboard",
+          "Manajemen Keuangan (Hutang, Piutang, Kas)",
+          "CRM & Follow-up Klien",
+          "Ritual Harian & Review Mingguan",
+          "Dewan 46 — Kecerdasan Kolektif",
+          "Ultimate Solver AI",
+          "Arena Debat Dewan",
+          "Sage Console",
+          "SEO Mastery — Audit, Keyword, Rank Tracker, Backlink",
+          "Meta & Schema Forge",
+          "Data Vault — Backup & Restore",
+          "Diagnostik Kesehatan Sistem",
+        ],
+      },
+      {
+        "@type": "FAQPage",
+        "@id": `${BRAND.siteUrl}/#faq`,
+        mainEntity: BRAND_FAQ.map((f) => ({
+          "@type": "Question",
+          name: f.q,
+          acceptedAnswer: { "@type": "Answer", text: f.a },
+        })),
+      },
+      {
+        "@type": "WebPage",
+        "@id": `${BRAND.siteUrl}/#webpage`,
+        url: BRAND.siteUrl,
+        name: BRAND_TITLE,
+        description: BRAND_DESCRIPTION,
+        isPartOf: { "@id": websiteId },
+        about: { "@id": personId },
+        inLanguage: "id-ID",
+        primaryImageOfPage: `${BRAND.siteUrl}/opengraph-image`,
       },
     ],
   };

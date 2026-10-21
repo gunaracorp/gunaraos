@@ -1,20 +1,63 @@
 {
   "name": "GUNARA OS — by Gugun Gunara (Muhammad Lutfi Azmi)",
   "short_name": "GUNARA OS",
-  "description": "Sistem Operasi Hidup & Bisnis — ditempa by Gugun Gunara · Muhammad Lutfi Azmi · prabudanling · Santri Angon · PT Top Konsultan Internasional (topkonsultan.web.id) · PT Digital Bisnis Manajemen (digiman.id)",
+  "description": "Sistem Operasi Hidup & Bisnis — Hulu → Mesin → Hilir · Dewan 46 · God Mode · SEO Mastery. Ditempa by Gugun Gunara · Muhammad Lutfi Azmi · prabudanling · Santri Angon · PT Top Konsultan Internasional (topkonsultan.web.id) · PT Digital Bisnis Manajemen (digiman.id)",
   "id": "/",
   "start_url": "/",
+  "scope": "/",
   "display": "standalone",
+  "display_override": ["window-controls-overlay", "standalone", "minimal-ui"],
+  "orientation": "any",
   "background_color": "#0d1f19",
   "theme_color": "#0d1f19",
   "lang": "id",
-  "categories": ["business", "productivity", "finance"],
+  "dir": "ltr",
+  "categories": ["business", "productivity", "finance", "utilities", "education"],
+  "handle_links": "preferred",
+  "launch_handler": { "client_mode": "focus-existing" },
+  "prefer_related_applications": false,
   "icons": [
     {
       "src": "/logo.svg",
       "sizes": "any",
       "type": "image/svg+xml",
       "purpose": "any"
+    },
+    {
+      "src": "/logo.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Command Center",
+      "short_name": "Beranda",
+      "description": "Dashboard utama GUNARA OS",
+      "url": "/?section=dashboard",
+      "icons": [{ "src": "/logo.svg", "sizes": "any" }]
+    },
+    {
+      "name": "SEO Command Center",
+      "short_name": "SEO Hub",
+      "description": "Arsenal SEO Mastery — audit, keyword, rank",
+      "url": "/?section=seo-hub",
+      "icons": [{ "src": "/logo.svg", "sizes": "any" }]
+    },
+    {
+      "name": "Ultimate Solver",
+      "short_name": "Solver",
+      "description": "Sidangkan Dewan 46 via AI",
+      "url": "/?section=solver",
+      "icons": [{ "src": "/logo.svg", "sizes": "any" }]
+    },
+    {
+      "name": "Data Vault & Diagnostik",
+      "short_name": "Backup",
+      "description": "Backup, restore, dan health check data",
+      "url": "/?section=vault",
+      "icons": [{ "src": "/logo.svg", "sizes": "any" }]
     }
   ]
 }

@@ -7,7 +7,7 @@ import {
   Sun, CalendarCheck, Inbox, Scale, Globe, Bot, ShieldCheck, Target,
   Briefcase, ScrollText, Lock, GraduationCap, Landmark, Brain, Swords,
   MessagesSquare, Rocket, ScanSearch, KeyRound, TrendingUp, FilePenLine,
-  Link2, Radar, Code2,
+  Link2, Radar, Code2, DatabaseBackup,
   type LucideIcon,
 } from "lucide-react";
 
@@ -21,7 +21,8 @@ export type SectionId =
   | "tutorial"
   | "seo-hub" | "seo-audit" | "seo-keywords" | "seo-ranks" | "seo-content"
   | "seo-calendar" | "seo-backlinks" | "seo-competitor" | "seo-forge"
-  | "seo-clients" | "seo-academy";
+  | "seo-clients" | "seo-academy"
+  | "vault";
 
 export interface NavItem { id: SectionId; label: string; icon: LucideIcon; desc?: string }
 export interface NavGroup { title: string; items: NavItem[] }
@@ -70,10 +71,11 @@ export const NAV: NavGroup[] = [
       { id: "agents", label: "15 AI Agents", icon: Bot, desc: "Role activation siap copy" },
       { id: "sistem", label: "Sistem", icon: ShieldCheck, desc: "Aturan · Ritual · Stack" },
       { id: "roadmap", label: "Roadmap 90 Hari", icon: Target, desc: "Grand Build" },
+      { id: "vault", label: "Data Vault & Diagnostik", icon: DatabaseBackup, desc: "Backup · Restore · Health Check" },
     ],
   },
   {
-    title: "⚡ GOD MODE — v7.0", items: [
+    title: "⚡ GOD MODE — v9.0", items: [
       { id: "arena", label: "Arena Debat", icon: Swords, desc: "Dewan saling berdebat, diarbitrase" },
       { id: "sage", label: "Sage Console", icon: MessagesSquare, desc: "Ngobrol 3 wajah kebijaksanaan" },
     ],

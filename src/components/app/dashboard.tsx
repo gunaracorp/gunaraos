@@ -6,7 +6,7 @@
 // via useNow(); server & klien identik sampai mount.
 // ═══════════════════════════════════════════════════
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -20,7 +20,7 @@ import { Label } from "@/components/ui/label";
 import {
   Flame, Trophy, HeartPulse, Landmark, HandCoins, Users, Sparkles, ArrowRight,
   Sun, ShieldCheck, Quote, ListChecks, CalendarClock, Clock, Swords, MessagesSquare,
-  Rocket, ScanSearch,
+  Rocket, ScanSearch, DatabaseBackup, HardDrive,
 } from "lucide-react";
 import { useRecords, useSettings } from "./use-records";
 import {
@@ -116,6 +116,17 @@ export function Dashboard({ onNavigate }: { onNavigate: (section: string) => voi
     [seoProjects.items]
   );
   const seoSkorTerakhir = seoAuditList.items[0]?.skorTotal as number | undefined;
+
+  // ── Data Vault: total baris database (bukti data tersimpan) ──
+  const [totalRows, setTotalRows] = useState<number | null>(null);
+  useEffect(() => {
+    let alive = true;
+    fetch("/api/health", { cache: "no-store" })
+      .then((r) => r.json())
+      .then((j) => { if (alive && typeof j.totalRows === "number") setTotalRows(j.totalRows); })
+      .catch(() => { /* abaikan — angka vault bersifat informatif */ });
+    return () => { alive = false; };
+  }, []);
 
   const mitDone = todayLog ? [todayLog.done1, todayLog.done2, todayLog.done3].filter(Boolean).length : 0;
   const mitFilled = todayLog ? [todayLog.mit1, todayLog.mit2, todayLog.mit3].filter(Boolean).length : 0;
@@ -236,6 +247,35 @@ export function Dashboard({ onNavigate }: { onNavigate: (section: string) => voi
             )}
           </span>
           <ArrowRight className="size-4 flex-none text-emerald-600 dark:text-emerald-400 group-hover:translate-x-1 transition-transform" />
+        </button>
+      </FadeUp>
+
+      {/* ═══ DATA VAULT & DIAGNOSTIK — v9.0 ═══ */}
+      <FadeUp delay={0.09}>
+        <button
+          onClick={() => onNavigate("vault")}
+          className="w-full group rounded-xl border border-sky-600/25 bg-gradient-to-r from-sky-600/10 via-card to-card p-4 flex items-center gap-4 text-left transition-colors hover:border-sky-600/60 hover:bg-sky-600/[0.06]"
+        >
+          <span className="size-11 flex-none rounded-xl bg-gradient-to-br from-sky-700 to-emerald-950 text-sky-100 flex items-center justify-center shadow">
+            <DatabaseBackup className="size-5" />
+          </span>
+          <span className="flex-1 min-w-0">
+            <span className="flex items-center gap-1.5 flex-wrap">
+              <span className="block text-sm font-black tracking-tight">Data Vault &amp; Diagnostik</span>
+              <span className="rounded-full bg-sky-600 text-white px-1.5 py-0.5 text-[9px] font-black tracking-wider">BARU v9.0</span>
+            </span>
+            <span className="block text-xs text-muted-foreground truncate">
+              Data tersimpan otomatis di server — backup/restore JSON, health check 14 endpoint, panduan migrasi hosting.
+            </span>
+          </span>
+          <span className="hidden sm:flex flex-none items-center gap-2 text-[11px] font-semibold">
+            {typeof totalRows === "number" && (
+              <span className="inline-flex items-center gap-1 rounded-full bg-sky-600/10 text-sky-700 dark:text-sky-300 px-2.5 py-1 border border-sky-600/20">
+                <HardDrive className="size-3" /> {totalRows.toLocaleString("id-ID")} baris tersimpan
+              </span>
+            )}
+          </span>
+          <ArrowRight className="size-4 flex-none text-sky-600 dark:text-sky-400 group-hover:translate-x-1 transition-transform" />
         </button>
       </FadeUp>
 
