@@ -1,0 +1,858 @@
+     1→<a name="top"></a>
+     2→<!-- ══════════════════════════════════════════════════════════════════ -->
+     3→<!--  GUNARA OS — README MASTERPIECE · International Standard          -->
+     4→<!--  Languages: 🇮🇩 Bahasa Indonesia + 🇬🇧 English · Version: v3.0      -->
+     5→<!-- ══════════════════════════════════════════════════════════════════ -->
+     6→
+     7→<div align="center">
+     8→
+     9→# ⚡ G U N A R A ⋅ O S ⚡
+    10→
+    11→### 🇮🇩 Sistem Operasi Pribadi & Bisnis — Sekelas Notion, Ditempa Khusus untuk Gunara Corp
+    12→### 🇬🇧 The Personal & Business Operating System — Notion-Grade, Custom-Forged for One
+    13→
+    14→**🇮🇩 [Bahasa Indonesia](#bahasa-indonesia) &nbsp;·&nbsp; 🇬🇧 [English](#english) &nbsp;·&nbsp; [⬇ Galeri](#id-galeri) &nbsp;·&nbsp; [🚀 Memulai](#id-memulai)**
+    15→
+    16→<img src="download/v3-dashboard.png" alt="GUNARA OS — Command Center" width="920"/>
+    17→
+    18→<br/>
+    19→
+    20→[![Version](https://img.shields.io/badge/GUNARA_OS-v3.0-059669?style=for-the-badge&logo=rocket&logoColor=white)](#id-versi)
+    21→[![Next.js 16](https://img.shields.io/badge/Next.js_16-000000?style=for-the-badge&logo=nextdotjs&logoColor=white)](https://nextjs.org)
+    22→[![React 19](https://img.shields.io/badge/React_19-149ECA?style=for-the-badge&logo=react&logoColor=white)](https://react.dev)
+    23→[![TypeScript 5](https://img.shields.io/badge/TypeScript_5-3178C6?style=for-the-badge&logo=typescript&logoColor=white)](https://typescriptlang.org)
+    24→[![Tailwind CSS 4](https://img.shields.io/badge/Tailwind_CSS_4-06B6D4?style=for-the-badge&logo=tailwindcss&logoColor=white)](https://tailwindcss.com)
+    25→[![Prisma 6](https://img.shields.io/badge/Prisma_6·SQLite-2D3748?style=for-the-badge&logo=prisma&logoColor=white)](https://prisma.io)
+    26→[![Framer Motion 12](https://img.shields.io/badge/Framer_Motion_12-000000?style=for-the-badge&logo=framer&logoColor=white)](https://motion.dev)
+    27→[![ISO 9001:2015](https://img.shields.io/badge/ISO_9001:2015-Aligned-1D4ED8?style=for-the-badge)](#id-standar)
+    28→[![OWASP](https://img.shields.io/badge/OWASP-AES--256--GCM-7C3AED?style=for-the-badge)](#id-keamanan)
+    29→[![NIST SP 800-63B](https://img.shields.io/badge/NIST_SP_800--63B-Compliant-EA580C?style=for-the-badge)](#id-keamanan)
+    30→[![WCAG 2.2](https://img.shields.io/badge/WCAG_2.2-Conscious-16A34A?style=for-the-badge)](#id-standar)
+    31→[![Lint 0/0](https://img.shields.io/badge/ESLint-0_errors_·_0_warnings-22C55E?style=for-the-badge&logo=eslint&logoColor=white)]()
+    32→[![Made with ❤️ in Indonesia](https://img.shields.io/badge/Made_with_❤️_in-Indonesia-DC2626?style=for-the-badge&logo=location&logoColor=white)](#id-lisensi)
+    33→
+    34→</div>
+    35→
+    36→<br/>
+    37→
+    38→---
+    39→
+    40→<a name="bahasa-indonesia"></a>
+    41→## 🇮🇩 BAHASA INDONESIA
+    42→
+    43→> *"Air jernih mengalir dari hulu. Bangun hulunya sekali, rawat mesinnya tiap minggu, jalankan hilirnya tiap hari — hasilnya adalah konsekuensi, bukan kebetulan."*
+    44→> — **Piagam GUNARA OS**
+    45→
+    46→<div align="right"><a href="#top">⬆ kembali ke atas</a></div>
+    47→
+    48→<a name="id-tentang"></a>
+    49→### ✨ 1. Tentang GUNARA OS
+    50→
+    51→**GUNARA OS** bukan sekadar aplikasi catatan. Ia adalah **sistem operasi lengkap untuk hidup dan bisnis** — dibangun sekelas Notion, tetapi diarsitekuri di sekeliling *satu orang*: Gugun Gunara, pemilik Gunara Corp. Setiap piksel, setiap tabel database, dan setiap animasi dirancang untuk menjawab satu pertanyaan: *"apa yang harus saya kerjakan hari ini supaya 10 tahun ke depan saya menang?"* Dokumen-dokumen strategi pribadi (14 file dari `github-docs/`) tidak dibiarkan menganggur sebagai teks — semuanya dikompilasi menjadi perangkat lunak yang hidup dan berinteraksi.
+    52→
+    53→Aplikasi ini menggabungkan tiga dunia yang biasanya terpisah: **OS pribadi** (filosofi hidup, disiplin harian, keuangan keluarga), **kantor konsultan perizinan** (CRM, tracker pengurusan izin ISO, katalog 46 layanan), dan **arsenal strategis** (43 domain portfolio, 15 AI agents dengan prompt role-activation siap pakai, roadmap 90 hari). Ketiganya berteistur dalam satu SPA ringkas dengan satu Command Center sebagai kokpit.
+    54→
+    55→Tiga keunggulan yang membuatnya berbeda:
+    56→
+    57→| 🏛️ | 🛡️ | ⚡ |
+    58→|---|---|---|
+    59→| **Arsitektur Hulu → Mesin → Hilir** | **Keamanan kelas enterprise** | **Pengalaman premium** |
+    60→| Filosofi air: isi hulu sekali, mesin dirawat mingguan, hilir dijalankan harian | scrypt, AES-256-GCM, secrets di-strip otomatis dari API | Animasi sinematik penuh, ⌘K, dark mode, jam WIB live |
+    61→
+    62→<div align="right"><a href="#top">⬆</a></div>
+    63→
+    64→<a name="id-filosofi"></a>
+    65→### 🌊 2. Filosofi Arsitektur: Hulu · Mesin · Hilir
+    66→
+    67→Sistem ini meniru aliran sungai. **Hulu** adalah mata air — piagam diri, visi 10 tahun, OKR, dan kurikulum yang *diisi sekali* lalu menjadi sumber segala keputusan. **Mesin** adalah lima generator nilai — keuangan, CRM, relasi & politik, belajar, dokumentasi — yang *dirawat setiap minggu* agar terus menghasilkan. **Hilir** adalah aliran harian — ritual pagi, review mingguan, backlog, dan log keputusan — yang *dijalankan setiap hari* tanpa perlu berpikir ulang. Bisnis Hub berdiri di muara: tempat semua nilai mengalir menjadi pendapatan nyata.
+    68→
+    69→```mermaid
+    70→flowchart TB
+    71→    subgraph HULU["🌊 HULU — Diisi Sekali"]
+    72→        A["Piagam Diri · Visi 10 Tahun<br/>OKR · Kurikulum"]
+    73→    end
+    74→    subgraph MESIN["⚙️ MESIN — Dirawat Mingguan"]
+    75→        B1["💰 Keuangan"] ~~~ B2["👥 CRM"] ~~~ B3["🤝 Relasi & Politik"]
+    76→        B4["📚 Belajar"] ~~~ B5["🏆 Dokumentasi"]
+    77→    end
+    78→    subgraph HILIR["🏃 HILIR — Dijalankan Harian"]
+    79→        C1["☀️ Ritual Harian"] ~~~ C2["📅 Review Mingguan"]
+    80→        C3["📥 Backlog"] ~~~ C4["⚖️ Decisions Log"]
+    81→    end
+    82→    subgraph HUB["💼 BISNIS HUB — Gunara Group"]
+    83→        D1["🗂️ Database Bisnis"] ~~~ D2["📜 Perizinan ISO"]
+    84→        D3["🔐 Aset Digital"]
+    85→    end
+    86→    HULU --> MESIN --> HILIR --> HUB
+    87→```
+    88→
+    89→<div align="right"><a href="#top">⬆</a></div>
+    90→
+    91→<a name="id-peta"></a>
+    92→### 🧭 3. Peta Lengkap 19 Section
+    93→
+    94→Satu route (`/`), sembilan belas section state-based, semuanya dapat dilompati lewat **Command Palette (⌘K / Ctrl+K)**.
+    95→
+    96→| # | Section | Grup | Fungsi |
+    97→|---|---------|------|--------|
+    98→| 0 | 🏠 **Command Center** | Beranda | Kokpit harian: sapaan, jam WIB live, 3 MIT, energi, statistik, fase aktif |
+    99→| 1 | 🌊 **Piagam · Visi · OKR** | HULU | Mata air segalanya — diisi sekali |
+   100→| 2 | 💰 **Keuangan** | MESIN | Hutang + cicilan otomatis, piutang, arus kas, rekening anak |
+   101→| 3 | 👥 **Klien / CRM** | MESIN | Master klien + pipeline follow-up dengan flag telat otomatis |
+   102→| 4 | 🤝 **Relasi & Politik** | MESIN | Ledger kepercayaan & aktivitas strategis |
+   103→| 5 | 📚 **Belajar** | MESIN | Jurnal pembelajaran — mesin ganda |
+   104→| 6 | 🏆 **Dokumentasi** | MESIN | Win Log + Studi Kasus |
+   105→| 7 | ☀️ **Ritual Harian** | HILIR | 3 MIT pagi + refleksi malam + riwayat |
+   106→| 8 | 📅 **Review Mingguan** | HILIR | 30 menit tiap akhir pekan |
+   107→| 9 | 📥 **Backlog** | HILIR | Penjara ide — agar fokus tak bocor |
+   108→| 10 | ⚖️ **Decisions Log** | HILIR | Sejarah keputusan & alasannya |
+   109→| 11 | 🌐 **43 Domain** | ARSENAL | Portfolio domain + misi per domain |
+   110→| 12 | 🤖 **15 AI Agents** | ARSENAL | Role activation prompt siap copy-paste |
+   111→| 13 | 🛡️ **Sistem** | ARSENAL | 10 aturan mutlak, pola mingguan, protokol hari buruk, master prompt, stack |
+   112→| 14 | 🎯 **Roadmap 90 Hari** | ARSENAL | Grand Build Fase 0–5 dengan gate |
+   113→| 15 | 💼 **Database Bisnis** | BISNIS HUB | Pelanggan 360° (25 field) + Perusahaan & legalitas |
+   114→| 16 | 📜 **Perizinan** | BISNIS HUB | Kanban 5 tahap ISO, katalog 46 layanan, Pencari Izin |
+   115→| 17 | 🔐 **Aset Digital** | BISNIS HUB | Sosmed, Brankas kredensial terenkripsi, Pengguna & role |
+   116→| 18 | 📚 **Tutorial Lengkap** | PANDUAN | 18 panduan langkah-demi-langkah seluruh fitur |
+   117→
+   118→<div align="right"><a href="#top">⬆</a></div>
+   119→
+   120→<a name="id-fitur"></a>
+   121→### 💎 4. Fitur Utama
+   122→
+   123→#### 🏠 Command Center
+   124→- **Jam live WIB + sapaan dinamis** — pagi/siang/sore/malam mengikuti waktu nyata, dirender client-safe tanpa hydration error.
+   125→- **3 MIT (Most Important Tasks)** — tulis, centang dengan animasi spring, otomatis sinkron dengan Ritual Harian.
+   126→- **Slider energi 1–10** — angka pop beranimasi; nilai ≤ 4 memicu peringatan protokol hari buruk.
+   127→- **4 stat card CountUp** — sisa hutang, piutang, klien aktif, follow-up telat; semua beranimasi dari nilai sebelumnya.
+   128→- **Strip Bisnis Hub** — ringkasan pelanggan, izin berjalan, dan nilai pipeline (Rp) yang bisa diklik menuju tracker.
+   129→
+   130→#### 🏃 Mesin Disiplin
+   131→- **Keuangan 4-in-1** — hutang dengan dialog *Cicil* (sisa terhitung otomatis + toast), piutang, arus kas, rekening anak.
+   132→- **CRM cerdas** — counter pipeline, flag **TELAT** merah otomatis untuk follow-up melewati jatuh tempo.
+   133→- **Ritual Harian** — MIT pagi + refleksi malam dalam satu log per tanggal (upsert otomatis).
+   134→
+   135→#### 🛡️ Arsenal Strategis
+   136→- **15 AI Agents** — kartu per gelombang, dialog *Role Activation* berisi prompt lengkap, tombol copy → "Tersalin!".
+   137→- **43 Domain Portfolio** — tabel editable + grid tergrup per tier (INTI / GATEWAY / FUTURE / PARKED).
+   138→- **Roadmap Grand Build** — Fase 0–5 dengan gerbang kelulusan, kalender 90 hari, target finansial.
+   139→
+   140→#### 💼 Bisnis Hub — Perangkat Konsultan Perizinan
+   141→- **Database Pelanggan 360°** — 25 field metadata: KTP, NPWP, alamat, sumber lead, preferensi komunikasi, status, catatan.
+   142→- **Database Perusahaan** — NIB, NPWP, SK AHU, KBLI, modal, status grup (Gunara Consultant ⇄ PusatPerizinan.com).
+   143→- **Kanban Perizinan 5 Tahap (ISO 9001:2015)** — Konsultasi → Dokumen → Pengajuan → Terbit → Serah Terima; status pelanggan ikut berganti otomatis saat kartu pindah tahap.
+   144→- **Pencari Izin (Rules Engine)** — pilih 10 sektor × skala usaha × 9 flag kondisi → daftar izin terprioritas WAJIB → OPSIONAL + estimasi biaya + **1 klik masuk tracker**.
+   145→- **Katalog 46 Layanan** — harga, durasi, instansi penanggung jawab; searchable real-time.
+   146→- **Brankas Kredensial (11 kategori)** — EMAIL_GOOGLE, OSS, PAJAK, BANK, dsb.; semua terenkripsi AES-256-GCM dengan *Vault Health Check* bergaya OWASP.
+   147→- **Aset Sosial Media** — platform, username, metrik follower, cadance konten, status akses.
+   148→- **Pengguna & Role** — OWNER/ADMIN/STAFF dengan password scrypt + indikator kekuatan sandi NIST.
+   149→
+   150→<div align="right"><a href="#top">⬆</a></div>
+   151→
+   152→<a name="id-galeri"></a>
+   153→### 🖼️ 5. Galeri
+   154→
+   155→| Command Center | Kanban Perizinan ISO |
+   156→|---|---|
+   157→| <img src="download/v3-dashboard.png" width="440" alt="Command Center"/> | <img src="download/v3-perizinan-kanban.png" width="440" alt="Kanban 5 Tahap"/> |
+   158→| **Pencari Izin — Rules Engine** | **Hasil Rekomendasi + Estimasi Biaya** |
+   159→| <img src="download/v3-finder.png" width="440" alt="Pencari Izin"/> | <img src="download/v3-finder-hasil.png" width="440" alt="Hasil Pencari Izin"/> |
+   160→| **Database Bisnis** | **Brankas Terenkripsi + Reveal** |
+   161→| <img src="download/v3-bisnis.png" width="440" alt="Database Bisnis"/> | <img src="download/v3-vault-reveal.png" width="440" alt="Brankas"/> |
+   162→| **Mode Gelap** | **Mobile Responsive 390px** |
+   163→| <img src="download/v3-dark.png" width="440" alt="Dark Mode"/> | <img src="download/v3-mobile.png" width="440" alt="Mobile"/> |
+   164→
+   165→<div align="right"><a href="#top">⬆</a></div>
+   166→
+   167→<a name="id-database"></a>
+   168→### 🗄️ 6. Database — Metadata Terlengkap: 26 Model
+   169→
+   170→Satu file `prisma/schema.prisma` mengelola **26 model** dalam **SQLite** (siap migrasi ke PostgreSQL untuk multi-device). Semua resource dilayani lewat **API generik** `/api/data/[resource]` yang dikonfigurasi dari satu peta — menambah resource baru tidak butuh endpoint baru.
+   171→
+   172→| Domain | Model | Peran |
+   173→|---|---|---|
+   174→| ⚙️ Inti Sistem | `Setting` | Piagam, visi 10 tahun, OKR, kurikulum, master prompt, protokol hari buruk, fase aktif |
+   175→| 💰 Keuangan | `Debt` `DebtPayment` `Receivable` `Cashflow` `ChildSaving` | Hutang + riwayat cicilan, piutang, arus kas, tabungan anak |
+   176→| 👥 CRM | `Client` `FollowUp` | Master klien, pipeline, follow-up dengan flag telat otomatis |
+   177→| 🤝 Relasi | `Relation` `PoliticalActivity` | Ledger kepercayaan, aktivitas politik strategis |
+   178→| 📚 Pertumbuhan | `LearningJournal` `WinLog` `CaseStudy` | Jurnal belajar (mesin ganda), kemenangan, studi kasus |
+   179→| 🏃 Disiplin | `DailyLog` `WeeklyReview` `BacklogItem` `DecisionLog` | Ritual harian, review mingguan, penjara ide, sejarah keputusan |
+   180→| 🛡️ Arsenal | `Domain` `Agent` | 43 domain portfolio, 15 AI agents + prompt role-activation |
+   181→| 💼 Bisnis Hub | `AppUser` `Customer` `Company` `SocialAccount` `VaultEntry` `PermitApplication` `ServiceCatalog` | Pengguna & role, pelanggan 25 field, perusahaan & legalitas, sosmed, brankas 11 kategori, tracker izin 5 tahap, katalog 46 layanan |
+   182→
+   183→<details>
+   184→<summary>🔍 <b>Buka: sorotan field kunci Bisnis Hub (klik)</b></summary>
+   185→
+   186→| Model | Sorotan Field |
+   187→|---|---|
+   188→| `AppUser` | email, password (scrypt + salt), role (OWNER/ADMIN/STAFF), 2FA flag, failedAttempts, lastLogin |
+   189→| `Customer` | nama, KTP, NPWP, telepon/WA, email, alamat lengkap, sumber lead, preferensi komunikasi, status, nilai bisnis, catatan — **25 field 360°** |
+   190→| `Company` | nama legal, brand, NIB, NPWP, SK AHU, KBLI, modal dasar, alamat, status grup, relasi kepemilikan |
+   191→| `SocialAccount` | platform, username, url, password (AES-256-GCM), email terkait, follower, cadance konten, status akses |
+   192→| `VaultEntry` | 11 kategori (EMAIL_GOOGLE, OSS, PAJAK, BANK, HOSTING, DOMAIN, dll.), username, password + PIN + backup codes terenkripsi, catatan, health flags |
+   193→| `PermitApplication` | klien, layanan, **tahap 1–5 ISO**, harga deal, biaya instansi, DP, sisa, tanggal & PIC per tahap, status otomatis |
+   194→| `ServiceCatalog` | nama, kategori, instansi, harga, durasi, syarat — **46 layanan ter-seed** dari audit gunara.web.id |
+   195→</details>
+   196→
+   197→<div align="right"><a href="#top">⬆</a></div>
+   198→
+   199→<a name="id-keamanan"></a>
+   200→### 🔐 7. Keamanan — Zero-Compromise Vault
+   201→
+   202→Keamanan dirancang dengan prinsip *assume breach*: meski database bocor, kredensial tetap terlindungi.
+   203→
+   204→| Lapisan | Mekanisme | Standar Acuan |
+   205→|---|---|---|
+   206→| Password pengguna | **scrypt** + salt unik, verifikasi *timing-safe* | NIST SP 800-63B |
+   207→| Kredensial brankas | **AES-256-GCM** terenkripsi *at-rest* (password, PIN, backup codes) | OWASP |
+   208→| Eksposur API | Semua field rahasia **di-strip otomatis** dari setiap response list/detail | Privacy by Design |
+   209→| Reveal on-demand | Endpoint eksklusif `?reveal=password\|pin\|backupCodes` per item | Least Privilege |
+   210→| Kekuatan sandi | `passwordStrength()` — panjang, variasi karakter, pola umum | NIST SP 800-63B |
+   211→| Vault Health | Pemindaian kesehatan: 2FA belum aktif, sandi duplikat/lemah, cadance cadangan | OWASP AMM |
+   212→| Manajemen kunci | `GUNARA_VAULT_KEY` via environment — tak pernah masuk kode | 12-Factor Config |
+   213→
+   214→<details>
+   215→<summary>🔐 <b>Buka: alur enkripsi (diagram)</b></summary>
+   216→
+   217→```mermaid
+   218→flowchart LR
+   219→    P["✍️ Input rahasia<br/>(password/PIN/codes)"] --> E["🔐 AES-256-GCM<br/>encrypt + IV unik"]
+   220→    E --> DB[("💾 SQLite<br/>ciphertext only")]
+   221→    DB --> S["📦 GET /api/data/*<br/>secrets di-strip"]
+   222→    S --> U["🖥️ UI: row terkunci"]
+   223→    DB -.->|"GET ?reveal=password<br/>endpoint eksklusif"| R["🔓 Reveal on-demand<br/>+ audit row"]
+   224→```
+   225→</details>
+   226→
+   227→<div align="right"><a href="#top">⬆</a></div>
+   228→
+   229→<a name="id-standar"></a>
+   230→### 🌍 8. Standar Internasional yang Diterapkan
+   231→
+   232→| Standar | Penerapan Konkret di Kode |
+   233→|---|---|
+   234→| **ISO 9001:2015** | Alur perizinan 5 tahap dengan status otomatis antar-tahap — proses terukur, terdokumentasi, ter-audit |
+   235→| **NIST SP 800-63B** | Kebijakan sandi + hashing scrypt timing-safe |
+   236→| **OWASP Top 10 / AMM** | Enkripsi at-rest, strip secrets, Vault Health |
+   237→| **WCAG 2.2** | `focus-visible` ring, dukungan `prefers-reduced-motion` (CSS + Framer), `aria-label` penuh, `sr-only` dialog descriptions |
+   238→| **12-Factor App** | Konfigurasi via environment, satu codebase, proses stateless |
+   239→| **SemVer** | vMAJOR.MINOR.PATCH + changelog terstruktur (lih. Riwayat Versi) |
+   240→| **Clean Architecture** | UI *config-driven* dari satu peta (`gunara.tsx`), API generik, pustaka animasi terpusat (`motion.tsx`) |
+   241→| **Type-Safe End-to-End** | TypeScript 5 + Prisma Client yang digenerate dari schema |
+   242→
+   243→Doktrin rekayasa: ** hydration-safe by design** (semua data waktu dirender client-only via `useMounted()`/`useNow()`), **reduced-motion first**, dan **lint 0 error · 0 warning** sebagai gerbang merge.
+   244→
+   245→<div align="right"><a href="#top">⬆</a></div>
+   246→
+   247→<a name="id-memulai"></a>
+   248→### 🚀 9. Memulai
+   249→
+   250→**Prasyarat:** [Bun](https://bun.sh) ≥ 1.1 *(atau Node.js ≥ 20)* · Git
+   251→
+   252→```bash
+   253→# 1️⃣ Kloning & masuk
+   254→git clone https://github.com/prabudanling/doc-gunaracorp.git gunara-os
+   255→cd gunara-os
+   256→
+   257→# 2️⃣ Instal dependensi
+   258→bun install            # atau: npm install
+   259→
+   260→# 3️⃣ Siapkan environment — buat file .env:
+   261→#    DATABASE_URL="file:./db/custom.db"
+   262→#    GUNARA_VAULT_KEY="ganti-dengan-kunci-rahasia-minimal-32-karakter"
+   263→
+   264→# 4️⃣ Bentuk struktur database dari 26 model
+   265→bun run db:push
+   266→
+   267→# 5️⃣ Isi data awal (idempoten — aman dijalankan ulang)
+   268→bun scripts/seed.ts         # OS: piagam, visi, OKR, 43 domain, 15 agents, dst.
+   269→bun scripts/seed-bisnis.ts  # Bisnis Hub: 46 layanan, 2 perusahaan, OWNER, contoh data
+   270→
+   271→# 6️⃣ Nyalakan
+   272→bun run dev
+   273→# → buka http://localhost:3000 — selamat datang di kokpitmu 🚀
+   274→```
+   275→
+   276→> 💡 **Produksi:** `bun run build` lalu `bun run start` (standalone server). Wajib set `GUNARA_VAULT_KEY` yang kuat dan acak — kunci ini mengenkripsi seluruh brankas kredensial.
+   277→
+   278→<div align="right"><a href="#top">⬆</a></div>
+   279→
+   280→<a name="id-skrip"></a>
+   281→### 📜 10. Skrip & Perintah
+   282→
+   283→| Perintah | Fungsi |
+   284→|---|---|
+   285→| `bun run dev` | Server pengembangan (Turbopack) + log ke `dev.log` |
+   286→| `bun run build` | Build produksi (standalone + statik) |
+   287→| `bun run start` | Jalankan server produksi |
+   288→| `bun run lint` | ESLint — saat ini **0 error · 0 warning** |
+   289→| `bun run db:push` | Sinkronisasi schema Prisma → SQLite |
+   290→| `bun run db:generate` | Generate Prisma Client |
+   291→| `bun run db:migrate` / `db:reset` | Migrasi formal & reset database |
+   292→| `bun scripts/seed.ts` | Seed OS (settings, 43 domain, 15 agents, win logs) |
+   293→| `bun scripts/seed-bisnis.ts` | Seed Bisnis Hub (46 layanan, perusahaan, OWNER, brankas, sosmed, pelanggan, pengurusan) |
+   294→
+   295→<div align="right"><a href="#top">⬆</a></div>
+   296→
+   297→<a name="id-pintasan"></a>
+   298→### ⌨️ 11. Pintasan Keyboard
+   299→
+   300→| Pintasan | Aksi |
+   301→|---|---|
+   302→| <kbd>⌘</kbd> / <kbd>Ctrl</kbd> + <kbd>K</kbd> | Buka **Command Palette** — lompat ke 19 section |
+   303→| <kbd>↑</kbd> <kbd>↓</kbd> | Navigasi hasil filter |
+   304→| <kbd>↵</kbd> | Lompat ke section terpilih |
+   305→| <kbd>Esc</kbd> | Tutup palette / drawer / dialog |
+   306→| 🌗 **Tombol tema** | Terang ⇄ Gelap (tersimpan otomatis, default ikuti sistem) |
+   307→
+   308→<div align="right"><a href="#top">⬆</a></div>
+   309→
+   310→<a name="id-struktur"></a>
+   311→### 🏗️ 12. Struktur Proyek
+   312→
+   313→<details>
+   314→<summary>📂 <b>Buka pohon proyek (klik)</b></summary>
+   315→
+   316→```text
+   317→src/
+   318→├── app/
+   319→│   ├── page.tsx                    # SPA tunggal — AppShell
+   320→│   ├── layout.tsx                  # Root layout + ThemeProvider
+   321→│   ├── globals.css                 # Tema emerald-imperium + keyframes animasi
+   322→│   └── api/data/
+   323→│       ├── route.ts                # Health check
+   324→│       └── [resource]/
+   325→│           ├── route.ts            # GET list + POST (enkripsi otomatis)
+   326→│           └── [id]/route.ts       # PATCH, DELETE, GET ?reveal=
+   327→├── components/
+   328→│   ├── app/
+   329→│   │   ├── app-shell.tsx           # Kerangka: sidebar, header, transisi antar-section
+   330→│   │   ├── dashboard.tsx           # Command Center
+   331→│   │   ├── hulu.tsx                # Piagam · Visi · OKR
+   332→│   │   ├── finance.tsx crm.tsx mesin-lain.tsx   # Modul MESIN
+   333→│   │   ├── hilir.tsx               # Ritual · Review · Backlog · Keputusan
+   334→│   │   ├── arsenal.tsx             # Domain · Agents · Sistem · Roadmap
+   335→│   │   ├── bisnis.tsx              # Database Pelanggan & Perusahaan
+   336→│   │   ├── perizinan.tsx           # Kanban ISO · Katalog · Pencari Izin
+   337→│   │   ├── aset-digital.tsx        # Sosmed · Brankas · Pengguna
+   338→│   │   ├── guide.tsx               # Tutorial 18 panduan
+   339→│   │   ├── command-palette.tsx     # ⌘K (cmdk)
+   340→│   │   ├── motion.tsx              # Pustaka animasi bersama (FadeUp, CountUp, dst.)
+   341→│   │   ├── record-table.tsx        # Tabel + dialog form generik
+   342→│   │   └── use-records.ts nav.ts   # Hooks & peta navigasi
+   343→│   └── ui/                         # shadcn/ui — 40+ komponen Radix
+   344→├── lib/
+   345→│   ├── gunara.tsx                  # Konfigurasi 20+ resource (field, form, tone)
+   346→│   ├── crypto.ts                   # scrypt · AES-256-GCM · passwordStrength
+   347→│   ├── license-finder.ts           # Rules engine 10 sektor × 9 flag
+   348→│   ├── service-catalog.ts          # 46 layanan
+   349→│   └── db.ts                       # Prisma singleton
+   350→└── prisma/schema.prisma            # 26 model — metadata terlengkap
+   351→scripts/
+   352→├── seed.ts                         # Seed OS
+   353→├── seed-bisnis.ts                  # Seed Bisnis Hub
+   354→└── restart-dev.sh                  # Clean-restart server dev
+   355→```
+   356→</details>
+   357→
+   358→<div align="right"><a href="#top">⬆</a></div>
+   359→
+   360→<a name="id-versi"></a>
+   361→### 📖 13. Riwayat Versi
+   362→
+   363→| Versi | Kodename | Sorotan |
+   364→|---|---|---|
+   365→| **v1.0** | *Foundation* | OS inti: arsitektur Hulu/Mesin/Hilir, 19 model Prisma, SPA 15 section, CRUD generik, seed dari 14 dokumen strategi |
+   366→| **v2.0** | *Motion* | Animasi penuh (FadeUp, Stagger, CountUp, FloatingOrbs), ⌘K Command Palette, dark mode persist, jam live WIB, skeleton shimmer, perbaikan hydration tanggal |
+   367→| **v2.1** | *Hardening* | Kebal kelas error hydration Radix/React 19.2, lint 0/0, aksesibilitas dialog lengkap, SheetDescription sr-only |
+   368→| **v3.0** | *Bisnis Hub* | **Metadata terlengkap**: +7 model (AppUser, Customer, Company, SocialAccount, VaultEntry, PermitApplication, ServiceCatalog), audit dua situs perusahaan, Kanban ISO 5 tahap, Pencari Izin, brankas AES-256-GCM, tutorial 18 panduan |
+   369→
+   370→<div align="right"><a href="#top">⬆</a></div>
+   371→
+   372→<a name="id-roadmap"></a>
+   373→### 🗺️ 14. Roadmap
+   374→
+   375→- [x] **v1.0** — OS pribadi lengkap
+   376→- [x] **v2.0** — Animasi penuh + fitur standar internasional
+   377→- [x] **v2.1** — Hardening hydration & aksesibilitas
+   378→- [x] **v3.0** — Bisnis Hub + metadata terlengkap + tools konsultan
+   379→- [ ] **v4.0 — *Konvergensi*** *(dirancang)*
+   380→  - 🔑 Login Google OAuth (next-auth sudah disiapkan di dependensi)
+   381→  - 🤖 AI Copilot in-app (z-ai-web-dev-sdk): ringkasan mingguan otomatis, drafting follow-up klien
+   382→  - 📲 PWA + mode offline, push reminder ritual harian
+   383→  - ☁️ Sinkronisasi multi-device — migrasi SQLite → PostgreSQL
+   384→- [ ] **v5.0 — *Skala Gunara Group***
+   385→  - 📱 Aplikasi mobile (React Native) berbagi API
+   386→  - 🏢 Multi-tenant untuk tim — role granular per divisi
+   387→  - 📊 BI dashboard: tren pipeline, omzet per instansi, konversi lead
+   388→  - 💬 Integrasi WhatsApp API untuk follow-up otomatis klien
+   389→
+   390→<div align="right"><a href="#top">⬆</a></div>
+   391→
+   392→<a name="id-faq"></a>
+   393→### ❓ 15. FAQ
+   394→
+   395→<details>
+   396→<summary><b>Kenapa hanya satu route (<code>/</code>)?</b></summary>
+   397→
+   398→Sesuai whitepaper & prinsip sandbox: satu SPA state-based lebih cepat, bebas reload, dan seluruh 19 section dilompati via Command Palette — pengalaman ala aplikasi desktop di browser.
+   399→</details>
+   400→
+   401→<details>
+   402→<summary><b>Apakah data saya aman di SQLite lokal?</b></summary>
+   403→
+   404→Ya untuk skenario personal: password pengguna di-hash scrypt, seluruh kredensial brankas terenkripsi AES-256-GCM, dan API tidak pernah mengembalikan field rahasia. Untuk multi-device, migrasi ke PostgreSQL + RLS sudah masuk roadmap v4.0.
+   405→</details>
+   406→
+   407→<details>
+   408→<summary><b>Kenapa jam/tanggal baru muncul setelah halaman terbuka?</b></summary>
+   409→
+   410→Itu fitur, bukan bug — *hydration-safe by design*. Data waktu memang hanya dirender di klien agar server (UTC) tidak pernah bertabrakan dengan klien (WIB). Nol hydration error terverifikasi.
+   411→</details>
+   412→
+   413→<details>
+   414→<summary><b>Bagaimana menambah jenis data baru?</b></summary>
+   415→
+   416→Tambahkan model di `schema.prisma` → `bun run db:push` → daftarkan di `MODELS` (API) + konfigurasi resource di `gunara.tsx` → section muncul. Tidak perlu endpoint baru; API-nya generik.
+   417→</details>
+   418→
+   419→<div align="right"><a href="#top">⬆</a></div>
+   420→
+   421→<a name="id-lisensi"></a>
+   422→### 📜 16. Lisensi & Kontak
+   423→
+   424→**© 2026 Gunara Corp — All rights reserved.** Perangkat lunak pribadi yang ditempa khusus untuk Gugun Gunara; tidak untuk didistribusikan tanpa izin tertulis.
+   425→
+   426→| Kanal | Alamat |
+   427→|---|---|
+   428→| 🏢 **PusatPerizinan.com** | [pusatperizinan.com](https://pusatperizinan.com) — konsultan perizinan usaha #1, 1.247+ klien |
+   429→| 🌐 **Gunara Web** | [gunara.web.id](https://gunara.web.id) — 46 kategori layanan, 38 provinsi, proses ISO 9001:2015 |
+   430→| 📄 **Dokumentasi Strategi** | [github.com/prabudanling/doc-gunaracorp](https://github.com/prabudanling/doc-gunaracorp) |
+   431→
+   432→<br/>
+   433→
+   434→---
+   435→
+   436→<a name="english"></a>
+   437→## 🇬🇧 ENGLISH
+   438→
+   439→> *"Clear water flows from the upstream. Build your upstream once, service your engines weekly, run your downstream daily — results become consequences, not accidents."*
+   440→> — **The GUNARA OS Charter**
+   441→
+   442→<div align="right"><a href="#top">⬆ back to top</a></div>
+   443→
+   444→<a name="en-about"></a>
+   445→### ✨ 1. About GUNARA OS
+   446→
+   447→**GUNARA OS** is not just another notes app. It is a **complete operating system for life and business** — built to Notion-grade standards, but architected around *one person*: Gugun Gunara, owner of Gunara Corp. Every pixel, every database table, and every animation is designed to answer a single question: *"what must I do today so that, ten years from now, I win?"* The private strategy documents (14 files in `github-docs/`) were never left idle as text — they were compiled into living, interactive software.
+   448→
+   449→The app fuses three worlds that usually live apart: a **personal OS** (life philosophy, daily discipline, family finances), a **licensing consultancy back office** (CRM, ISO-stage permit tracker, 46-service catalog), and a **strategic arsenal** (43-domain portfolio, 15 AI agents with ready-to-use role-activation prompts, a 90-day roadmap). All three coexist in one lean SPA with a single Command Center as the cockpit.
+   450→
+   451→Three advantages that set it apart:
+   452→
+   453→| 🏛️ | 🛡️ | ⚡ |
+   454→|---|---|---|
+   455→| **Upstream → Engine → Downstream architecture** | **Enterprise-grade security** | **Premium experience** |
+   456→| The water philosophy: fill upstream once, service engines weekly, run downstream daily | scrypt, AES-256-GCM, secrets auto-stripped from every API response | Full cinematic animation, ⌘K palette, dark mode, live WIB clock |
+   457→
+   458→<div align="right"><a href="#top">⬆</a></div>
+   459→
+   460→<a name="en-philosophy"></a>
+   461→### 🌊 2. Architecture Philosophy: Upstream · Engine · Downstream
+   462→
+   463→The system mirrors a river. The **Upstream (Hulu)** is the spring — personal charter, 10-year vision, OKRs, and curriculum — *filled once*, then serving as the source of every decision. The **Engines (Mesin)** are five value generators — finance, CRM, relations & politics, learning, documentation — *serviced weekly* so they keep producing. The **Downstream (Hilir)** is the daily flow — morning ritual, weekly review, backlog, decision log — *executed daily* without rethinking. The Business Hub sits at the river mouth, where all value flows into real revenue.
+   464→
+   465→```mermaid
+   466→flowchart TB
+   467→    subgraph UP["🌊 UPSTREAM — Fill Once"]
+   468→        A["Charter · 10-Year Vision<br/>OKRs · Curriculum"]
+   469→    end
+   470→    subgraph ENG["⚙️ ENGINES — Service Weekly"]
+   471→        B1["💰 Finance"] ~~~ B2["👥 CRM"] ~~~ B3["🤝 Relations"]
+   472→        B4["📚 Learning"] ~~~ B5["🏆 Documentation"]
+   473→    end
+   474→    subgraph DOWN["🏃 DOWNSTREAM — Run Daily"]
+   475→        C1["☀️ Daily Ritual"] ~~~ C2["📅 Weekly Review"]
+   476→        C3["📥 Backlog"] ~~~ C4["⚖️ Decisions Log"]
+   477→    end
+   478→    subgraph HUB["💼 BUSINESS HUB — Gunara Group"]
+   479→        D1["🗂️ Business DB"] ~~~ D2["📜 ISO Permits"]
+   480→        D3["🔐 Digital Assets"]
+   481→    end
+   482→    UP --> ENG --> DOWN --> HUB
+   483→```
+   484→
+   485→<div align="right"><a href="#top">⬆</a></div>
+   486→
+   487→<a name="en-map"></a>
+   488→### 🧭 3. The Complete Map: 19 Sections
+   489→
+   490→One route (`/`), nineteen state-based sections — every one of them reachable through the **Command Palette (⌘K / Ctrl+K)**.
+   491→
+   492→| # | Section | Group | Purpose |
+   493→|---|---------|-------|---------|
+   494→| 0 | 🏠 **Command Center** | Home | Daily cockpit: greeting, live WIB clock, 3 MITs, energy, stats, active phase |
+   495→| 1 | 🌊 **Charter · Vision · OKR** | UPSTREAM | The source of everything — filled once |
+   496→| 2 | 💰 **Finance** | ENGINES | Debts + auto installments, receivables, cashflow, child savings |
+   497→| 3 | 👥 **Clients / CRM** | ENGINES | Client master + follow-up pipeline with auto LATE flag |
+   498→| 4 | 🤝 **Relations & Politics** | ENGINES | Trust ledger & strategic activities |
+   499→| 5 | 📚 **Learning** | ENGINES | Learning journal — the double engine |
+   500→| 6 | 🏆 **Documentation** | ENGINES | Win Log + Case Studies |
+   501→| 7 | ☀️ **Daily Ritual** | DOWNSTREAM | 3 morning MITs + evening reflection + history |
+   502→| 8 | 📅 **Weekly Review** | DOWNSTREAM | 30 minutes every weekend |
+   503→| 9 | 📥 **Backlog** | DOWNSTREAM | The idea prison — so focus never leaks |
+   504→| 10 | ⚖️ **Decisions Log** | DOWNSTREAM | Decision history & rationale |
+   505→| 11 | 🌐 **43 Domains** | ARSENAL | Domain portfolio + per-domain mission |
+   506→| 12 | 🤖 **15 AI Agents** | ARSENAL | Role-activation prompts, copy-ready |
+   507→| 13 | 🛡️ **System** | ARSENAL | 10 absolute rules, weekly pattern, bad-day protocol, master prompt, stack |
+   508→| 14 | 🎯 **90-Day Roadmap** | ARSENAL | Grand Build Phases 0–5 with gates |
+   509→| 15 | 💼 **Business Database** | BUSINESS HUB | 360° customers (25 fields) + companies & legal entities |
+   510→| 16 | 📜 **Permits** | BUSINESS HUB | 5-stage ISO kanban, 46-service catalog, License Finder |
+   511→| 17 | 🔐 **Digital Assets** | BUSINESS HUB | Social media, encrypted credential vault, users & roles |
+   512→| 18 | 📚 **Full Tutorial** | GUIDE | 18 step-by-step guides covering every feature |
+   513→
+   514→<div align="right"><a href="#top">⬆</a></div>
+   515→
+   516→<a name="en-features"></a>
+   517→### 💎 4. Key Features
+   518→
+   519→#### 🏠 Command Center
+   520→- **Live WIB clock + dynamic greeting** — morning/afternoon/evening/night follows real time, rendered client-safe with zero hydration errors.
+   521→- **3 MITs (Most Important Tasks)** — write, check with a spring animation, auto-synced with the Daily Ritual.
+   522→- **Energy slider 1–10** — animated number pop; values ≤ 4 trigger the bad-day protocol warning.
+   523→- **4 CountUp stat cards** — outstanding debt, receivables, active clients, late follow-ups; all animate from their previous values.
+   524→- **Business Hub strip** — customer, running permit, and pipeline value (Rp) summary that jumps straight to the tracker.
+   525→
+   526→#### 🏃 Discipline Engines
+   527→- **Finance 4-in-1** — debts with an *Install* dialog (remaining balance computed instantly + toast), receivables, cashflow, child savings.
+   528→- **Smart CRM** — pipeline counters and an automatic red **LATE** flag for overdue follow-ups.
+   529→- **Daily Ritual** — morning MITs + evening reflection in one log per date (auto upsert).
+   530→
+   531→#### 🛡️ Strategic Arsenal
+   532→- **15 AI Agents** — one card per wave, a *Role Activation* dialog with the full prompt, copy button → "Copied!".
+   533→- **43-Domain Portfolio** — editable table + tier-grouped grid (INTI / GATEWAY / FUTURE / PARKED).
+   534→- **Grand Build Roadmap** — Phases 0–5 with graduation gates, 90-day calendar, financial targets.
+   535→
+   536→#### 💼 Business Hub — The Licensing Consultant's Toolkit
+   537→- **360° Customer Database** — 25 metadata fields: ID card (KTP), tax ID (NPWP), address, lead source, communication preference, status, notes.
+   538→- **Company Database** — NIB, NPWP, AHU deeds, KBLI codes, capital, group status (Gunara Consultant ⇄ PusatPerizinan.com).
+   539→- **5-Stage Permit Kanban (ISO 9001:2015)** — Consultation → Documents → Filing → Issued → Handover; customer status auto-transitions as cards move.
+   540→- **License Finder (Rules Engine)** — pick 10 sectors × business scale × 9 condition flags → prioritized permit list (MANDATORY → OPTIONAL) + cost estimates + **one click into the tracker**.
+   541→- **46-Service Catalog** — price, duration, responsible agency; real-time search.
+   542→- **Credential Vault (11 categories)** — GOOGLE_EMAIL, OSS, TAX, BANK, etc.; all encrypted with AES-256-GCM and guarded by an OWASP-style *Vault Health Check*.
+   543→- **Social Media Assets** — platform, handle, follower metrics, content cadence, access status.
+   544→- **Users & Roles** — OWNER/ADMIN/STAFF with scrypt passwords + NIST password-strength indicator.
+   545→
+   546→<div align="right"><a href="#top">⬆</a></div>
+   547→
+   548→<a name="en-gallery"></a>
+   549→### 🖼️ 5. Gallery
+   550→
+   551→| Command Center | ISO Permit Kanban |
+   552→|---|---|
+   553→| <img src="download/v3-dashboard.png" width="440" alt="Command Center"/> | <img src="download/v3-perizinan-kanban.png" width="440" alt="5-Stage Kanban"/> |
+   554→| **License Finder — Rules Engine** | **Recommendations + Cost Estimates** |
+   555→| <img src="download/v3-finder.png" width="440" alt="License Finder"/> | <img src="download/v3-finder-hasil.png" width="440" alt="Finder Results"/> |
+   556→| **Business Database** | **Encrypted Vault + Reveal** |
+   557→| <img src="download/v3-bisnis.png" width="440" alt="Business Database"/> | <img src="download/v3-vault-reveal.png" width="440" alt="Vault"/> |
+   558→| **Dark Mode** | **Mobile Responsive 390px** |
+   559→| <img src="download/v3-dark.png" width="440" alt="Dark Mode"/> | <img src="download/v3-mobile.png" width="440" alt="Mobile"/> |
+   560→
+   561→<div align="right"><a href="#top">⬆</a></div>
+   562→
+   563→<a name="en-database"></a>
+   564→### 🗄️ 6. Database — The Most Complete Metadata: 26 Models
+   565→
+   566→A single `prisma/schema.prisma` governs **26 models** on **SQLite** (PostgreSQL-ready for multi-device). Every resource is served through a **generic API** at `/api/data/[resource]` driven by one configuration map — adding a new resource requires zero new endpoints.
+   567→
+   568→| Domain | Models | Role |
+   569→|---|---|---|
+   570→| ⚙️ System Core | `Setting` | Charter, 10-year vision, OKRs, curriculum, master prompt, bad-day protocol, active phase |
+   571→| 💰 Finance | `Debt` `DebtPayment` `Receivable` `Cashflow` `ChildSaving` | Debts + installment history, receivables, cashflow, child savings |
+   572→| 👥 CRM | `Client` `FollowUp` | Client master, pipeline, follow-ups with auto LATE flag |
+   573→| 🤝 Relations | `Relation` `PoliticalActivity` | Trust ledger, strategic political activity |
+   574→| 📚 Growth | `LearningJournal` `WinLog` `CaseStudy` | Learning journal (double engine), wins, case studies |
+   575→| 🏃 Discipline | `DailyLog` `WeeklyReview` `BacklogItem` `DecisionLog` | Daily ritual, weekly review, idea prison, decision history |
+   576→| 🛡️ Arsenal | `Domain` `Agent` | 43-domain portfolio, 15 AI agents + role-activation prompts |
+   577→| 💼 Business Hub | `AppUser` `Customer` `Company` `SocialAccount` `VaultEntry` `PermitApplication` `ServiceCatalog` | Users & roles, 25-field customers, companies & legalities, social accounts, 11-category vault, 5-stage permit tracker, 46-service catalog |
+   578→
+   579→<details>
+   580→<summary>🔍 <b>Open: Business Hub key-field highlights (click)</b></summary>
+   581→
+   582→| Model | Field Highlights |
+   583→|---|---|
+   584→| `AppUser` | email, password (scrypt + salt), role (OWNER/ADMIN/STAFF), 2FA flag, failedAttempts, lastLogin |
+   585→| `Customer` | name, KTP, NPWP, phone/WA, email, full address, lead source, communication preference, status, business value, notes — **25 fields, 360°** |
+   586→| `Company` | legal name, brand, NIB, NPWP, AHU deed, KBLI, authorized capital, address, group status, ownership relation |
+   587→| `SocialAccount` | platform, username, url, password (AES-256-GCM), linked email, followers, content cadence, access status |
+   588→| `VaultEntry` | 11 categories (GOOGLE_EMAIL, OSS, TAX, BANK, HOSTING, DOMAIN, etc.), username, encrypted password + PIN + backup codes, notes, health flags |
+   589→| `PermitApplication` | client, service, **ISO stages 1–5**, deal price, agency fees, down payment, balance, per-stage dates & PIC, auto status |
+   590→| `ServiceCatalog` | name, category, agency, price, duration, requirements — **46 services seeded** from the gunara.web.id audit |
+   591→</details>
+   592→
+   593→<div align="right"><a href="#top">⬆</a></div>
+   594→
+   595→<a name="en-security"></a>
+   596→### 🔐 7. Security — The Zero-Compromise Vault
+   597→
+   598→Security follows an *assume breach* principle: even if the database leaks, credentials stay protected.
+   599→
+   600→| Layer | Mechanism | Reference Standard |
+   601→|---|---|---|
+   602→| User passwords | **scrypt** + unique salt, timing-safe verification | NIST SP 800-63B |
+   603→| Vault credentials | **AES-256-GCM** encrypted at-rest (password, PIN, backup codes) | OWASP |
+   604→| API exposure | All secret fields **auto-stripped** from every list/detail response | Privacy by Design |
+   605→| On-demand reveal | Exclusive per-item endpoint `?reveal=password\|pin\|backupCodes` | Least Privilege |
+   606→| Password strength | `passwordStrength()` — length, character variety, common patterns | NIST SP 800-63B |
+   607→| Vault Health | Health scan: missing 2FA, duplicate/weak passwords, backup cadence | OWASP AMM |
+   608→| Key management | `GUNARA_VAULT_KEY` via environment — never in code | 12-Factor Config |
+   609→
+   610→<details>
+   611→<summary>🔐 <b>Open: encryption flow (diagram)</b></summary>
+   612→
+   613→```mermaid
+   614→flowchart LR
+   615→    P["✍️ Secret input<br/>(password/PIN/codes)"] --> E["🔐 AES-256-GCM<br/>encrypt + unique IV"]
+   616→    E --> DB[("💾 SQLite<br/>ciphertext only")]
+   617→    DB --> S["📦 GET /api/data/*<br/>secrets stripped"]
+   618→    S --> U["🖥️ UI: locked row"]
+   619→    DB -.->|"GET ?reveal=password<br/>exclusive endpoint"| R["🔓 On-demand reveal<br/>+ audited row"]
+   620→```
+   621→</details>
+   622→
+   623→<div align="right"><a href="#top">⬆</a></div>
+   624→
+   625→<a name="en-standards"></a>
+   626→### 🌍 8. International Standards Applied
+   627→
+   628→| Standard | Concrete Implementation in Code |
+   629→|---|---|
+   630→| **ISO 9001:2015** | 5-stage permit workflow with automatic stage-to-stage status — measurable, documented, auditable processes |
+   631→| **NIST SP 800-63B** | Password policy + timing-safe scrypt hashing |
+   632→| **OWASP Top 10 / AMM** | Encryption at-rest, secret stripping, Vault Health |
+   633→| **WCAG 2.2** | `focus-visible` rings, `prefers-reduced-motion` support (CSS + Framer), full `aria-label` coverage, `sr-only` dialog descriptions |
+   634→| **12-Factor App** | Environment-based config, one codebase, stateless processes |
+   635→| **SemVer** | vMAJOR.MINOR.PATCH + structured changelog (see Version History) |
+   636→| **Clean Architecture** | Config-driven UI from a single map (`gunara.tsx`), generic API, centralized motion library (`motion.tsx`) |
+   637→| **End-to-End Type Safety** | TypeScript 5 + Prisma Client generated from schema |
+   638→
+   639→Engineering doctrine: **hydration-safe by design** (all time-based data renders client-only via `useMounted()`/`useNow()`), **reduced-motion first**, and **0 errors · 0 warnings lint** as the merge gate.
+   640→
+   641→<div align="right"><a href="#top">⬆</a></div>
+   642→
+   643→<a name="en-getting-started"></a>
+   644→### 🚀 9. Getting Started
+   645→
+   646→**Prerequisites:** [Bun](https://bun.sh) ≥ 1.1 *(or Node.js ≥ 20)* · Git
+   647→
+   648→```bash
+   649→# 1️⃣ Clone & enter
+   650→git clone https://github.com/prabudanling/doc-gunaracorp.git gunara-os
+   651→cd gunara-os
+   652→
+   653→# 2️⃣ Install dependencies
+   654→bun install            # or: npm install
+   655→
+   656→# 3️⃣ Set up the environment — create a .env file:
+   657→#    DATABASE_URL="file:./db/custom.db"
+   658→#    GUNARA_VAULT_KEY="replace-with-a-random-secret-of-32+-chars"
+   659→
+   660→# 4️⃣ Shape the database from 26 models
+   661→bun run db:push
+   662→
+   663→# 5️⃣ Seed initial data (idempotent — safe to re-run)
+   664→bun scripts/seed.ts         # OS: charter, vision, OKRs, 43 domains, 15 agents, etc.
+   665→bun scripts/seed-bisnis.ts  # Business Hub: 46 services, 2 companies, OWNER, sample data
+   666→
+   667→# 6️⃣ Launch
+   668→bun run dev
+   669→# → open http://localhost:3000 — welcome to your cockpit 🚀
+   670→```
+   671→
+   672→> 💡 **Production:** `bun run build` then `bun run start` (standalone server). Always set a strong, random `GUNARA_VAULT_KEY` — this key encrypts the entire credential vault.
+   673→
+   674→<div align="right"><a href="#top">⬆</a></div>
+   675→
+   676→<a name="en-scripts"></a>
+   677→### 📜 10. Scripts & Commands
+   678→
+   679→| Command | Purpose |
+   680→|---|---|
+   681→| `bun run dev` | Development server (Turbopack) + logs to `dev.log` |
+   682→| `bun run build` | Production build (standalone + static) |
+   683→| `bun run start` | Run the production server |
+   684→| `bun run lint` | ESLint — currently **0 errors · 0 warnings** |
+   685→| `bun run db:push` | Sync Prisma schema → SQLite |
+   686→| `bun run db:generate` | Generate Prisma Client |
+   687→| `bun run db:migrate` / `db:reset` | Formal migrations & database reset |
+   688→| `bun scripts/seed.ts` | Seed OS (settings, 43 domains, 15 agents, win logs) |
+   689→| `bun scripts/seed-bisnis.ts` | Seed Business Hub (46 services, companies, OWNER, vault, socials, customers, permits) |
+   690→
+   691→<div align="right"><a href="#top">⬆</a></div>
+   692→
+   693→<a name="en-shortcuts"></a>
+   694→### ⌨️ 11. Keyboard Shortcuts
+   695→
+   696→| Shortcut | Action |
+   697→|---|---|
+   698→| <kbd>⌘</kbd> / <kbd>Ctrl</kbd> + <kbd>K</kbd> | Open the **Command Palette** — jump to 19 sections |
+   699→| <kbd>↑</kbd> <kbd>↓</kbd> | Navigate filtered results |
+   700→| <kbd>↵</kbd> | Jump to the selected section |
+   701→| <kbd>Esc</kbd> | Close palette / drawer / dialog |
+   702→| 🌗 **Theme button** | Light ⇄ Dark (persisted, defaults to system) |
+   703→
+   704→<div align="right"><a href="#top">⬆</a></div>
+   705→
+   706→<a name="en-structure"></a>
+   707→### 🏗️ 12. Project Structure
+   708→
+   709→<details>
+   710→<summary>📂 <b>Open the project tree (click)</b></summary>
+   711→
+   712→```text
+   713→src/
+   714→├── app/
+   715→│   ├── page.tsx                    # Single-route SPA — AppShell
+   716→│   ├── layout.tsx                  # Root layout + ThemeProvider
+   717→│   ├── globals.css                 # Emerald-imperium theme + animation keyframes
+   718→│   └── api/data/
+   719→│       ├── route.ts                # Health check
+   720→│       └── [resource]/
+   721→│           ├── route.ts            # GET list + POST (auto-encryption)
+   722→│           └── [id]/route.ts       # PATCH, DELETE, GET ?reveal=
+   723→├── components/
+   724→│   ├── app/
+   725→│   │   ├── app-shell.tsx           # Frame: sidebar, header, section transitions
+   726→│   │   ├── dashboard.tsx           # Command Center
+   727→│   │   ├── hulu.tsx                # Charter · Vision · OKR
+   728→│   │   ├── finance.tsx crm.tsx mesin-lain.tsx   # ENGINE modules
+   729→│   │   ├── hilir.tsx               # Ritual · Review · Backlog · Decisions
+   730→│   │   ├── arsenal.tsx             # Domains · Agents · System · Roadmap
+   731→│   │   ├── bisnis.tsx              # Customer & Company database
+   732→│   │   ├── perizinan.tsx           # ISO Kanban · Catalog · License Finder
+   733→│   │   ├── aset-digital.tsx        # Socials · Vault · Users
+   734→│   │   ├── guide.tsx               # 18 tutorials
+   735→│   │   ├── command-palette.tsx     # ⌘K (cmdk)
+   736→│   │   ├── motion.tsx              # Shared motion library (FadeUp, CountUp, etc.)
+   737→│   │   ├── record-table.tsx        # Generic table + form dialog
+   738→│   │   └── use-records.ts nav.ts   # Hooks & navigation map
+   739→│   └── ui/                         # shadcn/ui — 40+ Radix components
+   740→├── lib/
+   741→│   ├── gunara.tsx                  # Config for 20+ resources (fields, forms, tones)
+   742→│   ├── crypto.ts                   # scrypt · AES-256-GCM · passwordStrength
+   743→│   ├── license-finder.ts           # Rules engine: 10 sectors × 9 flags
+   744→│   ├── service-catalog.ts          # 46 services
+   745→│   └── db.ts                       # Prisma singleton
+   746→└── prisma/schema.prisma            # 26 models — the most complete metadata
+   747→scripts/
+   748→├── seed.ts                         # OS seed
+   749→├── seed-bisnis.ts                  # Business Hub seed
+   750→└── restart-dev.sh                  # Clean-restart the dev server
+   751→```
+   752→</details>
+   753→
+   754→<div align="right"><a href="#top">⬆</a></div>
+   755→
+   756→<a name="en-versions"></a>
+   757→### 📖 13. Version History
+   758→
+   759→| Version | Codename | Highlights |
+   760→|---|---|---|
+   761→| **v1.0** | *Foundation* | Core OS: Upstream/Engine/Downstream architecture, 19 Prisma models, 15-section SPA, generic CRUD, seeded from 14 strategy documents |
+   762→| **v2.0** | *Motion* | Full animation (FadeUp, Stagger, CountUp, FloatingOrbs), ⌘K Command Palette, persisted dark mode, live WIB clock, skeleton shimmer, date hydration fix |
+   763→| **v2.1** | *Hardening* | Immune to the Radix/React 19.2 hydration error class, 0/0 lint, complete dialog accessibility, sr-only SheetDescription |
+   764→| **v3.0** | *Business Hub* | **The most complete metadata**: +7 models (AppUser, Customer, Company, SocialAccount, VaultEntry, PermitApplication, ServiceCatalog), two-company site audit, 5-stage ISO kanban, License Finder, AES-256-GCM vault, 18 in-app tutorials |
+   765→
+   766→<div align="right"><a href="#top">⬆</a></div>
+   767→
+   768→<a name="en-roadmap"></a>
+   769→### 🗺️ 14. Roadmap
+   770→
+   771→- [x] **v1.0** — Complete personal OS
+   772→- [x] **v2.0** — Full animation + international-standard features
+   773→- [x] **v2.1** — Hydration & accessibility hardening
+   774→- [x] **v3.0** — Business Hub + most-complete metadata + consultant tools
+   775→- [ ] **v4.0 — *Convergence*** *(designed)*
+   776→  - 🔑 Google OAuth login (next-auth already prepared in dependencies)
+   777→  - 🤖 In-app AI Copilot (z-ai-web-dev-sdk): automatic weekly summaries, client follow-up drafting
+   778→  - 📲 PWA + offline mode, push reminders for the daily ritual
+   779→  - ☁️ Multi-device sync — SQLite → PostgreSQL migration
+   780→- [ ] **v5.0 — *Gunara Group Scale***
+   781→  - 📱 Mobile app (React Native) sharing the same API
+   782→  - 🏢 Multi-tenant for teams — granular per-division roles
+   783→  - 📊 BI dashboard: pipeline trends, revenue per agency, lead conversion
+   784→  - 💬 WhatsApp API integration for automated client follow-ups
+   785→
+   786→<div align="right"><a href="#top">⬆</a></div>
+   787→
+   788→<a name="en-faq"></a>
+   789→### ❓ 15. FAQ
+   790→
+   791→<details>
+   792→<summary><b>Why is there only one route (<code>/</code>)?</b></summary>
+   793→
+   794→By design, per the whitepaper & sandbox principle: a single state-based SPA is faster, reload-free, and all 19 sections are reachable through the Command Palette — a desktop-app experience inside the browser.
+   795→</details>
+   796→
+   797→<details>
+   798→<summary><b>Is my data safe in local SQLite?</b></summary>
+   799→
+   800→Yes for the personal scenario: user passwords are scrypt-hashed, all vault credentials are AES-256-GCM encrypted, and the API never returns secret fields. For multi-device, the PostgreSQL + RLS migration is on the v4.0 roadmap.
+   801→</details>
+   802→
+   803→<details>
+   804→<summary><b>Why does the clock/date only appear after the page opens?</b></summary>
+   805→
+   806→That is a feature, not a bug — *hydration-safe by design*. Time-based data intentionally renders on the client only, so the server (UTC) can never disagree with the client (WIB). Zero hydration errors, verified.
+   807→</details>
+   808→
+   809→<details>
+   810→<summary><b>How do I add a new type of data?</b></summary>
+   811→
+   812→Add a model to `schema.prisma` → `bun run db:push` → register it in `MODELS` (API) + the resource config in `gunara.tsx` → the section appears. No new endpoints needed; the API is generic.
+   813→</details>
+   814→
+   815→<div align="right"><a href="#top">⬆</a></div>
+   816→
+   817→<a name="en-license"></a>
+   818→### 📜 16. License & Contact
+   819→
+   820→**© 2026 Gunara Corp — All rights reserved.** Private software custom-forged for Gugun Gunara; not for distribution without written permission.
+   821→
+   822→| Channel | Address |
+   823→|---|---|
+   824→| 🏢 **PusatPerizinan.com** | [pusatperizinan.com](https://pusatperizinan.com) — #1 business licensing consultancy, 1,247+ clients |
+   825→| 🌐 **Gunara Web** | [gunara.web.id](https://gunara.web.id) — 46 service categories, 38 provinces, ISO 9001:2015 process |
+   826→| 📄 **Strategy Documentation** | [github.com/prabudanling/doc-gunaracorp](https://github.com/prabudanling/doc-gunaracorp) |
+   827→
+   828→<br/>
+   829→
+   830→<br/>
+   831→
+   832→---
+   833→
+   834→<div align="center">
+   835→
+   836→## ⚡ GUNARA OS
+   837→
+   838→**🇮🇩 Karena hidup dan bisnismu layak memiliki sistem operasi.**
+   839→**🇬🇧 Because your life and business deserve an operating system.**
+   840→
+   841→| | |
+   842→|---|---|
+   843→| 🧠 **Engineered doctrine** | Master Polymath · Sage Universal · Ultimate Problem Solver |
+   844→| 🏛️ **Council** | 46 cross-domain expert councils, distilled into software |
+   845→| 🛠️ **Stack** | Next.js 16 · React 19 · TypeScript 5 · Tailwind 4 · Prisma 6 · Framer Motion 12 |
+   846→| 🌏 **Origin** | Dibangun dengan ❤️ + ☕ di Indonesia — Built with love & coffee in Indonesia |
+   847→
+   848→<br/>
+   849→
+   850→<a href="#bahasa-indonesia">🇮🇩 Baca versi Bahasa Indonesia</a> &nbsp;·&nbsp; <a href="#english">🇬🇧 Read the English version</a> &nbsp;·&nbsp; <a href="#top">⬆ Naik ke puncak / Back to top</a>
+   851→
+   852→<br/>
+   853→
+   854→**© 2026 Gunara Corp™ · v3.0 "Bisnis Hub" · All rights reserved**
+   855→
+   856→</div>
+   857→
+   858→

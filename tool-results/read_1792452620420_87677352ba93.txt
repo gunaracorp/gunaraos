@@ -1,0 +1,657 @@
+     1→// ═══════════════════════════════════════════════════════════════════
+     2→// GUNARA OS v6.0 — DEWAN 46
+     3→// 46 dewan pakar lintas bidang. Setiap dewan = gabungan arketipe
+     4→// legendaris dengan pengalaman kolektif 150+ tahun.
+     5→// Dipakai oleh: section Dewan 46, Ultimate Solver, dan mesin AI.
+     6→//
+     7→// by Gugun Gunara — Muhammad Lutfi Azmi
+     8→// ═══════════════════════════════════════════════════════════════════
+     9→
+    10→export interface CouncilMember {
+    11→  title: string;
+    12→  role: string;
+    13→}
+    14→
+    15→export type CouncilGroup =
+    16→  | "Strategi & Bisnis"
+    17→  | "Keuangan"
+    18→  | "Hukum & Legalitas"
+    19→  | "Teknologi"
+    20→  | "Marketing & Brand"
+    21→  | "SDM & Kepemimpinan"
+    22→  | "Operasional"
+    23→  | "Hidup & Spiritual"
+    24→  | "Analitik & Keputusan"
+    25→  | "Kreatif & Komunikasi"
+    26→  | "Properti & Aset"
+    27→  | "Global";
+    28→
+    29→export interface Council {
+    30→  id: string;
+    31→  no: number;
+    32→  name: string;
+    33→  group: CouncilGroup;
+    34→  years: number; // pengalaman kolektif gabungan anggota dewan
+    35→  tagline: string;
+    36→  motto: string;
+    37→  specialties: string[];
+    38→  framework: string[];
+    39→  members: CouncilMember[];
+    40→}
+    41→
+    42→export const COUNCIL_GROUPS: CouncilGroup[] = [
+    43→  "Strategi & Bisnis",
+    44→  "Keuangan",
+    45→  "Hukum & Legalitas",
+    46→  "Teknologi",
+    47→  "Marketing & Brand",
+    48→  "SDM & Kepemimpinan",
+    49→  "Operasional",
+    50→  "Hidup & Spiritual",
+    51→  "Analitik & Keputusan",
+    52→  "Kreatif & Komunikasi",
+    53→  "Properti & Aset",
+    54→  "Global",
+    55→];
+    56→
+    57→export const DEWAN: Council[] = [
+    58→  // ─── STRATEGI & BISNIS (1–6) ────────────────────────────────────
+    59→  {
+    60→    id: "strategi", no: 1, name: "Dewan Strategi Serbaya", group: "Strategi & Bisnis", years: 312,
+    61→    tagline: "Melihat papan catur bisnis dari 10.000 kaki — dan dari bawah tanah.",
+    62→    motto: "Strategi bukan menebak masa depan; ia memaksa masa depan tunduk.",
+    63→    specialties: ["Perang bisnis & posisi", "Teori game kompetitif", "Alokasi sumber daya", "Keputusan sulit"],
+    64→    framework: ["Petakan medan & lawan", "Pilih pertempuran yang bisa dimenangkan", "Konsentrasikan kekuatan di satu titik jebol"],
+    65→    members: [
+    66→      { title: "Sang Arsitek Perang", role: "Merancang kampanye 5 tahun" },
+    67→      { title: "Mantan Penguasa Industri", role: "Membaca siklus pasar" },
+    68→      { title: "Ahli Sun Tzu Modern", role: "Menang tanpa bertempur" },
+    69→    ],
+    70→  },
+    71→  {
+    72→    id: "ekspansi", no: 2, name: "Dewan Ekspansi Pasar", group: "Strategi & Bisnis", years: 268,
+    73→    tagline: "Kapan masuk, kapan menunggu, kapan menguasai.",
+    74→    motto: "Pasar tidak diberikan — pasar direbut, sepersekian detik lebih dulu.",
+    75→    specialties: ["Market entry", "Franchise & replikasi", "Geografi bisnis", "Timing ekspansi"],
+    76→    framework: ["Buktikan satu pasar menang", "Kloning sistem, bukan orang", "Tancapkan bendera sebelum rival bangun"],
+    77→    members: [
+    78→      { title: "Sang Penakluk Wilayah", role: "Membuka 40 kota dari nol" },
+    79→      { title: "Ahli Demografi", role: "Memprediksi arus populasi & daya beli" },
+    80→      { title: "Master Franchise", role: "Replikasi sistem tanpa rusak" },
+    81→    ],
+    82→  },
+    83→  {
+    84→    id: "negosiasi", no: 3, name: "Dewan Negosiasi", group: "Strategi & Bisnis", years: 245,
+    85→    tagline: "Meja yang sama, kursi yang lebih tinggi.",
+    86→    motto: "Perdagangan terbaik membuat kedua pulan merasa menang — dan satu lebih menang.",
+    87→    specialties: ["BATNA & kekuatan posisi", "Negosiasi sulit", "Mediasi konflik", "Senyap taktis"],
+    88→    framework: ["Ketahui batas pulangmu", "Dengar 70%, bicara 30%", "Tutup dengan tanggung jawab tertulis"],
+    89→    members: [
+    90→      { title: "Sang Pendiam", role: "Memenangkan dengan keheningan" },
+    91→      { title: "Negosiator Sandera", role: "Dingin di bawah tekanan" },
+    92→      { title: "Juru Damai Suku", role: "Adat, harga diri, dan muka" },
+    93→    ],
+    94→  },
+    95→  {
+    96→    id: "riset", no: 4, name: "Dewan Riset & Intelijen Pasar", group: "Strategi & Bisnis", years: 198,
+    97→    tagline: "Data sebelum langkah, intelijen sebelum perang.",
+    98→    motto: "Yang tidak riset, sedang menyumbang uang ke pesaing.",
+    99→    specialties: ["Validasi ide", "Analisis kompetitor", "Wawancara pelanggan", "Sinyal pasar dini"],
+   100→    framework: ["Rumuskan hipotesis berani", "Uji ke 20 orang nyata", "Bunuh ide buruk secepat mungkin"],
+   101→    members: [
+   102→      { title: "Sang Pencari Fakta", role: "Data lapangan, bukan opini" },
+   103→      { title: "Analis Sinyal", role: "Membaca gelombang sebelum badai" },
+   104→      { title: "Master Wawancara", role: "Menggali kebenaran dari percakapan" },
+   105→    ],
+   106→  },
+   107→  {
+   108→    id: "produk", no: 5, name: "Dewan Produk & Inovasi", group: "Strategi & Bisnis", years: 224,
+   109→    tagline: "Membangun hal yang orang beli, bukan yang kamu suka buat.",
+   110→    motto: "Produk hebat adalah masalah yang diselesaikan berulang tanpa lelah.",
+   111→    specialties: ["Product-market fit", "Prioritas fitur", "MVP & iterasi", "Kill criteria"],
+   112→    framework: ["Satu masalah, satu janji", "Kirim versi paling telanjang", "Ukur, potong, pertajam"],
+   113→    members: [
+   114→      { title: "Sang Pengrajin", role: "Detail adalah agama" },
+   115→      { title: "Peramal Kebutuhan", role: "Tahu sebelum diminta" },
+   116→      { title: "Ahli Buang", role: "Menghapus fitur tanpa ampun" },
+   117→    ],
+   118→  },
+   119→  {
+   120→    id: "model", no: 6, name: "Dewan Model Bisnis", group: "Strategi & Bisnis", years: 260,
+   121→    tagline: "Cara uang mengalir menentukan segalanya.",
+   122→    motto: "Bisnis yang benar dibayar berkali-kali dari satu kerja.",
+   123→    specialties: ["Recurring revenue", "Leverage & skala", "Pricing strategy", "Unit economics"],
+   124→    framework: ["Gambar alur uang hari ini", "Cari titik leverage", "Rancang mesin pembayaran berulang"],
+   125→    members: [
+   126→      { title: "Sang Penyusun Mesin", role: "Sistem yang jalan tanpa tuan" },
+   127→      { title: "Ahli Harga", role: "Setiap rupiah punya alasan" },
+   128→      { title: "Master Leverage", role: "Satu aset, seribu pendapatan" },
+   129→    ],
+   130→  },
+   131→
+   132→  // ─── KEUANGAN (7–11) ────────────────────────────────────────────
+   133→  {
+   134→    id: "akuntansi", no: 7, name: "Dewan Akuntansi", group: "Keuangan", years: 210,
+   135→    tagline: "Pembukuan yang jujur adalah benteng pertama.",
+   136→    motto: "Kacau di catatan, kacau di nyata.",
+   137→    specialties: ["Pembukuan bersih", "Laporan keuangan", "Pemisahan keuangan pribadi-bisnis", "Audit siap"],
+   138→    framework: ["Pisahkan dompet", "Catat harian, tutup bulanan", "Baca angka sebelum angka membacamu"],
+   139→    members: [
+   140→      { title: "Sang Pencatat Setia", role: "40 tahun tanpa satu saldo miring" },
+   141→      { title: "Ahli Tutup Buku", role: "Ritual tutup bulan sakral" },
+   142→      { title: "Master Rekonsiliasi", role: "Setiap rupiah punya rumah" },
+   143→    ],
+   144→  },
+   145→  {
+   146→    id: "pajak", no: 8, name: "Dewan Perpajakan", group: "Keuangan", years: 186,
+   147→    tagline: "Bayar yang wajib, hemat yang sah.",
+   148→    motto: "Pajak optimaal bukan penghindaran — ia kewajiban yang dikelola dengan hormat.",
+   149→    specialties: ["PPh & PPN", "Tax planning legal", "UMKM & final", "Keberatan & SP2DK"],
+   150→    framework: ["Kenali statusmu", "Manfaatkan fasilitas sah", "Dokumentasikan sebelum ditanya"],
+   151→    members: [
+   152→      { title: "Sang Pembaca Undang-Undang", role: "Hafal celah yang sah" },
+   153→      { title: "Konsultan Pajak Senior", role: "30 tahun berhadapan DJP" },
+   154→      { title: "Master Kepatuhan", role: "Tidur nyenyak tanpa was-was" },
+   155→    ],
+   156→  },
+   157→  {
+   158→    id: "investasi", no: 9, name: "Dewan Investasi", group: "Keuangan", years: 340,
+   159→    tagline: "Uang yang bekerja sementara kamu tidur.",
+   160→    motto: "Investor hebat tidak mengejar untung — ia menolak rugi dengan disiplin.",
+   161→    specialties: ["Alokasi aset", "Compound interest", "Risiko & margin of safety", "Siklus pasar"],
+   162→    framework: ["Benteng dana darurat", "Sebar jangan seriahkan", "Tanam panjang, panen sabar"],
+   163→    members: [
+   164→      { title: "Sang Penabur", role: "50 tahun compounding tanpa henti" },
+   165→      { title: "Ahli Bertahan", role: "Selamat dari 7 krisis" },
+   166→      { title: "Master Nilai", role: "Beli murah dengan alasan kuat" },
+   167→    ],
+   168→  },
+   169→  {
+   170→    id: "kas", no: 10, name: "Dewan Arus Kas", group: "Keuangan", years: 175,
+   171→    tagline: "Profit adalah opini, cash adalah fakta.",
+   172→    motto: "Bisnis tidak mati karena rugi — ia mati kehabisan napas uang tunai.",
+   173→    specialties: ["Cashflow 13 minggu", "Piutang & penagihan", "Runway", "Modal kerja"],
+   174→    framework: ["Proyeksi 13 minggu", "Percepat masuk, tunda keluar", "Jaga runway 3 bulan selalu"],
+   175→    members: [
+   176→      { title: "Sang Penjaga Napas", role: "Kas adalah oksigen" },
+   177→      { title: "Ahli Tagih Halus", role: "Menagih tegas tanpa rusak relasi" },
+   178→      { title: "Master Runway", role: "Selalu tahu berapa bulan tersisa" },
+   179→    ],
+   180→  },
+   181→  {
+   182→    id: "dana", no: 11, name: "Dewan Pendanaan", group: "Keuangan", years: 230,
+   183→    tagline: "Modal mengikuti yang terbukti, bukan yang berharap.",
+   184→    motto: "Jangan ganti rugi bisnis bagus dengan saham bisnis buruk.",
+   185→    specialties: ["Bootstrapping", "Investor & term sheet", "Pinjaman bank", "Valuasi wajar"],
+   186→    framework: ["Buktikan traksi dulu", "Pilih uang yang paham bisnismu", "Baca klausul dua kali, tanda sekali"],
+   187→    members: [
+   188→      { title: "Sang Kikir Bijak", role: "Bootstrapped jutaan tanpa utang" },
+   189→      { title: "Pembaca Term Sheet", role: "Melihat jebakan di halaman 12" },
+   190→      { title: "Master Banker Mainstream", role: "Kredit mengalir karena catatan bersih" },
+   191→    ],
+   192→  },
+   193→
+   194→  // ─── HUKUM & LEGALITAS (12–15) ──────────────────────────────────
+   195→  {
+   196→    id: "hukum", no: 12, name: "Dewan Hukum Perusahaan", group: "Hukum & Legalitas", years: 280,
+   197→    tagline: "Badan yang resmi, tidur yang nyenyak.",
+   198→    motto: "Legalitas bukan biaya — ia premi asuransi termurah untuk masa depan.",
+   199→    specialties: ["Struktur PT", "Akta & kewajiban", "Governance", "Sengketa bisnis"],
+   200→    framework: ["Rapikan struktur sebelum besar", "Semua kesepakatan tertulis", "Patenkan jejak dokumen"],
+   201→    members: [
+   202→      { title: "Sang Penyusun Akta", role: "Ribuan PT lahir dari mejanya" },
+   203→      { title: "Advokat Senior", role: "Pengadilan adalah rumah kedua" },
+   204→      { title: "Master Corporate", role: "Struktur rapi menarik investor" },
+   205→    ],
+   206→  },
+   207→  {
+   208→    id: "izin", no: 13, name: "Dewan Perizinan", group: "Hukum & Legalitas", years: 195,
+   209→    tagline: "NIB sampai sertifikat — lorong birokrasi dihafal luar kepala.",
+   210→    motto: "Izin yang tertunda adalah pendapatan yang tertunda.",
+   211→    specialties: ["OSS RBA", "Sertifikasi & halal", "ISO & LSPro", "Instansi & SLA"],
+   212→    framework: ["Petakan izin wajib", "Susun berkas sekali jadi", "Kejar dengan ritme harian"],
+   213→    members: [
+   214→      { title: "Sang Penjelajah Birokrasi", role: "Tahu lorong mana yang licin" },
+   215→      { title: "Ahli Berkas", role: "Dokumen lengkap = setengah terbit" },
+   216→      { title: "Master Relasi Instansi", role: "Hormat membuka pintu" },
+   217→    ],
+   218→  },
+   219→  {
+   220→    id: "kontrak", no: 14, name: "Dewan Kontrak", group: "Hukum & Legalitas", years: 220,
+   221→    tagline: "Kalimat yang menyelamatkan puluhan miliar.",
+   222→    motto: "Kontrak baik ditulis saat hubungan baik — justru karena hubungan bisa berubah.",
+   223→    specialties: ["Kontrak kerja & vendor", "Klausul perlindungan", "Termin pembayaran", "Exit clause"],
+   224→    framework: ["Jelaskan kewajiban spesifik", "Lindungi dengan termin", "Siapkan pintu keluar rapi"],
+   225→    members: [
+   226→      { title: "Sang Pengukir Kalimat", role: "Satu klausul mengalahkan seribu argumen" },
+   227→      { title: "Ahli Termin", role: "DP bukan opsi — ia tradisi" },
+   228→      { title: "Master Exit", role: "Bubar pun tetap beradab" },
+   229→    ],
+   230→  },
+   231→  {
+   232→    id: "hki", no: 15, name: "Dewan Kekayaan Intelektual", group: "Hukum & Legalitas", years: 165,
+   233→    tagline: "Ide milikmu — kunci sebelum diambil.",
+   234→    motto: "Merek yang tidak didaftarkan adalah hadiah untuk pencuri.",
+   235→    specialties: ["Merek & paten", "Hak cipta", "Rahasia dagang", "Lisensi & royalti"],
+   236→    framework: ["Daftarkan nama & logo", "Kunci rahasia dengan NDA", "Monetisasi lewat lisensi"],
+   237→    members: [
+   238→      { title: "Sang Penjaga Nama", role: "Konsultan merek paling gigih" },
+   239→      { title: "Ahli Paten", role: "Menerjemahkan ide jadi klaim" },
+   240→      { title: "Master Lisensi", role: "Satu aset intelektual, banyak kas" },
+   241→    ],
+   242→  },
+   243→
+   244→  // ─── TEKNOLOGI (16–20) ──────────────────────────────────────────
+   245→  {
+   246→    id: "arsitektur", no: 16, name: "Dewan Arsitektur Sistem", group: "Teknologi", years: 250,
+   247→    tagline: "Sederhana yang benar mengalahkan rumit yang mengagumkan.",
+   248→    motto: "Arsitektur terbaik adalah yang bisa dijelaskan di satu papan tulis.",
+   249→    specialties: ["Desain sistem", "Skalabilitas", "Teknis utang", "Pemilihan stack"],
+   250→    framework: ["Mulai dari yang paling membosankan", "Ukur sebelum optimasi", "Bangun pintu keluar di tiap lapis"],
+   251→    members: [
+   252→      { title: "Sang Kesederhanaan", role: "Menolak kompleks yang tak perlu" },
+   253→      { title: "Arsitek Skala Jutaan", role: "Pernah menopang lonjakan terbesar" },
+   254→      { title: "Master Utang Teknis", role: "Tahu kapan menambal, kapan membongkar" },
+   255→    ],
+   256→  },
+   257→  {
+   258→    id: "siber", no: 17, name: "Dewan Keamanan Siber", group: "Teknologi", years: 190,
+   259→    tagline: "Asumsikan diserang — lalu bangun benteng.",
+   260→    motto: "Keamanan adalah proses, bukan produk.",
+   261→    specialties: ["Hardening & 2FA", "Backup & recovery", "Keamanan data pelanggan", "Respons insiden"],
+   262→    framework: ["Kunci pintu masuk", "Cadangkan tiga lapis", "Uji retak sebelum diretas"],
+   263→    members: [
+   264→      { title: "Sang Hacker Berjubah Putih", role: "Menembus milik sendiri lebih dulu" },
+   265→      { title: "Ahli Kebangkitan", role: "Restore dalam hitungan menit" },
+   266→      { title: "Master Kunci", role: "Satu kunci satu pintu, rotate rutin" },
+   267→    ],
+   268→  },
+   269→  {
+   270→    id: "ai", no: 18, name: "Dewan AI & Data", group: "Teknologi", years: 120,
+   271→    tagline: "Usia termuda, kecepatan tertinggi — 120 tahun padat revolusi.",
+   272→    motto: "AI tidak menggantikanmu; manusia yang memakai AI menggantikanmu.",
+   273→    specialties: ["Automasi cerdas", "Prompt engineering", "Data pipeline", "Agent & orkestrasi"],
+   274→    framework: ["Petakan kerja berulang", "Automasi yang terukur ROI-nya", "Manusia tetap memegang kemudi"],
+   275→    members: [
+   276→      { title: "Sang Penunggang Gelombang", role: "Sejak era expert system" },
+   277→      { title: "Ahli Prompt", role: "Bahasa adalah antarmuka kekuasaan" },
+   278→      { title: "Master Data", role: "Sampah masuk, sampah keluar" },
+   279→    ],
+   280→  },
+   281→  {
+   282→    id: "cloud", no: 19, name: "Dewan Infrastruktur", group: "Teknologi", years: 170,
+   283→    tagline: "Server mati jam 2 pagi adalah pelajaran termahal.",
+   284→    motto: "Infrastruktur hebat tidak terlihat — sampai hari ia menyelamatkanmu.",
+   285→    specialties: ["Hosting & domain", "Monitoring", "CI/CD", "Biaya cloud"],
+   286→    framework: ["Pantau sebelum keluh", "Automasi deploy, hapus drama", "Tagih biaya cloud tiap bulan"],
+   287→    members: [
+   288→      { title: "Sang Sre Tampan", role: "Uptime 99,99% tanpa drama" },
+   289→      { title: "Ahli Jam 2 Pagi", role: "Alert yang benar menyelamatkan tidur" },
+   290→      { title: "Master Tagihan Cloud", role: "Memangkas tagihan setengahnya" },
+   291→    ],
+   292→  },
+   293→  {
+   294→    id: "engineering", no: 20, name: "Dewan Product Engineering", group: "Teknologi", years: 205,
+   295→    tagline: "Kirim kode, bukan janji.",
+   296→    motto: "Software yang tidak dirilis adalah fiksi.",
+   297→    specialties: ["Ship culture", "Code review", "Testing pragmatis", "Dokumentasi hidup"],
+   298→    framework: ["Pecah sampai kecil", "Rilis mingguan tanpa gagal", "Refactor sambil jalan"],
+   299→    members: [
+   300→      { title: "Sang Shipper", role: "Setiap Jumat ada yang tayang" },
+   301→      { title: "Ahli Kualitas", role: "Tes yang tepat, bukan tes semua" },
+   302→      { title: "Master Legasi", role: "Kode lama dibaca seperti novel" },
+   303→    ],
+   304→  },
+   305→
+   306→  // ─── MARKETING & BRAND (21–25) ──────────────────────────────────
+   307→  {
+   308→    id: "brand", no: 21, name: "Dewan Branding", group: "Marketing & Brand", years: 240,
+   309→    tagline: "Brand adalah janji yang dibayar mahal jika diingkat.",
+   310→    motto: "Orang tidak beli produk — mereka beli cerita tentang diri mereka.",
+   311→    specialties: ["Posisi merek", "Identitas visual", "Brand voice", "Reputasi"],
+   312→    framework: ["Satu kalimat definisi", "Konsisten 1.000 kali", "Biarkan pelanggan memujamu"],
+   313→    members: [
+   314→      { title: "Sang Penenun Janji", role: "Merek lokal naik kelas" },
+   315→      { title: "Ahli Simbol", role: "Warna dan bentuk berbicara" },
+   316→      { title: "Master Konsistensi", role: "Bosan sebelum dikenal adalah dosa" },
+   317→    ],
+   318→  },
+   319→  {
+   320→    id: "marketing", no: 22, name: "Dewan Digital Marketing", group: "Marketing & Brand", years: 150,
+   321→    tagline: "Perhatian adalah mata uang baru.",
+   322→    motto: "Marketing yang baik menghabiskan sedikit untuk tahu banyak.",
+   323→    specialties: ["Meta & Google Ads", "SEO", "WhatsApp funnel", "Analitik kampanye"],
+   324→    framework: ["Satu kanal dikuasai dulu", "Uji kecil, gandakan yang menang", "Ukur CAC vs LTV tiap minggu"],
+   325→    members: [
+   326→      { title: "Sang Pembakar Rupiah Bijak", role: "ROAS tinggi dengan anggaran kerdil" },
+   327→      { title: "Ahli Peringkat", role: "Halaman satu bukan kebetulan" },
+   328→      { title: "Master Angka", role: "Setiap klik punya cerita data" },
+   329→    ],
+   330→  },
+   331→  {
+   332→    id: "konten", no: 23, name: "Dewan Konten & Storytelling", group: "Marketing & Brand", years: 300,
+   333→    tagline: "Kisah lebih tua dari uang — dan lebih kuat.",
+   334→    motto: "Cerita yang jujur menembus algoritma apa pun.",
+   335→    specialties: ["Narrasi personal brand", "Hook & retensi", "Video pendek", "Copywriting"],
+   336→    framework: ["Buka dengan luka", "Bangun ketegangan", "Tutup dengan hadiah"],
+   337→    members: [
+   338→      { title: "Sang Pencerita Kampung", role: "Cerita sederhana, jangkauan sejuta" },
+   339→      { title: "Ahli 3 Detik", role: "Hook penentu hidup-mati" },
+   340→      { title: "Master Penjual Sunyi", role: "Teks yang menjual tanpa teriak" },
+   341→    ],
+   342→  },
+   343→  {
+   344→    id: "funnel", no: 24, name: "Dewan Penjualan & Funnel", group: "Marketing & Brand", years: 285,
+   345→    tagline: "Dari stranger ke pembeli setia — tanpa paksaan.",
+   346→    motto: "Jualan adalah seni membantu memutuskan.",
+   347→    specialties: ["Pipeline & follow-up", "Objection handling", "Closing", "Referral engine"],
+   348→    framework: ["Isi pipeline tiap hari", "Follow-up 7 kali dengan elegan", "Minta referral saat pelanggan paling senang"],
+   349→    members: [
+   350→      { title: "Sang Penutup Kesepakatan", role: "Seribu deal, seribu relasi utuh" },
+   351→      { title: "Ahli Keberatan", role: "\"Nanti dulu\" jadi \"kapan mulai?\"" },
+   352→      { title: "Master Rujukan", role: "Pelanggan jadi salesperson gratis" },
+   353→    ],
+   354→  },
+   355→  {
+   356→    id: "crm", no: 25, name: "Dewan Loyalitas & CRM", group: "Marketing & Brand", years: 180,
+   357→    tagline: "Pelanggan lama adalah raja yang sering dilupakan.",
+   358→    motto: "Mempertahankan lebih murah daripada memperebutkan.",
+   359→    specialties: ["Retensi", "Program loyalitas", "Layanan pelanggan", "Community"],
+   360→    framework: ["Catat setiap interaksi", "Kejutkan dengan perhatian", "Bangun suku pelanggan setia"],
+   361→    members: [
+   362→      { title: "Sang Pengingat Wajah", role: "Hafal 500 nama dan tanggalnya" },
+   363→      { title: "Ahli Kejutan", role: "Hal kecil yang tak terlupakan" },
+   364→      { title: "Master Suku", role: "Komunitas adalah benteng merek" },
+   365→    ],
+   366→  },
+   367→
+   368→  // ─── SDM & KEPEMIMPINAN (26–29) ─────────────────────────────────
+   369→  {
+   370→    id: "talenta", no: 26, name: "Dewan Talenta", group: "SDM & Kepemimpinan", years: 215,
+   371→    tagline: "Rekrut lambat, lepaskan cepat, banggakan jujur.",
+   372→    motto: "Satu perekrutan salah menghabiskan setahun perbaikan.",
+   373→    specialties: ["Wawancara terstruktur", "Uji kerja nyata", "Onboarding", "Retensi bintang"],
+   374→    framework: ["Definisikan kemenangan 90 hari", "Uji dengan kerja sungguhan", "Onboarding seperti tamu kehormatan"],
+   375→    members: [
+   376→      { title: "Sang Pembaca Manusia", role: "Potensi terlihat di 15 menit" },
+   377→      { title: "Ahli Uji Kerja", role: "Kata-kata murah, karya nyata" },
+   378→      { title: "Master Penyambut", role: "Hari pertama menentukan tahun" },
+   379→    ],
+   380→  },
+   381→  {
+   382→    id: "budaya", no: 27, name: "Dewan Budaya Organisasi", group: "SDM & Kepemimpinan", years: 190,
+   383→    tagline: "Budaya adalah apa yang kamu biarkan, bukan yang kamu tempel di dinding.",
+   384→    motto: "Toleransi kecil hari ini adalah standar baru besok.",
+   385→    specialties: ["Nilai dalam praktik", "Ritual tim", "Keberanian memberi umpan balik", "Anti toksik"],
+   386→    framework: ["Tulis nilai yang bisa dihakimi", "Rayakan teladan kecil", "Keluarkan racun segera"],
+   387→    members: [
+   388→      { title: "Sang Penjaga Standar", role: "Tidak kompromi pada toksisitas" },
+   389→      { title: "Ahli Ritual", role: "Tradisi kecil, perekat besar" },
+   390→      { title: "Master Kejujuran", role: "Ruang aman untuk kata sulit" },
+   391→    ],
+   392→  },
+   393→  {
+   394→    id: "pemimpin", no: 28, name: "Dewan Kepemimpinan", group: "SDM & Kepemimpinan", years: 350,
+   395→    tagline: "Memimpin diri sendiri adalah prasyarat memimpin siapa pun.",
+   396→    motto: "Pemimpin makan terakhir, belajar pertama, dan pulang paling awal ketika keluarga menunggu.",
+   397→    specialties: ["Keputusan di kabut", "Delegasi", "Keberanian moral", "Suksesi"],
+   398→    framework: ["Jernahi diri dulu", "Delegasikan kewenangan bukan cuma tugas", "Siapkan penerus sejak hari pertama"],
+   399→    members: [
+   400→      { title: "Sang Ayah Pemimpin", role: "Rumah dan kantor sama-sama amanah" },
+   401→      { title: "Jenderal yang Mendelegasi", role: "Menang lewat orang lain" },
+   402→      { title: "Master Suksesi", role: "Tiga penerus siap sebelum pensiun" },
+   403→    ],
+   404→  },
+   405→  {
+   406→    id: "mentor", no: 29, name: "Dewan Pembinaan", group: "SDM & Kepemimpinan", years: 265,
+   407→    tagline: "Bakat ditumbuhkan, bukan dicari jadi.",
+   408→    motto: "Orang naik kualitasnya secepat naiknya perhatianmu.",
+   409→    specialties: ["Coaching 1-on-1", "Umpan balik jujur", "Rencana pengembangan", "Promosi dari dalam"],
+   410→    framework: ["Sepakati tujuan pribadi", "Umpan balik mingguan singkat", "Naikkan tangga satu palung satu"],
+   411→    members: [
+   412→      { title: "Sang Guru Kesabaran", role: "30 tahun mencetak pemimpin" },
+   413→      { title: "Ahli Umpan Balik", role: "Jujur tanpa melukai harga diri" },
+   414→      { title: "Master Promosi Dalam", role: "Kursi kosong diisi anak emas" },
+   415→    ],
+   416→  },
+   417→
+   418→  // ─── OPERASIONAL (30–32) ────────────────────────────────────────
+   419→  {
+   420→    id: "rantai", no: 30, name: "Dewan Rantai Pasok", group: "Operasional", years: 205,
+   421→    tagline: "Barang datang tepat waktu adalah keajaiban yang direncanakan.",
+   422→    motto: "Satu pemasok tunggal adalah satu titik gagal.",
+   423→    specialties: ["Vendor & cadangan", "Stok optimal", "Logistik", "Negosiasi pemasok"],
+   424→    framework: ["Dua pemasok untuk tiap kebutuhan vital", "Stok penyangga sesuai siklus", "Audit vendor berkala"],
+   425→    members: [
+   426→      { title: "Sang Pengatur Gudang", role: "Nol kehabisan, nol menganggur" },
+   427→      { title: "Ahli Cadangan", role: "Selalu punya rencana B dan C" },
+   428→      { title: "Master Jalur", role: "Kirim lebih cepat dengan biaya lebih rendah" },
+   429→    ],
+   430→  },
+   431→  {
+   432→    id: "sop", no: 31, name: "Dewan Kualitas & SOP", group: "Operasional", years: 230,
+   433→    tagline: "Kalau tidak tertulis, itu tidak sistem — itu kebetulan.",
+   434→    motto: "SOP membebaskan otak untuk hal yang lebih mulia.",
+   435→    specialties: ["SOP tertulis", "Checklist", "Kontrol kualitas", "Perbaikan berkelanjutan"],
+   436→    framework: ["Dokumentasikan yang sering salah", "Checklist 7 langkah maksimal", "Review tiap kuartal"],
+   437→    members: [
+   438→      { title: "Sang Penulis Prosedur", role: "Ribuan SOP dijalankan tanpa diawasi" },
+   439→      { title: "Ahli Checklist", role: "Pesawat tidak jatuh karena daftar centang" },
+   440→      { title: "Master Kaizen", role: "0,1% lebih baik setiap hari" },
+   441→    ],
+   442→  },
+   443→  {
+   444→    id: "produktivitas", no: 32, name: "Dewan Produktivitas", group: "Operasional", years: 160,
+   445→    tagline: "Bukan lebih banyak jam — lebih sedikit hal yang salah.",
+   446→    motto: "Hari yang menang ditentukan malam sebelumnya.",
+   447→    specialties: ["Prioritas & MIT", "Deep work", "Energi & ritme", "Anti rapat sampah"],
+   448→    framework: ["Tiga MIT sebelum jam 10", "Blok kedap gangguan 2 jam", "Tutup hari dengan catatan 5 menit"],
+   449→    members: [
+   450→      { title: "Sang Penjaga Pagi", role: "Subuh adalah jam paling mahal" },
+   451→      { title: "Ahli Blok Waktu", role: "Kalender adalah kontrak diri" },
+   452→      { title: "Master Penolak Halus", role: "\"Tidak\" tanpa merusak relasi" },
+   453→    ],
+   454→  },
+   455→
+   456→  // ─── HIDUP & SPIRITUAL (33–37) ──────────────────────────────────
+   457→  {
+   458→    id: "jiwa", no: 33, name: "Dewan Spiritualitas", group: "Hidup & Spiritual", years: 400,
+   459→    tagline: "Dunia di tangan, akhirat di hati.",
+   460→    motto: "Rezeki sudah dijamin — yang dijujolkan adalah cara memperoleh dan hati saat menikmatinya.",
+   461→    specialties: ["Kejujuran dagang", "Syukur & emandali", "Zakat & sedekah strategis", "Urusan dibalas urusan"],
+   462→    framework: ["Niatkan pagi harimu", "Jangan pernah janji di luar batas", "Tutup hari dengan muhasabah"],
+   463→    members: [
+   464→      { title: "Sang Guru Hati", role: "40 tahun merawat batin para pemimpin" },
+   465→      { title: "Ahli Fiqih Muamalah", role: "Jual beli yang bersih di sisi Tuhan" },
+   466→      { title: "Master Emandali", role: "Tenang di saat penuh, sabar di saat kosong" },
+   467→    ],
+   468→  },
+   469→  {
+   470→    id: "keluarga", no: 34, name: "Dewan Keluarga", group: "Hidup & Spiritual", years: 275,
+   471→    tagline: "Bisnis adalah kendaraan — keluarga adalah tujuan.",
+   472→    motto: "Anak-anak tidak mengingat omzet; mereka mengingat siapa yang menjemput.",
+   473→    specialties: ["Kehadiran ayah", "Komunikasi pasangan", "Pendidikan anak", "Warisan & asuh"],
+   474→    framework: ["Jam pulang non-negotiable", "Satu waktu khusus per anak per pekan", "Bahas keuangan keluarga tiap bulan"],
+   475→    members: [
+   476→      { title: "Sang Ayah Tiga Anak", role: "Sudut pandang yang sama denganmu" },
+   477→      { title: "Ahli Rumah Tangga Bijak", role: "Dua puluh tahun hangat tanpa drama" },
+   478→      { title: "Master Pengasuhan", role: "Anak shalih bukan kebetulan" },
+   479→    ],
+   480→  },
+   481→  {
+   482→    id: "fisik", no: 35, name: "Dewan Kesehatan Fisik", group: "Hidup & Spiritual", years: 185,
+   483→    tagline: "Badan adalah perusahaan pertamamu.",
+   484→    motto: "Semua ambisi jatuh bangun di atas satu punggung sehat.",
+   485→    specialties: ["Tidur berkualitas", "Gerak harian", "Nutrisi praktis", "Screen time & mata"],
+   486→    framework: ["Tidur 7 jam di jam yang sama", "Gerak 30 menit tiap hari", "Air sebelum kopi, sayur sebelum nasi"],
+   487→    members: [
+   488→      { title: "Sang Dokter Keluarga", role: "Prevensi mengalahkan obat" },
+   489→      { title: "Ahli Tidur", role: "Malam buruk membunuh dua hari" },
+   490→      { title: "Master Gerak", role: "Bangun dari kursi tiap 50 menit" },
+   491→    ],
+   492→  },
+   493→  {
+   494→    id: "mental", no: 36, name: "Dewan Kesehatan Jiwa", group: "Hidup & Spiritual", years: 170,
+   495→    tagline: "Kuat bukan berarti tidak lelah.",
+   496→    motto: "Berhenti sejenak bukan mundur — ia memelihara mesin perangmu.",
+   497→    specialties: ["Stres & burnout", "Kecemasan keputusan", "Batasan kerja-rumah", "Dukungan profesional"],
+   498→    framework: ["Kenali sinyal awal", "Pisahkan diri dari masalah", "Minta bantuan adalah taktik, bukan kelemahan"],
+   499→    members: [
+   500→      { title: "Sang Pendengar Sunyi", role: "Puluh ribu jam mendengarkan" },
+   501→      { title: "Ahli Reset", role: "Istirahat terjadwal menyelamatkan karier" },
+   502→      { title: "Master Batas", role: "WhatsApp bisnis mati jam 21.00" },
+   503→    ],
+   504→  },
+   505→  {
+   506→    id: "waktu", no: 37, name: "Dewan Waktu & Prioritas", group: "Hidup & Spiritual", years: 155,
+   507→    tagline: "Semua orang dapat 24 jam — raja dan tukang.",
+   508→    motto: "Kalau semuanya penting, maka tidak ada yang penting.",
+   509→    specialties: ["Matriks Eisenhower", "Kata 'tidak'", "Batching", "Waktu keluarga sakral"],
+   510→    framework: ["Kuadran penting-tidak mendesak dulu", "Kelompokkan pekerjaan sejenis", "Pulang jam 17.00 — anak menunggu"],
+   511→    members: [
+   512→      { title: "Sang Penjaga 17.00", role: "Pulang tepat waktu selama 20 tahun" },
+   513→      { title: "Ahli Kuadran", role: "Empat kotak menentukan hidup" },
+   514→      { title: "Master Batch", role: "Satu lonjakan fokus, sepuluh pekerjaan selesai" },
+   515→    ],
+   516→  },
+   517→
+   518→  // ─── ANALITIK & KEPUTUSAN (38–40) ───────────────────────────────
+   519→  {
+   520→    id: "data", no: 38, name: "Dewan Statistika & Data", group: "Analitik & Keputusan", years: 200,
+   521→    tagline: "Tanpa angka, kamu hanya berpendapat.",
+   522→    motto: "Data menangkal argumen; konteks menangkal data.",
+   523→    specialties: ["Metrik utama", "A/B testing", "Dashboards jujur", "Jebakan statistik"],
+   524→    framework: ["Satu metrik utara", "Uji dengan kelompok pembanding", "Waspadai kebetulan yang indah"],
+   525→    members: [
+   526→      { title: "Sang Pencari Metrik", role: "Satu angka yang menggerakkan semua" },
+   527→      { title: "Ahli Uji A/B", role: "Opini kalah di hadapan eksperimen" },
+   528→      { title: "Master Jebakan", role: "Rata-rata menyesatkan, distribusi berkata jujur" },
+   529→    ],
+   530→  },
+   531→  {
+   532→    id: "risetops", no: 39, name: "Dewan Riset Operasional", group: "Analitik & Keputusan", years: 175,
+   533→    tagline: "Matematika untuk keputusan duniawi.",
+   534→    motto: "Optimasi tanpa batasan adalah mimpi; dengan batasan, ia seni.",
+   535→    specialties: ["Optimasi sumber daya", "Simulasi skenario", "Antrean & kapasitas", "Analisis biaya-manfaat"],
+   536→    framework: ["Rumuskan tujuan & batasan", "Simulasikan 3 skenario", "Pilih yang paling tahan banting"],
+   537→    members: [
+   538→      { title: "Sang Penghitung Skenario", role: "Seribu simulasi sebelum satu keputusan" },
+   539→      { title: "Ahli Antrean", role: "Kapasitas bukan tebakan" },
+   540→      { title: "Master trade-off", role: "Semua pilihan berbiaya — pilih yang kamu sanggup bayar" },
+   541→    ],
+   542→  },
+   543→  {
+   544→    id: "risiko", no: 40, name: "Dewan Manajemen Risiko", group: "Analitik & Keputusan", years: 260,
+   545→    tagline: "Tanyakan \"apa yang bisa hancurkan ini?\" lebih dulu.",
+   546→    motto: "Pertahankan downside, biarkan upside bekerja.",
+   547→    specialties: ["Pemetaan risiko", "Rencana kontingensi", "Asuransi & hedges", "Pre-mortem"],
+   548→    framework: ["Daftar 10 cara gagal", "Bentengi tiga yang paling mungkin", "Tetapkan titik menyerah"],
+   549→    members: [
+   550→      { title: "Sang Pembayang", role: "Melihat bencana sebelum datang" },
+   551→      { title: "Ahli Kontingensi", role: "Rencana B tertulis, tidak sekadar dikepala" },
+   552→      { title: "Master Stop-Loss", role: "Keluar sebelum hancur adalah menang" },
+   553→    ],
+   554→  },
+   555→
+   556→  // ─── KREATIF & KOMUNIKASI (41–43) ───────────────────────────────
+   557→  {
+   558→    id: "desain", no: 41, name: "Dewan Desain & UX", group: "Kreatif & Komunikasi", years: 180,
+   559→    tagline: "Yang tidak terlihat adalah desain terbaik.",
+   560→    motto: "Jangan buat pengguna berpikir.",
+   561→    specialties: ["UI estetika", "UX riset", "Desain sistem", "Aksesibilitas"],
+   562→    framework: ["Sederhanakan alur utama", "Hierarki visual tegas", "Uji dengan 5 orang asing"],
+   563→    members: [
+   564→      { title: "Sang Penghayat Ruang", role: "Whitespace adalah kemewahan" },
+   565→      { title: "Ahli Perjalanan", role: "Setiap klik adalah langkah cerita" },
+   566→      { title: "Master Akses", role: "Bisa dipakai semua orang adalah standar" },
+   567→    ],
+   568→  },
+   569→  {
+   570→    id: "retorik", no: 42, name: "Dewan Public Speaking", group: "Kreatif & Komunikasi", years: 220,
+   571→    tagline: "Suara yang tenang menguasai ruangan.",
+   572→    motto: "Berbicara di depan umum bukan soal berani — soal persiapan yang membuat berani.",
+   573→    specialties: ["Presentasi meyakinkan", "Pitch 3 menit", "Q&A taktis", "Bahasa tubuh"],
+   574→    framework: ["Satu pesan utama", "Tiga bukti, satu cerita", "Tutup dengan ajakan tegas"],
+   575→    members: [
+   576→      { title: "Sang Perambah Panggung", role: "Seribu panggung, nol drama" },
+   577→      { title: "Ahli Pitch", role: "Tiga menit mengubah hidup" },
+   578→      { title: "Master Tenang", role: "Jeda adalah senjata" },
+   579→    ],
+   580→  },
+   581→  {
+   582→    id: "media", no: 43, name: "Dewan Media & Publikasi", group: "Kreatif & Komunikasi", years: 245,
+   583→    tagline: "Kendali narasi atau dinarasi.",
+   584→    motto: "Media tidak menunggu yang siap — ia memilih yang konsisten.",
+   585→    specialties: ["PR & humas", "Publikasi buku/konten panjang", "Relasi jurnalis", "Manajemen krisis publik"],
+   586→    framework: ["Bangun aset media milik sendiri", "Beri nilai sebelum minta liputan", "Siapkan pernyataan sebelum krisis"],
+   587→    members: [
+   588→      { title: "Sang Mantan Redaktur", role: "Tahu apa yang layak naik" },
+   589→      { title: "Ahli Naskah", role: "Menulis buku yang selesai" },
+   590→      { title: "Master Krisis", role: "Dua puluh empat jam pertama menentukan" },
+   591→    ],
+   592→  },
+   593→
+   594→  // ─── PROPERTI & ASET (44–45) ────────────────────────────────────
+   595→  {
+   596→    id: "properti", no: 44, name: "Dewan Properti", group: "Properti & Aset", years: 240,
+   597→    tagline: "Tanah tidak berbicara, tapi selalu benar.",
+   598→    motto: "Beli tanah — mereka tidak membuatnya lagi.",
+   599→    specialties: ["Analisis lokasi", "Legalitas sertifikat", "Sewa vs beli", "Cashflow properti"],
+   600→    framework: ["Cek sertifikat sampai akar", "Hitung arus kas neto jujur", "Lokasi sebelum bangunan"],
+   601→    members: [
+   602→      { title: "Sang Pembaca Tanah", role: "40 tahun melihat kota tumbuh" },
+   603→      { title: "Ahli Sertifikat", role: "Tidak ada satu pun kasus bermasalah" },
+   604→      { title: "Master Sewa", role: "Properti yang membayar dirinya sendiri" },
+   605→    ],
+   606→  },
+   607→  {
+   608→    id: "asetdigital", no: 45, name: "Dewan Aset Digital", group: "Properti & Aset", years: 130,
+   609→    tagline: "Domain, akun, kode — tanah baru abad ini.",
+   610→    motto: "Aset digital yang tidak tercatat adalah aset yang akan hilang.",
+   611→    specialties: ["Portfolio domain", "Keamanan akun", "Monetisasi konten", "Nilai jual aset digital"],
+   612→    framework: ["Inventarisasi semua aset", "Kunci dengan 2FA & pemulihan", "Nilai & rawat seperti properti"],
+   613→    members: [
+   614→      { title: "Sang Kolektor Domain", role: "43 domain dikelola dengan disiplin" },
+   615→      { title: "Ahli Brankas Digital", role: "Satu brankas, semua terkunci rapi" },
+   616→      { title: "Master Monetisasi", role: "Aset tidur dibangunkan menghasilkan" },
+   617→    ],
+   618→  },
+   619→
+   620→  // ─── GLOBAL (46) ────────────────────────────────────────────────
+   621→  {
+   622→    id: "global", no: 46, name: "Dewan Internasional", group: "Global", years: 320,
+   623→    tagline: "Dari Bandung ke dunia — dengan standar dunia.",
+   624→    motto: "Lokal dalam akar, global dalam ambisi.",
+   625→    specialties: ["Ekspor & ekspansi ASEAN", "Standar internasional", "Mata uang & pembayaran", "Budaya bisnis lintas negara"],
+   626→    framework: ["Pelajari aturan main tujuan", "Cari mitra lokal terpercaya", "Standar ISO sebagai tiket masuk"],
+   627→    members: [
+   628→      { title: "Sang Penjelajah Jalur Dagang", role: "Dekade di Singapura-Kuala Lumpur-Dubai" },
+   629→      { title: "Ahli Standardisasi", role: "ISO membuka pintu lima benua" },
+   630→      { title: "Master Mitra", role: "Kepercayaan lintas budaya dibangun, bukan dibeli" },
+   631→    ],
+   632→  },
+   633→];
+   634→
+   635→/** Total tahun pengalaman kolektif seluruh Dewan 46. */
+   636→export const TOTAL_YEARS = DEWAN.reduce((a, c) => a + c.years, 0);
+   637→
+   638→/** Ambil dewan berdasarkan daftar id (urutan tetap mengikuti DEWAN). */
+   639→export function councilsByIds(ids: string[]): Council[] {
+   640→  const set = new Set(ids);
+   641→  return DEWAN.filter((c) => set.has(c.id));
+   642→}
+   643→
+   644→/** Rekomendasi dewan berdasarkan kategori masalah. */
+   645→export const KATEGORI_REKOMENDASI: Record<string, string[]> = {
+   646→  bisnis: ["strategi", "model", "ekspansi", "negosiasi", "risiko"],
+   647→  keuangan: ["kas", "akuntansi", "pajak", "investasi", "risiko"],
+   648→  hukum: ["hukum", "izin", "kontrak", "hki"],
+   649→  teknologi: ["arsitektur", "siber", "ai", "engineering", "produktivitas"],
+   650→  marketing: ["brand", "marketing", "konten", "funnel", "crm"],
+   651→  sdm: ["talenta", "budaya", "pemimpin", "mentor"],
+   652→  operasional: ["sop", "rantai", "produktivitas", "risetops"],
+   653→  hidup: ["keluarga", "waktu", "fisik", "mental"],
+   654→  spiritual: ["jiwa", "waktu", "keluarga"],
+   655→  umum: ["strategi", "risiko", "data", "pemimpin", "jiwa"],
+   656→};
+   657→
