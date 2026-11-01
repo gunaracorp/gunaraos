@@ -8,6 +8,7 @@ import {
   Briefcase, ScrollText, Lock, GraduationCap, Landmark, Brain, Swords,
   MessagesSquare, Rocket, ScanSearch, KeyRound, TrendingUp, FilePenLine,
   Link2, Radar, Code2, DatabaseBackup, Tag,
+  Crown, Factory, BrainCircuit, Lightbulb, Flame, BarChart3, Sunrise, Calculator,
   type LucideIcon,
 } from "lucide-react";
 
@@ -22,6 +23,9 @@ export type SectionId =
   | "seo-hub" | "seo-audit" | "seo-keywords" | "seo-ranks" | "seo-content"
   | "seo-calendar" | "seo-backlinks" | "seo-competitor" | "seo-forge"
   | "seo-clients" | "seo-academy"
+  | "brand"
+  | "usahasiap"
+  | "secondbrain" | "ideamatrix" | "habits" | "analytics" | "briefing" | "kalkulator"
   | "vault"
   | "release";
 
@@ -42,6 +46,26 @@ export const NAV: NavGroup[] = [
       { id: "seo-forge", label: "Meta & Schema Forge", icon: Code2, desc: "SERP · OG · JSON-LD" },
       { id: "seo-clients", label: "Klien & Proposal", icon: Handshake, desc: "Proyek + proposal AI" },
       { id: "seo-academy", label: "SEO Academy", icon: GraduationCap, desc: "Masterclass + checklist 100" },
+    ],
+  },
+  {
+    title: "👑 BRAND — Identitas Dunia", items: [
+      { id: "brand", label: "Brand & Social Hub", icon: Crown, desc: "Identitas · Support System · 6 Sosmed" },
+    ],
+  },
+  {
+    title: "🏭 USAHASIAP — Compliance to Revenue", items: [
+      { id: "usahasiap", label: "UsahaSiap OS", icon: Factory, desc: "Register 45 Dokumen · USMR-001" },
+    ],
+  },
+  {
+    title: "🧠 OMNISCIENT — Mesin Kognitif", items: [
+      { id: "secondbrain", label: "Second Brain", icon: BrainCircuit, desc: "Otak kedua + AI Ringkasan" },
+      { id: "ideamatrix", label: "Idea Matrix", icon: Lightbulb, desc: "Prioritas Dampak × Usaha" },
+      { id: "habits", label: "Habit Streaks", icon: Flame, desc: "Bunga majemuk disiplin 14 hari" },
+      { id: "analytics", label: "Analytics Engine", icon: BarChart3, desc: "KPI kas · piutang · klien" },
+      { id: "briefing", label: "AI Morning Briefing", icon: Sunrise, desc: "Staf presiden pribadi" },
+      { id: "kalkulator", label: "Kalkulator Bisnis", icon: Calculator, desc: "BEP · Margin · ROI · Anuitas" },
     ],
   },
   {

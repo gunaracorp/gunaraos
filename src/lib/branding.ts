@@ -17,7 +17,7 @@
 // ═══════════════════════════════════════════════════════════════════
 
 /** Nomor versi aplikasi — SINGLE SOURCE OF TRUTH (SemVer 2.0.0, di-sync oleh scripts/version.ts). */
-export const VERSION = "9.3.0";
+export const VERSION = "10.2.0";
 
 /** Versi pendek untuk display ("9.2" dari "9.2.0"). */
 export const VERSION_SHORT = VERSION.split(".").slice(0, 2).join(".");
@@ -142,6 +142,22 @@ export const BRAND_KEYWORDS: string[] = [
   "self hosted productivity",
   "ai dewan pakar",
   "problem solver indonesia",
+  // 🏭 USAHASIAP — Compliance to Revenue OS
+  "UsahaSiap",
+  "Usaha Siap",
+  "usahasiap compliance to revenue OS",
+  "compliance to revenue",
+  "compliance management Indonesia",
+  "sistem kepatuhan usaha",
+  "perizinan usaha otomatis",
+  "business compliance software Indonesia",
+  "compliance checklist UMKM",
+  "supplier readiness Indonesia",
+  "profil pemasok",
+  "regulatory atlas",
+  "PT Top Konsultan UsahaSiap",
+  "Gugun Gunara UsahaSiap",
+  "operating system bisnis Indonesia",
 ];
 
 /** Bahasa yang didukung situs — standar internasional (hreflang). */

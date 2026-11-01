@@ -29,7 +29,18 @@ const MODELS: Record<string, string> = {
   vaultEntry: "vaultEntry",
   permitApplication: "permitApplication",
   serviceCatalog: "serviceCatalog",
+  brainNote: "brainNote",
+  ideaItem: "ideaItem",
+  habit: "habit",
+  habitLog: "habitLog",
+  briefing: "briefing",
+  usaDocument: "usaDocument",
 };
+
+// usaDocument memakai kode (USA-01..45) sebagai id
+function idWhere(resource: string, id: string) {
+  return resource === "usaDocument" ? { kode: id } : { id };
+}
 
 function getModel(name: string): any | null {
   const key = MODELS[name];
@@ -43,7 +54,7 @@ export async function GET(req: Request, ctx: { params: Promise<{ resource: strin
   const model = getModel(resource);
   if (!model) return NextResponse.json({ error: "Resource tidak dikenal" }, { status: 404 });
 
-  const item = await model.findUnique({ where: { id } });
+  const item = await model.findUnique({ where: idWhere(resource, id) });
   if (!item) return NextResponse.json({ error: "Tidak ditemukan" }, { status: 404 });
 
   const revealKey = new URL(req.url).searchParams.get("reveal");
@@ -64,7 +75,7 @@ export async function PATCH(req: Request, ctx: { params: Promise<{ resource: str
     if (body.id) delete body.id;
     const { data, error } = encryptSecretsFor(resource, body);
     if (error) return NextResponse.json({ error }, { status: 400 });
-    const item = await model.update({ where: { id }, data });
+    const item = await model.update({ where: idWhere(resource, id), data });
     return NextResponse.json({ item: stripSecretsFor(resource, [item])[0] });
   } catch (e) {
     console.error("PATCH error", resource, e);
@@ -77,7 +88,7 @@ export async function DELETE(_req: Request, ctx: { params: Promise<{ resource: s
   const model = getModel(resource);
   if (!model) return NextResponse.json({ error: "Resource tidak dikenal" }, { status: 404 });
   try {
-    await model.delete({ where: { id } });
+    await model.delete({ where: idWhere(resource, id) });
     return NextResponse.json({ ok: true });
   } catch (e) {
     console.error("DELETE error", resource, e);

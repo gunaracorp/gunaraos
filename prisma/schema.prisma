@@ -1,10 +1,10 @@
 generator client {
-  provider = "prisma-client-js"
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
 }
 
 datasource db {
   provider = "sqlite"
-  url      = env("DATABASE_URL")
 }
 
 // ═══════════════════════════════════════════════════════
@@ -626,4 +626,84 @@ model SeoProposal {
   layanan   String   @default("[]") // JSON array layanan dipilih
   hasil     String   @default("") // markdown proposal AI
   createdAt DateTime @default(now())
+}
+
+// ═══════════════════════════════════════════════════════
+// 🧠 OMNISCIENT — Enam Mesin Kognitif
+// ═══════════════════════════════════════════════════════
+
+// Second Brain — otak kedua polimatik
+model BrainNote {
+  id          String   @id @default(cuid())
+  judul       String   @default("")
+  isi         String
+  kategori    String   @default("IDE") // IDE | INSIGHT | KUTIPAN | RENCANA | BELAJAR | LAIN
+  tags        String   @default("")
+  pinned      Boolean  @default(false)
+  aiRingkasan String   @default("") // ringkasan 1 kalimat (AI)
+  aiPoin      String   @default("") // 3 poin kunci, dipisah "||"
+  aiKategori  String   @default("") // saran kategori
+  aiTags      String   @default("") // saran tags
+  aiKoneksi   String   @default("") // 2 koneksi lintas-bidang, dipisah "||"
+  createdAt   DateTime @default(now())
+}
+
+// Idea Matrix — peta prioritas Dampak × Usaha
+model IdeaItem {
+  id        String   @id @default(cuid())
+  judul     String
+  catatan   String   @default("")
+  dampak    Int      @default(3) // 1-5
+  usaha     Int      @default(3) // 1-5
+  status    String   @default("AKTIF") // AKTIF | DIEKSEKUSI | SELESAI | CORET
+  createdAt DateTime @default(now())
+}
+
+// Habit Streaks — mesin bunga majemuk disiplin
+model Habit {
+  id        String     @id @default(cuid())
+  nama      String
+  ikon      String     @default("🌱")
+  target    Int        @default(7) // kali per minggu
+  arsip     Boolean    @default(false)
+  logs      HabitLog[]
+  createdAt DateTime   @default(now())
+}
+
+model HabitLog {
+  id      String  @id @default(cuid())
+  habitId String
+  habit   Habit   @relation(fields: [habitId], references: [id], onDelete: Cascade)
+  tanggal String // YYYY-MM-DD (WIB)
+  selesai Boolean @default(true)
+
+  @@unique([habitId, tanggal])
+}
+
+// AI Morning Briefing — satu per hari (WIB)
+model Briefing {
+  id        String   @id @default(cuid())
+  tanggal   String   @unique // YYYY-MM-DD (WIB)
+  isi       String // markdown briefing
+  createdAt DateTime @default(now())
+}
+
+// ═══════════════════════════════════════════════════════
+// 🏭 USAHASIAP — Register 45 Controlled Documents
+// Sumber: USMR-001 Master Document Register v1.0
+// ═══════════════════════════════════════════════════════
+
+model UsaDocument {
+  kode       String   @id // USA-01 .. USA-45
+  nama       String
+  domain     String // A..I
+  pgaRef     String   @default("")
+  ownerRole  String   @default("")
+  reviewer   String   @default("")
+  dependensi String   @default("")
+  gelombang  Int      @default(1)
+  status     String   @default("REGISTERED / NOT STARTED")
+  output     String   @default("")
+  catatan    String   @default("")
+  createdAt  DateTime @default(now())
 }

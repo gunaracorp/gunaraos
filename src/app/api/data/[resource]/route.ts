@@ -45,6 +45,14 @@ const MODELS: Record<string, string> = {
   competitorReport: "competitorReport",
   metaPreset: "metaPreset",
   seoProposal: "seoProposal",
+  // 🧠 OMNISCIENT
+  brainNote: "brainNote",
+  ideaItem: "ideaItem",
+  habit: "habit",
+  habitLog: "habitLog",
+  briefing: "briefing",
+  // 🏭 USAHASIAP
+  usaDocument: "usaDocument",
 };
 
 // Model dengan urutan custom (setting tidak punya createdAt)
@@ -61,6 +69,12 @@ const ORDERED: Record<string, Record<string, string>> = {
   keywordIdea: { createdAt: "desc" },
   contentPlan: { createdAt: "desc" },
   seoProposal: { createdAt: "desc" },
+  brainNote: { createdAt: "desc" },
+  ideaItem: { createdAt: "desc" },
+  habit: { createdAt: "asc" },
+  habitLog: { tanggal: "desc" },
+  briefing: { tanggal: "desc" },
+  usaDocument: { kode: "asc" },
 };
 
  
@@ -79,8 +93,20 @@ export async function GET(req: Request, ctx: { params: Promise<{ resource: strin
   const whereVal = url.searchParams.get("whereVal");
   const where = whereKey && whereVal ? { [whereKey]: whereVal } : undefined;
   const include =
-    resource === "debt" ? { payments: true } : resource === "client" ? { followUps: true } : undefined;
+    resource === "debt" ? { payments: true } : resource === "client" ? { followUps: true } : resource === "habit" ? { logs: true } : undefined;
   const orderBy = ORDERED[resource] || { createdAt: "desc" };
+
+  // 🏭 UsaDocument: auto-seed 45 dokumen dari USMR-001 saat tabel masih kosong
+  if (resource === "usaDocument") {
+    const c = await db.usaDocument.count();
+    if (c === 0) {
+      const { USA_DOCUMENTS } = await import("@/lib/usahasiap");
+      await db.usaDocument.createMany({
+        data: USA_DOCUMENTS.map(({ domainNama: _dn, ...d }) => d),
+      });
+    }
+  }
+
   const items = await model.findMany({ where, include, orderBy });
   return NextResponse.json({ items: stripSecretsFor(resource, items) });
 }
@@ -99,6 +125,16 @@ export async function POST(req: Request, ctx: { params: Promise<{ resource: stri
         const updated = await model.update({ where: { tanggal: body.tanggal }, data: body });
         return NextResponse.json({ item: updated });
       }
+    }
+    // habitLog: upsert per habit×tanggal (toggle grid 14 hari)
+    if (resource === "habitLog" && body.habitId && body.tanggal) {
+      delete body.id;
+      const item = await model.upsert({
+        where: { habitId_tanggal: { habitId: body.habitId, tanggal: body.tanggal } },
+        update: { selesai: body.selesai ?? true },
+        create: { habitId: body.habitId, tanggal: body.tanggal, selesai: body.selesai ?? true },
+      });
+      return NextResponse.json({ item });
     }
     if (body.id) delete body.id;
     const { data, error } = encryptSecretsFor(resource, body);

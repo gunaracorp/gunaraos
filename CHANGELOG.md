@@ -12,6 +12,68 @@ Kategori: **Added** (ditambah) · **Changed** (disempurnakan) · **Deprecated** 
 
 ## [Unreleased]
 
+## [10.2.0] - 2026-11-01 — PUSAT-DATA
+
+### Added
+- **Arsitektur database dual-mode LOKAL ⇄ CLOUD**: `src/lib/db.ts` kini database client pintar — otomatis memakai **Prisma Postgres prisma.io** begitu `PRISMA_POSTGRES_URL` diisi di `.env`, dan kembali ke **SQLite lokal** (`db/custom.db`) bila tidak. Tanpa mengubah satu baris kode aplikasi.
+- **Pipeline migrasi data otomatis**: `scripts/db-export.mjs` (export seluruh tabel SQLite → JSON), `scripts/db-import-cloud.ts` (import ke Prisma Postgres: hapus terbalik lalu createMany skipDuplicates), `scripts/db-migrate-cloud.sh` (orkestrator satu perintah: export → push tabel → import → verifikasi hitung baris).
+- **Schema cloud `prisma/schema.postgres.prisma`** (provider `postgresql`) yang di-auto-generate dari schema utama oleh `scripts/sync-pg-schema.sh` — semua model dijamin 100% identik, tidak bisa "drift".
+- **Config cloud `prisma/cloud.config.ts`** (standar Prisma 7) + **7 script npm baru**: `db:cloud:sync`, `db:cloud:push` (buat semua tabel di cloud), `db:cloud:generate`, `db:cloud:studio`, `db:cloud:off` (kembali ke lokal), `db:migrate-cloud`.
+- **`.env.example`** berbahasa Indonesia berisi contoh kedua mode, dan **panduan lengkap `SETUP-DATABASE.md`**: langkah aktivasi free tier prisma.io (2 GB storage · 200.000 operations/bulan · 50 database · tanpa kartu kredit) dari daftar akun hingga data terpindah.
+- **`prisma.config.ts`** — file konfigurasi resmi Prisma 7+ (menggantikan konfigurasi di `package.json`), memuat `.env` via dotenv untuk CLI.
+- **Restorasi penuh pasca-reset lingkungan kerja**: Brand & Social Hub (v9.4.0), enam mesin kognitif OMNISCIENT (v10.0.0), dan UsahaSiap OS Register Explorer 45 dokumen (v10.1.0) dibangun ulang di atas riwayat git v9.3.0; `src/lib/usahasiap.ts` di-generate terprogram dari USMR-001 v1.0 via `scripts/gen-usahasiap-data.py`.
+- **API baru**: `POST /api/brain` (AI Ringkasan Second Brain) dan `GET`/`POST /api/briefing` (AI Morning Briefing — upsert satu per hari WIB dari agregasi seluruh database).
+- Auto-seed 45 dokumen `UsaDocument` saat tabel kosong; upsert `habitLog` per habit×tanggal; PATCH/DELETE `usaDocument` via kode.
+
+### Changed
+- **Upgrade Prisma 6.11.1 → 7.10.1** (generasi rust-free) beserta driver adapter resmi: `@prisma/adapter-better-sqlite3` (SQLite lokal) dan `@prisma/adapter-pg` (Postgres cloud).
+- `prisma/schema.prisma`: generator `prisma-client-js` → **`prisma-client`** dengan output eksplisit `src/generated/prisma`; datasource tanpa properti `url` (wajib Prisma 7 — URL pindah ke `prisma.config.ts`).
+- `next.config.ts`: `serverExternalPackages` untuk modul native database (tidak di-bundle).
+- `package.json` version 9.3.0 → 10.2.0 (major + 2 minor); `.gitignore` mengecualikan `!.env.example`; ESLint mengabaikan folder hasil generate `src/generated/**` dan folder referensi `usahasiap-src/**`.
+- Navigasi: grup 👑 BRAND, 🏭 USAHASIAP, dan 🧠 OMNISCIENT (6 item) ditambahkan setelah grup SEO MASTERY.
+
+### Fixed
+- Script produksi `start` kini berjalan di **Node** (bukan Bun) — modul native `better-sqlite3` belum didukung runtime Bun (oven-sh/bun#4290); dev server Next.js sudah berjalan di Node sehingga tidak terdampak.
+- Ikon `Hole` tidak valid pada lucide-react (diganti `TrendingDown`); field `domainNama` disisihkan saat auto-seed; probe SEO brand-hub didedarkan agar tidak setState sinkron dalam effect.
+
+## [10.1.0] - 2026-11-01 — USAHASIAP
+
+### Added
+- **🏭 UsahaSiap OS — Compliance-to-Revenue OS** (grup navigasi baru setelah 👑 BRAND): integrasi repo `github.com/gunaracorp/usahasiap-compliance-to-revenue-os` ke dalam Gunara OS, dengan konten bersumber dari **USMR-001 Master Document Register v1.0** (baseline 31 Oktober 2026) + USM-00..04.
+  - Hero visi (USA-01 DRAFT v0.3), positioning, thesis produk, tombol repo GitHub, dan jangkar "by Gugun Gunara — Muhammad Lutfi Azmi · didukung PT Top Konsultan Internasional + PT Digital Bisnis Manajemen".
+  - **Statistik live** dari database: jumlah dokumen, domain, master volume, dan progres penulisan berbobot (Approved 100% · Review 70% · Draft 40% · Terdaftar 0%).
+  - **Pipeline Compliance → Revenue** 5 tahap: Kepatuhan → Dokumen & Bukti → Kesiapan Usaha → Profil Pemasok → Revenue.
+  - **5 Master Volume** (USM-00..04) + kartu Register USMR-001.
+  - **Register Explorer interaktif** — 45 controlled documents (USA-01..45) tersimpan di SQLite: pencarian (kode/nama/PGA/owner/output), filter domain A–I, filter gelombang 1–5, filter status 8 nilai; klik baris membuka detail (owner-role, reviewer, dependensi, referensi PGA165, keluaran minimum USMR-001 §6); **ubah status langsung** (PATCH → toast → tersimpan permanen) dan **catatan progres** per dokumen.
+  - **9 Domain cards** dengan progress bar live (klik kartu = filter explorer).
+  - **5 Stage Gates** (Problem Evidence → Paid Pilot → MVP Release → Repeatability → Expansion) dan **5 Gelombang Pengerjaan** dengan progres live per gelombang.
+  - **Guardrail janji** (boleh/tidak boleh), **6 risiko utama**, **prioritas 14 hari pertama**, dan catatan sumber kebenaran + batas tanggung jawab (bukan pengganti OSS/regulator/nasihat hukum).
+- **Skema Prisma baru**: `UsaDocument` (@id `kode` USA-01..45, domain, pgaRef, ownerRole, reviewer, dependensi, gelombang, status, output, catatan).
+- **Resource CRUD baru** di API generik `/api/data`: `usaDocument` — dengan **auto-seed 45 dokumen** saat tabel kosong, sorting `kode`, dan dukungan PATCH/DELETE via `kode` (helper `idWhere`).
+- 15 keyword SEO baru untuk entitas UsahaSiap tertanam di metadata.
+- i18n EN untuk grup 🏭 USAHASIAP dan item UsahaSiap OS.
+
+### Changed
+- Versi 10.0.0 → 10.1.0 (minor — satu section baru dengan register database interaktif).
+
+## [10.0.0] - 2026-11-01 — OMNISCIENT
+
+### Added
+- **Enam mesin kognitif baru** dalam grup navigasi 🧠 OMNISCIENT:
+  - **AI Morning Briefing** — staf presiden pribadi: sistem membaca seluruh database (MIT hari ini, hutang & tenggat, follow-up, arus kas bulan ini, kebiasaan, ide dampak tertinggi) lalu menyusun briefing pagi markdown yang tersimpan satu per hari (API `/api/briefing`, model `Briefing`).
+  - **Second Brain** — otak kedua polimatik: catatan dengan kategori (IDE/INSIGHT/KUTIPAN/RENCANA/BELAJAR/LAIN), tags, pin, pencarian instan, filter tag, plus **AI Ringkasan** per catatan (ringkasan 1 kalimat, 3 poin kunci, saran kategori & tags, 2 koneksi lintas-bidang) via API `/api/brain`; saran AI dapat diterapkan sekali klik.
+  - **Idea Matrix** — peta prioritas visual Dampak × Usaha dengan 4 kuadran: ⚡ Quick Wins, 🏔️ Big Bets, 🍬 Fill-Ins, 🕳️ Money Pits; titik ide interaktif, status AKTIF → DIEKSEKUSI → SELESAI/CORET.
+  - **Habit Streaks** — mesin bunga majemuk disiplin: grid 14 hari yang bisa diklik (zona WIB), streak berjalan + rekor terbaik, progres mingguan vs target, ProgressRing harian.
+  - **Analytics Engine** — agregasi data nyata: 6 KPI (kas masuk/keluar, net, piutang, hutang, klien aktif) dengan animasi CountUp, BarChart arus kas 6 bulan, dan funnel pipeline klien berbasis nilai kontrak.
+  - **Kalkulator Bisnis** — 5 kalkulator instan sisi klien: Break-Even Point, Margin & Harga Jual (memisahkan margin vs markup), ROI + payback period, Cicilan Anuitas (metode bank), Proyeksi Tabungan (Future Value).
+- **Skema Prisma baru**: `BrainNote`, `IdeaItem`, `Habit` + `HabitLog` (unik per habit×tanggal), `Briefing` (satu per hari WIB).
+- **Resource CRUD baru** di API generik `/api/data`: `brainNote`, `ideaItem`, `habit`, `habitLog`, `briefing`.
+- i18n EN lengkap untuk seluruh item navigasi baru.
+
+### Changed
+- Versi 9.3.0 → 10.0.0 (major — enam modul baru + satu section brand).
+- Navigasi: grup 🧠 OMNISCIENT (6 item) ditambahkan setelah grup 👑 BRAND.
+
 ## [9.3.0] - 2026-10-22 — Domain Money Engine
 
 ### Added
