@@ -21,7 +21,7 @@ if ! grep -q "^PRISMA_POSTGRES_URL=" .env 2>/dev/null; then
 fi
 
 echo "── LANGKAH 1/4: Export data dari SQLite lokal ──"
-bun scripts/db-export.ts
+node scripts/db-export.mjs
 
 echo ""
 echo "── LANGKAH 2/4: Membuat semua tabel di Prisma Postgres ──"

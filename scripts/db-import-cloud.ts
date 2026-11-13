@@ -3,7 +3,7 @@
  * Prasyarat:
  *   1. PRISMA_POSTGRES_URL sudah diisi di .env
  *   2. Tabel cloud sudah dibuat: bun run db:cloud:push
- *   3. File db/export-cloud.json ada (dari bun scripts/db-export.ts)
+ *   3. File db/export-cloud.json ada (dari node scripts/db-export.mjs)
  * Jalankan: bun scripts/db-import-cloud.ts
  *
  * Strategi: hapus isi tabel cloud secara TERBALIK (anak dulu) lalu isi
