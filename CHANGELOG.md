@@ -12,6 +12,23 @@ Kategori: **Added** (ditambah) · **Changed** (disempurnakan) · **Deprecated** 
 
 ## [Unreleased]
 
+## [10.2.1] - 2026-11-16 — GERBANG-MUTU
+
+### Fixed
+- **Bug runtime senyap Analytics Engine**: seluruh statistik arus kas (masuk/keluar bulan ini, pembanding bulan lalu, chart 6 bulan) selalu bernilai nol karena agregasi memakai field `c.jumlah` yang tidak ada pada model `Cashflow` — diperbaiki menjadi `c.nilai` (`src/components/app/analytics-engine.tsx`).
+- **Bug data yang sama di AI Morning Briefing**: `POST /api/briefing` mengagregasi `c.jumlah` → diperbaiki ke `c.nilai`; ringkasan MIT memakai `mitPagi`/`malam` yang tidak ada pada skema `DailyLog` → kini menampilkan `mit1..mit3` lengkap dengan status selesai/belum plus refleksi (`src/app/api/briefing/route.ts`).
+- **3 skrip seed lolos Prisma 7**: `scripts/seed.ts`, `seed-bisnis.ts`, `seed-domains-money.ts` mengimpor `PrismaClient` dari `@prisma/client` yang tidak lagi mengekspornya (Prisma 7 memancarkan client ke `src/generated/prisma`) — kini memakai import relatif `../src/generated/prisma/client` + adapter `PrismaBetterSqlite3` pada konstruktor, konsisten dengan `src/lib/db.ts` dan `scripts/db-import-cloud.ts`.
+- **Tipe tuple `WINS` di `scripts/seed.ts`**: anotasi 3 elemen pada data 4 elemen (tanggal, kemenangan, bukti, jadiKonten) — diperbaiki menjadi tuple 4 elemen sehingga destrukturisasi `jadiKonten` sah.
+- **Interface `ReleaseEntry`** (`src/lib/versioning.ts`) kini mendeklarasikan `verified?: string[]` — entri rilis v10.2.0 yang memuat bukti verifikasi tidak lagi gagal type-check.
+- **`tsconfig.json`**: `skills` dan `examples` masuk `exclude` (selaras `eslint.config.mjs`) — berkas demo/socket.io dan skrip skill tidak lagi mengotoriti hasil type-check proyek; `src/generated` ikut dikecualikan karena hasil generate.
+
+### Verified
+- `npx tsc --noEmit` — **0 error** (sebelumnya 17 error TypeScript) 🚀
+- `bun run lint` — 0 error, 0 warning
+- `bun run version:check` — SEMUA OK (7 titik konsistensi versi)
+- `npm run build` — sukses, 20 route terbangun tanpa cacat
+- Runtime: `/api/health` ok+dbOk (38 tabel · 174 baris), `POST /api/briefing` menghasilkan briefing WIB dari data nyata, homepage 200
+
 ## [10.2.0] - 2026-11-01 — PUSAT-DATA
 
 ### Added

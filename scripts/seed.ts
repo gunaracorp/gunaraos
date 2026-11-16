@@ -3,9 +3,12 @@
  * Sumber: github.com/prabudanling/doc-gunaracorp (14 file dokumentasi)
  * Mengisi: Settings (Hulu), Win Log, 43 Domain, 15 AI Agents
  */
-import { PrismaClient } from "@prisma/client";
+import { PrismaClient } from "../src/generated/prisma/client";
+import { PrismaBetterSqlite3 } from "@prisma/adapter-better-sqlite3";
 
-const prisma = new PrismaClient();
+const prisma = new PrismaClient({
+  adapter: new PrismaBetterSqlite3({ url: process.env.DATABASE_URL ?? "file:./db/custom.db" }),
+});
 
 const PIAGAM = `# ⚜️ PIAGAM DIRI — GUGUN GUNARA
 ## Dibaca setiap Senin pagi, sebelum membuka WhatsApp. Non-negotiable.
@@ -242,7 +245,7 @@ const DOMAINS: Array<[string, string, string, string, string]> = [
   ["santriangon.web.id", "PARKED", "Park sadar — identitas Santri Angon", "PARK", "Bisa aktif untuk karya sastra tahun 2-3."],
 ];
 
-const WINS: Array<[string, string, string]> = [
+const WINS: Array<[string, string, string, string]> = [
   ["2026-09-01", "PT ke-2 resmi berdiri (PT Digital Bisnis Manajemen)", "akta pendirian", "cerita founder"],
   ["2025-01-01", "Domain pertama dibeli — koleksi tumbuh jadi 43 domain", "registrar", ""],
   ["2025-06-01", "Dokumen fase 0-1 selesai (14 file!) — sistem lengkap", "repo GitHub", "konten story"],

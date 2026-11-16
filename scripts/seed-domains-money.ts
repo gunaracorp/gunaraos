@@ -10,9 +10,12 @@
 // atau flag --force dipakai.
 // ═══════════════════════════════════════════════════════════════════
 
-import { PrismaClient } from "@prisma/client";
+import { PrismaClient } from "../src/generated/prisma/client";
+import { PrismaBetterSqlite3 } from "@prisma/adapter-better-sqlite3";
 
-const db = new PrismaClient();
+const db = new PrismaClient({
+  adapter: new PrismaBetterSqlite3({ url: process.env.DATABASE_URL ?? "file:./db/custom.db" }),
+});
 const FORCE = process.argv.includes("--force");
 
 interface SeedDomain {

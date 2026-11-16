@@ -49,7 +49,7 @@ export function AnalyticsSection() {
     const bulanLalu = new Date(now.getFullYear(), now.getMonth() - 1, 1).toISOString().slice(0, 7);
     const sum = (arr: any[], bulan: string) =>
       arr.filter((c) => String(c.tanggal || "").startsWith(bulan))
-        .reduce((a, c) => a + (c.jumlah || 0), 0);
+        .reduce((a, c) => a + (c.nilai || 0), 0);
     const masuk = sum(cashflow.filter((c) => c.jenis === "MASUK"), bulanIni);
     const keluar = sum(cashflow.filter((c) => c.jenis === "KELUAR"), bulanIni);
     const masukLalu = sum(cashflow.filter((c) => c.jenis === "MASUK"), bulanLalu);
@@ -63,8 +63,8 @@ export function AnalyticsSection() {
     for (const c of cashflow) {
       const k = String(c.tanggal || "").slice(0, 7);
       if (!perBulan[k]) continue;
-      if (c.jenis === "MASUK") perBulan[k].masuk += c.jumlah || 0;
-      else perBulan[k].keluar += c.jumlah || 0;
+      if (c.jenis === "MASUK") perBulan[k].masuk += c.nilai || 0;
+      else perBulan[k].keluar += c.nilai || 0;
     }
     const chart = Object.entries(perBulan).map(([bulan, v]) => ({
       bulan: bulan.slice(5) + "/" + bulan.slice(2, 4),

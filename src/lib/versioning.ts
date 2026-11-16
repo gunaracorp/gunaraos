@@ -31,6 +31,8 @@ export interface ReleaseEntry {
   removed?: string[];
   fixed?: string[];
   security?: string[];
+  /** Bukti verifikasi saat rilis (hasil gerbang mutu, health check, dll). */
+  verified?: string[];
 }
 
 /** Nomor versi aplikasi — mengikuti single source of truth di branding.ts (di-sync oleh scripts/version.ts). */
@@ -46,6 +48,33 @@ export const APP_CHANNEL: ReleaseChannel = "stable";
 // Template entri baru: lihat VERSIONING.md §5 langkah 4.
 // ─────────────────────────────────────────────────────────────────────
 export const RELEASES: ReleaseEntry[] = [
+  {
+    version: "10.2.1",
+    date: "2026-11-16",
+    codename: "GERBANG-MUTU",
+    title: "Gerbang Mutu Penuh · 17 Error TypeScript Dihilangkan · Bug Data Cashflow Diperbaiki",
+    channel: "stable",
+    summary:
+      "Rilis patch disiplin gerbang mutu: seluruh 17 error TypeScript dituntaskan sampai nol (import PrismaClient Prisma 7 pada 3 skrip seed + adapter, tuple WINS, ReleaseEntry.verified), dua bug data arus kas diperbaiki (field jumlah → nilai) yang membuat statistik Analytics Engine selalu nol dan ringkasan briefing bocor, plus tsconfig mengeluarkan folder skills/examples/src/generated dari type-check.",
+    changed: [
+      "Versi 10.2.0 → 10.2.1 (patch — perbaikan cacat tanpa perubahan perilaku fitur)",
+      "tsconfig.json: exclude skills, examples, src/generated — selaras eslint.config.mjs",
+    ],
+    fixed: [
+      "analytics-engine: statistik arus kas (masuk/keluar/chart 6 bulan) selalu nol karena c.jumlah → c.nilai",
+      "briefing: agregasi kas c.jumlah → c.nilai; ringkasan MIT mitPagi/malam → mit1..mit3 + status done + refleksi",
+      "scripts/seed.ts, seed-bisnis.ts, seed-domains-money.ts: import PrismaClient @prisma/client → ../src/generated/prisma/client + adapter PrismaBetterSqlite3 (kontrak Prisma 7)",
+      "scripts/seed.ts: tuple WINS 3 elemen → 4 elemen (tanggal, kemenangan, bukti, jadiKonten)",
+      "versioning.ts: ReleaseEntry kini mendeklarasikan verified?: string[]",
+    ],
+    verified: [
+      "npx tsc --noEmit — 0 error (sebelumnya 17) 🚀",
+      "bun run lint — 0 error 0 warning",
+      "bun run version:check — SEMUA OK",
+      "npm run build — sukses, 20 route",
+      "/api/health ok+dbOk (38 tabel · 174 baris) · POST /api/briefing menghasilkan briefing WIB · homepage 200",
+    ],
+  },
   {
     version: "10.2.0",
     date: "2026-11-01",

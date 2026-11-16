@@ -5,9 +5,12 @@
  *          pengurusan izin contoh, sosmed, brankas, pengguna OWNER.
  * Idempoten: data yang sudah ada dilewati.
  */
-import { PrismaClient } from "@prisma/client";
+import { PrismaClient } from "../src/generated/prisma/client";
+import { PrismaBetterSqlite3 } from "@prisma/adapter-better-sqlite3";
 
-const prisma = new PrismaClient();
+const prisma = new PrismaClient({
+  adapter: new PrismaBetterSqlite3({ url: process.env.DATABASE_URL ?? "file:./db/custom.db" }),
+});
 
 // ── Katalog 46 layanan (sinkron dengan src/lib/service-catalog.ts) ──
 const SERVICES: { kode: string; nama: string; kategori: string; deskripsi: string; instansi: string; durasiMin: number; durasiMaks: number; hargaMulai: number }[] = [

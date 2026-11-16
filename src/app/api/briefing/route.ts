@@ -38,13 +38,13 @@ export async function POST() {
 
     const now = new Date();
     const bulanIni = now.toISOString().slice(0, 7);
-    const masuk = cashflow.filter((c) => c.jenis === "MASUK" && String(c.tanggal || "").startsWith(bulanIni)).reduce((a, c) => a + (c.jumlah || 0), 0);
-    const keluar = cashflow.filter((c) => c.jenis === "KELUAR" && String(c.tanggal || "").startsWith(bulanIni)).reduce((a, c) => a + (c.jumlah || 0), 0);
+    const masuk = cashflow.filter((c) => c.jenis === "MASUK" && String(c.tanggal || "").startsWith(bulanIni)).reduce((a, c) => a + (c.nilai || 0), 0);
+    const keluar = cashflow.filter((c) => c.jenis === "KELUAR" && String(c.tanggal || "").startsWith(bulanIni)).reduce((a, c) => a + (c.nilai || 0), 0);
     const followUpTelat = followUps.filter((f) => f.status && !["SELESAI", "CLOSED"].includes(f.status)).length;
 
     const ringkasanData = [
       `Tanggal: ${tanggal} (WIB)`,
-      `MIT hari ini: ${mit ? `pagi="${mit.mitPagi || "-"}"; malam="${mit.malam || "-"}"` : "belum diisi"}`,
+      `MIT hari ini: ${mit ? `mit1="${mit.mit1 || "-"}" (${mit.done1 ? "selesai" : "belum"}); mit2="${mit.mit2 || "-"}" (${mit.done2 ? "selesai" : "belum"}); mit3="${mit.mit3 || "-"}" (${mit.done3 ? "selesai" : "belum"}); refleksi="${mit.refleksi || "-"}"` : "belum diisi"}`,
       `Hutang aktif: ${debts.length} — ${debts.map((d) => `${d.kepada} (tenggat ${d.tenggat || "?"}, prioritas ${d.prioritas})`).join("; ") || "-"}`,
       `Follow-up terbuka: ${followUpTelat}`,
       `Arus kas bulan ini: masuk Rp${masuk.toLocaleString("id-ID")} · keluar Rp${keluar.toLocaleString("id-ID")} · net Rp${(masuk - keluar).toLocaleString("id-ID")}`,

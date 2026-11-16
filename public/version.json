@@ -1,25 +1,25 @@
 {
   "name": "GUNARA OS",
-  "version": "10.2.0",
+  "version": "10.2.1",
   "versionShort": "v10.2",
   "codename": "PUSAT-DATA",
   "channel": "stable",
-  "releaseDate": "2026-11-01",
-  "generatedAt": "2026-11-01T12:30:09.990Z",
+  "releaseDate": "2026-11-17",
+  "generatedAt": "2026-11-16T17:53:18.107Z",
   "semver": {
     "major": 10,
     "minor": 2,
-    "patch": 0,
+    "patch": 1,
     "prerelease": null,
     "build": null
   },
-  "releaseCount": 6,
+  "releaseCount": 9,
   "latestRelease": {
-    "version": "9.3.0",
-    "date": "2026-10-22",
-    "codename": "Domain Money Engine",
-    "title": "49 Domain · 49 Mesin Uang — Portfolio Monetisasi Penuh",
-    "summary": "Seluruh portfolio domain (48 dari registrar + prabudanling.web.id) kini terdata lengkap dengan status registrar asli, tanggal kedaluwarsa, biaya perpanjangan, dan BLUEPRINT 'apa isi website & cara menghasilkan uang' per domain — potensi gabungan Rp 266,5 juta/bulan dengan biaya Rp 3,96 juta/tahun (ROI ×806)."
+    "version": "10.2.0",
+    "date": "2026-11-01",
+    "codename": "PUSAT-DATA",
+    "title": "Prisma 7.10.1 · Database Dual-Mode LOKAL ⇄ CLOUD prisma.io · Restorasi Penuh",
+    "summary": "Fondasi PUSAT-DATA: upgrade Prisma 6.11.1 → 7.10.1 (generasi rust-free, standar Prisma 7/8) dengan driver adapter resmi, arsitektur database dual-mode — SQLite lokal untuk sekarang, Prisma Postgres prisma.io (free tier: 2 GB · 200.000 operations/bulan · 50 database · tanpa kartu kredit) untuk nanti — plus script migrasi data otomatis SQLite → cloud (export JSON → push tabel → import + verifikasi). Sekaligus restorasi penuh seluruh fitur v9.4.0–v10.1.0 (Brand & Social Hub, 6 mesin OMNISCIENT, UsahaSiap OS 45 dokumen) di atas riwayat git v9.3.0 setelah lingkungan kerja ter-reset."
   },
   "notesComplete": false,
   "standards": [
