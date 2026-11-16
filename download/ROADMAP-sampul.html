@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=Noto+Serif+SC:wght@400;700;900&family=Inter:wght@300;400;500;700&family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
+  <style>
+    @page { size: 794px 1123px; margin: 0; }
+    :root {
+      --c-bg: #0a1628;
+      --c-accent: #4da8da;
+      --c-text: #e8f0f8;
+      --c-muted: #7a9bb8;
+      --c-glow: #2d7ab3;
+    }
+    html, body {
+      margin: 0; padding: 0;
+      width: 794px; height: 1123px;
+      background: var(--c-bg);
+      color: var(--c-text);
+      font-family: 'Inter', 'Noto Sans SC', sans-serif;
+    }
+    @media screen {
+      html { height: auto; display: flex; justify-content: center; min-height: 100vh; background: var(--c-bg); }
+      body { transform-origin: top center; scale: min(1, calc(100vw / 794), calc(100vh / 1123)); margin: 0 auto; box-shadow: 0 0 60px rgba(0,0,0,0.3); }
+    }
+    .cover {
+      width: 794px; height: 1123px; position: relative; box-sizing: border-box;
+      border: none; outline: none; box-shadow: none;
+    }
+    /* Layer 1 — latar glow (satu-satunya kontainer ber-overflow hidden) */
+    .layer-1 { position: absolute; inset: 0; overflow: hidden; z-index: 1; }
+    .glow-a {
+      position: absolute; top: 40px; left: 40px;
+      width: 420px; height: 420px;
+      background: radial-gradient(circle, rgba(45,122,179,0.08) 0%, rgba(45,122,179,0) 70%);
+    }
+    .glow-b {
+      position: absolute; top: 620px; left: 330px;
+      width: 430px; height: 430px;
+      background: radial-gradient(circle, rgba(45,122,179,0.07) 0%, rgba(45,122,179,0) 70%);
+    }
+    /* Layer 2 — bingkai luminous */
+    .layer-2 { position: absolute; inset: 0; z-index: 2; }
+    .frame {
+      position: absolute; top: 80px; bottom: 80px; left: 60px; right: 60px;
+      border: 2px solid var(--c-accent);
+    }
+    /* Layer 3 — konten */
+    .layer-3 { position: absolute; inset: 0; z-index: 3; }
+    .kicker {
+      position: absolute; top: 135px; left: 110px;
+      font-size: 11pt; font-weight: 300; color: var(--c-accent);
+      letter-spacing: 5px; text-transform: uppercase;
+      font-family: 'Inter', 'Noto Sans SC', sans-serif;
+    }
+    .hero {
+      position: absolute; top: 236px; left: 110px;
+      max-width: 600px;
+      font-size: 42pt; font-weight: 900; line-height: 1.15;
+      font-family: 'Playfair Display', 'Noto Serif SC', serif;
+      color: var(--c-text);
+      text-shadow: 0 0 24px rgba(77,168,218,0.25);
+    }
+    .summary {
+      position: absolute; top: 505px; left: 110px;
+      max-width: 520px;
+      font-size: 15pt; line-height: 1.7; color: var(--c-muted);
+      font-weight: 300;
+    }
+    .org {
+      position: absolute; top: 719px; left: 110px;
+      font-size: 18pt; color: var(--c-text); font-weight: 500;
+    }
+    .org-sub {
+      position: absolute; top: 762px; left: 110px;
+      max-width: 560px;
+      font-size: 11pt; line-height: 1.6; color: var(--c-muted);
+      font-weight: 300;
+    }
+    .date {
+      position: absolute; top: 968px; left: 110px;
+      font-size: 10pt; color: var(--c-muted);
+      letter-spacing: 3px; text-transform: uppercase;
+    }
+  </style>
+</head>
+<body>
+  <div class="cover">
+    <div class="layer-1">
+      <div class="glow-a"></div>
+      <div class="glow-b"></div>
+    </div>
+    <div class="layer-2">
+      <div class="frame"></div>
+    </div>
+    <div class="layer-3">
+      <div class="kicker">Roadmap Strategis 2026 &#8211; 2028</div>
+      <div class="hero">GUNARA OS<br>Menuju Acuan Dunia</div>
+      <div class="summary">Sebelas fase, sembilan puluh sembilan langkah, satu amanah: peta jalan resmi dari v11.0.0 TANAH-SUCI hingga v100.0.0 ACUAN-DUNIA &#8212; sistem operasi kehidupan dan bisnis terbaik yang pernah ada.</div>
+      <div class="org">by Gugun Gunara &#8212; Muhammad Lutfi Azmi</div>
+      <div class="org-sub">PT Top Konsultan Internasional &#183; PT Digital Bisnis Manajemen &#183; digiman.id &#183; topkonsultan.web.id &#183; prabudanling &#183; santri angon</div>
+      <div class="date">November 2026 &#183; Gunaracorp</div>
+    </div>
+  </div>
+</body>
+</html>
