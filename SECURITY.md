@@ -24,10 +24,11 @@ Scan pola kredensial terhadap seluruh tree (tanpa `node_modules`, `.next`, `src/
 
 ```bash
 grep -rInE "ghp_[A-Za-z0-9]{20,}|github_pat_|sk-[A-Za-z0-9]{20,}|AKIA[0-9A-Z]{16}|-----BEGIN [A-Z ]*PRIVATE KEY" \
-  --exclude-dir=node_modules --exclude-dir=.next --exclude-dir=src/generated --exclude-dir=skills .
+  --exclude-dir=node_modules --exclude-dir=.next --exclude-dir=src/generated --exclude-dir=skills \
+  --exclude-dir=.github --exclude=SECURITY.md --exclude=package-lock.json .
 ```
 
-**Hasil: nol kecocokan.** Pemindaian ini dijalankan ulang setiap rilis (masuk pipeline `scripts/release-check.sh` melalui dokumentasi ini dan akan ditambahkan ke CI).
+**Hasil: nol kecocokan.** (Pola sendiri didokumentasikan di file ini dan `.github/` — keduanya di-exclude agar scan tidak mendeteksi dirinya; `package-lock.json` berisi integritas hash, bukan kredensial.) Pemindaian ini dijalankan otomatis oleh CI (`.github/workflows/ci.yml`) di setiap push dan pull request.
 
 ## 4. Audit Dependensi (npm audit, 2026-11-16)
 

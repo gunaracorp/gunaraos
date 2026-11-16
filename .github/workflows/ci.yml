@@ -39,7 +39,8 @@ jobs:
       - name: Keamanan — nol kredensial di kode sumber (SECURITY.md §3)
         run: |
           ! grep -rInE "ghp_[A-Za-z0-9]{20,}|github_pat_|sk-[A-Za-z0-9]{20,}|AKIA[0-9A-Z]{16}|-----BEGIN [A-Z ]*PRIVATE KEY" \
-            --exclude-dir=node_modules --exclude-dir=.next --exclude-dir=src/generated --exclude-dir=skills .
+            --exclude-dir=node_modules --exclude-dir=.next --exclude-dir=src/generated --exclude-dir=skills \
+            --exclude-dir=.github --exclude=SECURITY.md --exclude=package-lock.json .
 
       - name: Uji unit (vitest — cakupan ≥ 70% modul murni)
         run: npm test
