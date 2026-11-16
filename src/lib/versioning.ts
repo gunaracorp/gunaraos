@@ -49,6 +49,45 @@ export const APP_CHANNEL: ReleaseChannel = "stable";
 // ─────────────────────────────────────────────────────────────────────
 export const RELEASES: ReleaseEntry[] = [
   {
+    version: "11.0.0",
+    date: "2026-11-16",
+    codename: "TANAH-SUCI",
+    title: "Fase 1: Konstitusi & Tata Kelola — Piagam, Arsitektur, Gerbang Mutu Penuh, CI, Cadangan Teruji",
+    channel: "stable",
+    summary:
+      "Rilis penutup Fase 1 TANAH-SUCI (Langkah 1–9 Roadmap 99 Langkah): konstitusi sistem diratifikasi (PIAGAM.md — visi, misi, lima nilai amanah, tata kelola), peta arsitektur v1 100% terpetakan dari data nyata (44 model · 16 API · 44 seksi · 8 kontrak antarmodul), standar kode + 5 ADR, pipeline rilis terpadu, kebijakan keamanan dengan audit dependensi (27 → 13 kerentanan, sisanya accepted risk terdokumentasi) dan bukti nol kredensial di kode, cadangan 3-2-1 dengan latihan pemulihan LULUS (220/220 baris · 44 tabel), dokumentasi hidup tersinkron, uji unit invarian sistem 53 tes dengan cakupan ≥70% modul murni (stmts 87,3% · branch 71,9% · funcs 95,7% · lines 89,0%), dan CI GitHub Actions mengunci gerbang mutu di setiap push.",
+    added: [
+      "PIAGAM.md — konstitusi Gunara OS: visi acuan dunia, lima misi, nilai amanah (Amanah · Tertib · Transparan · Berjeak · Berbuah), tata kelola gerbang mutu, ratifikasi bertanda tangan",
+      "ARCHITECTURE.md v1 — peta arsitektur dari data nyata: 44 model Prisma per domain, 16 API route, 44 seksi navigasi, 33 komponen, 15 agen bernama, Dewan 46, 8 kontrak antarmodul (A–F + batasan konstitusi)",
+      "CONTRIBUTING.md — buku panduan gaya resmi: 7 aturan kode (field = skema Prisma, satu sumber kebenaran, kontrak Prisma 7), Conventional Commits, pola uji, gerbang mutu, tata PR",
+      "docs/adr/ADR-001..005 — lima catatan keputusan arsitektur: generator prisma-client Prisma 7, database dual-mode adapter, SemVer + nama sandi, lingkup tsc/eslint, lingkup cakupan uji",
+      "RELEASE-PROCESS.md + scripts/release-check.sh — pipeline rilis terpadu 9 tahap dengan titik gagal eksplisit, aturan penamaan codename & bertag, prosedur rollback",
+      "SECURITY.md — kebijakan rahasia (env + vault AES-256-GCM), rotasi token, bukti scan nol kredensial, hasil npm audit 27→13 dengan accepted risk terdokumentasi (js-yaml, sharp menunggu upstream)",
+      "scripts/db-snapshot.mjs + scripts/backup.sh + scripts/restore-drill.mjs + BACKUP.md — cadangan pola 3-2-1 (snapshot online-safe better-sqlite3 + export JSON + tar.gz + sha256 + retensi 14) dengan runbook pemulihan",
+      "Latihan pemulihan #1 LULUS: 220/220 baris cocok di 44/44 tabel, integritas ok dua sisi — jadwal harian + sebelum rilis/migrasi",
+      "Rangkaian uji unit vitest: 53 tes invarian sistem di src/lib/__tests__ — Dewan 46 tepat 46 anggota, USA-01..45 unik, 46 layanan, 15 agen, versi sinkron 7 titik, kripto roundtrip + kunci salah ditolak, SemVer parse/compare/bump, manifest runtime",
+      ".github/workflows/ci.yml — CI gerbang mutu: npm ci → prisma generate → tsc → lint → scan kredensial → vitest cakupan → next build",
+      "package-lock.json — lockfile npm terkunci (syarat npm ci + audit); vitest + @vitest/coverage-v8 sebagai devDependencies",
+      "vitest.config.ts — cakupan v8 pada 9 modul murni, threshold global ≥70% keempat dimensi, dijaga ADR-005",
+    ],
+    changed: [
+      "Versi 10.2.1 → 11.0.0 (mayor — penutup Fase 1 TANAH-SUCI: konstitusi & tata kelola baru yang mengikat seluruh rilis berikutnya)",
+      "README.md disinkronkan ke realitas v11: 44 seksi (bukan 19), 44 model (bukan 26), Prisma 7 dual-mode, riwayat versi v10.0–v11.0, roadmap 99 langkah, clone URL gunaracorp/gunaraos",
+      "worklog.md — entri terstruktur Fase 1 (What/Restore/Test/Next) mengikuti VERSIONING.md §7",
+    ],
+    fixed: [
+      "scripts/restore-drill.mjs: path absolut ditelan path.join — diperbaiki ke path.resolve sehingga latihan pemulihan bisa dijalankan dari lokasi mana pun",
+    ],
+    verified: [
+      "npx tsc --noEmit — 0 error 🚀 · bun run lint — 0 error 0 warning",
+      "npm test — 53/53 tes lulus · cakupan: stmts 87,3% · branch 71,9% · funcs 95,7% · lines 89,0% (≥70% keempatnya)",
+      "bun run version:check — SEMUA OK (7 titik konsistensi v11.0.0)",
+      "npm run build — sukses, 20 route terbangun",
+      "Scan kredensial: nol kecocokan · npm audit: 27 → 13 (2 critical & 12 high bertasih)",
+      "Latihan pemulihan 3-2-1: LULUS 220/220 baris · /api/health ok+dbOk · homepage & briefing 200",
+    ],
+  },
+  {
     version: "10.2.1",
     date: "2026-11-16",
     codename: "GERBANG-MUTU",

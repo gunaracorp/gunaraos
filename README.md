@@ -17,12 +17,12 @@
 
 <br/>
 
-[![Version](https://img.shields.io/badge/GUNARA_OS-v3.0-059669?style=for-the-badge&logo=rocket&logoColor=white)](#id-versi)
+[![Version](https://img.shields.io/badge/GUNARA_OS-v11.0.0_TANAH--SUCI-059669?style=for-the-badge&logo=rocket&logoColor=white)](#id-versi)
 [![Next.js 16](https://img.shields.io/badge/Next.js_16-000000?style=for-the-badge&logo=nextdotjs&logoColor=white)](https://nextjs.org)
 [![React 19](https://img.shields.io/badge/React_19-149ECA?style=for-the-badge&logo=react&logoColor=white)](https://react.dev)
 [![TypeScript 5](https://img.shields.io/badge/TypeScript_5-3178C6?style=for-the-badge&logo=typescript&logoColor=white)](https://typescriptlang.org)
 [![Tailwind CSS 4](https://img.shields.io/badge/Tailwind_CSS_4-06B6D4?style=for-the-badge&logo=tailwindcss&logoColor=white)](https://tailwindcss.com)
-[![Prisma 6](https://img.shields.io/badge/Prisma_6·SQLite-2D3748?style=for-the-badge&logo=prisma&logoColor=white)](https://prisma.io)
+[![Prisma 7](https://img.shields.io/badge/Prisma_7·SQLite⇄Postgres-2D3748?style=for-the-badge&logo=prisma&logoColor=white)](https://prisma.io)
 [![Framer Motion 12](https://img.shields.io/badge/Framer_Motion_12-000000?style=for-the-badge&logo=framer&logoColor=white)](https://motion.dev)
 [![ISO 9001:2015](https://img.shields.io/badge/ISO_9001:2015-Aligned-1D4ED8?style=for-the-badge)](#id-standar)
 [![OWASP](https://img.shields.io/badge/OWASP-AES--256--GCM-7C3AED?style=for-the-badge)](#id-keamanan)
@@ -89,31 +89,22 @@ flowchart TB
 <div align="right"><a href="#top">⬆</a></div>
 
 <a name="id-peta"></a>
-### 🧭 3. Peta Lengkap 19 Section
+### 🧭 3. Peta Lengkap 44 Section
 
-Satu route (`/`), sembilan belas section state-based, semuanya dapat dilompati lewat **Command Palette (⌘K / Ctrl+K)**.
+Satu route (`/`), empat puluh empat section state-based, semuanya dapat dilompati lewat **Command Palette (⌘K / Ctrl+K)**. Peta lengkap per section + kontrak antarmodul: **[ARCHITECTURE.md](./ARCHITECTURE.md)**.
 
-| # | Section | Grup | Fungsi |
-|---|---------|------|--------|
-| 0 | 🏠 **Command Center** | Beranda | Kokpit harian: sapaan, jam WIB live, 3 MIT, energi, statistik, fase aktif |
-| 1 | 🌊 **Piagam · Visi · OKR** | HULU | Mata air segalanya — diisi sekali |
-| 2 | 💰 **Keuangan** | MESIN | Hutang + cicilan otomatis, piutang, arus kas, rekening anak |
-| 3 | 👥 **Klien / CRM** | MESIN | Master klien + pipeline follow-up dengan flag telat otomatis |
-| 4 | 🤝 **Relasi & Politik** | MESIN | Ledger kepercayaan & aktivitas strategis |
-| 5 | 📚 **Belajar** | MESIN | Jurnal pembelajaran — mesin ganda |
-| 6 | 🏆 **Dokumentasi** | MESIN | Win Log + Studi Kasus |
-| 7 | ☀️ **Ritual Harian** | HILIR | 3 MIT pagi + refleksi malam + riwayat |
-| 8 | 📅 **Review Mingguan** | HILIR | 30 menit tiap akhir pekan |
-| 9 | 📥 **Backlog** | HILIR | Penjara ide — agar fokus tak bocor |
-| 10 | ⚖️ **Decisions Log** | HILIR | Sejarah keputusan & alasannya |
-| 11 | 🌐 **43 Domain** | ARSENAL | Portfolio domain + misi per domain |
-| 12 | 🤖 **15 AI Agents** | ARSENAL | Role activation prompt siap copy-paste |
-| 13 | 🛡️ **Sistem** | ARSENAL | 10 aturan mutlak, pola mingguan, protokol hari buruk, master prompt, stack |
-| 14 | 🎯 **Roadmap 90 Hari** | ARSENAL | Grand Build Fase 0–5 dengan gate |
-| 15 | 💼 **Database Bisnis** | BISNIS HUB | Pelanggan 360° (25 field) + Perusahaan & legalitas |
-| 16 | 📜 **Perizinan** | BISNIS HUB | Kanban 5 tahap ISO, katalog 46 layanan, Pencari Izin |
-| 17 | 🔐 **Aset Digital** | BISNIS HUB | Sosmed, Brankas kredensial terenkripsi, Pengguna & role |
-| 18 | 📚 **Tutorial Lengkap** | PANDUAN | 18 panduan langkah-demi-langkah seluruh fitur |
+| Grup | Section | Fungsi |
+|---|---------|--------|
+| 🏠 Beranda | Command Center | Kokpit harian: sapaan, jam WIB live, 3 MIT, energi, statistik |
+| 🚀 **SEO MASTERY** (11) | seo-hub, audit, keywords, ranks, content, calendar, backlinks, competitor, forge, clients, academy | Mesin konsultan SEO #1: dari audit sampai akademi |
+| 👑 **BRAND** (1) | Brand & Social Hub | Identitas dunia + sosmed + brankas |
+| 🏭 **USAHASIAP** (1) | UsahaSiap OS | Compliance-to-revenue: register 45 dokumen interaktif |
+| 🧠 **OMNISCIENT** (6) | Second Brain, Idea Matrix, Habit Streaks, Analytics, AI Briefing, Kalkulator | Enam mesin kognitif di atas data nyata |
+| 🌊 **HULU** (1) | Piagam · Visi · OKR | Mata air segalanya — diisi sekali |
+| ⚙️ **MESIN** (5) | Keuangan, Klien/CRM, Relasi & Politik, Belajar, Dokumentasi | Lima generator nilai — dirawat mingguan |
+| 🏃 **HILIR** (4) | Ritual Harian, Review Mingguan, Backlog, Decisions Log | Dijalankan harian tanpa berpikir ulang |
+| 🛡️ **ARSENAL** (3) | 49 Domain Engine, 15 AI Agents, Sistem | Senjata strategis |
+| 🧰 **Lainnya** (12) | Vault, Release Center, Arena Debat, Sage, Ultimate Solver, Dewan 46, Bisnis, Perizinan, Aset Digital, Tutorial, Roadmap, Roadmap 99 Langkah | Alat istimewa sistem |
 
 <div align="right"><a href="#top">⬆</a></div>
 
@@ -165,20 +156,22 @@ Satu route (`/`), sembilan belas section state-based, semuanya dapat dilompati l
 <div align="right"><a href="#top">⬆</a></div>
 
 <a name="id-database"></a>
-### 🗄️ 6. Database — Metadata Terlengkap: 26 Model
+### 🗄️ 6. Database — 44 Model, Dual-Mode LOKAL ⇄ CLOUD
 
-Satu file `prisma/schema.prisma` mengelola **26 model** dalam **SQLite** (siap migrasi ke PostgreSQL untuk multi-device). Semua resource dilayani lewat **API generik** `/api/data/[resource]` yang dikonfigurasi dari satu peta — menambah resource baru tidak butuh endpoint baru.
+Satu file `prisma/schema.prisma` mengelola **44 model** pada **SQLite lokal** (adapter `better-sqlite3`) yang bisa berpindah ke **Prisma Postgres prisma.io** (adapter `pg`) hanya dengan mengisi `PRISMA_POSTGRES_URL` — nol perubahan kode (`SETUP-DATABASE.md`). Semua resource dilayani lewat **API generik** `/api/data/[resource]`; menambah resource tidak butuh endpoint baru.
 
 | Domain | Model | Peran |
 |---|---|---|
 | ⚙️ Inti Sistem | `Setting` | Piagam, visi 10 tahun, OKR, kurikulum, master prompt, protokol hari buruk, fase aktif |
+| 🧠 Kognitif | `DailyLog` `WeeklyReview` `Habit` `HabitLog` `BrainNote` `IdeaItem` `Briefing` | Ritual harian, review, kebiasaan & streak, otak kedua, matriks ide, briefing AI harian |
 | 💰 Keuangan | `Debt` `DebtPayment` `Receivable` `Cashflow` `ChildSaving` | Hutang + riwayat cicilan, piutang, arus kas, tabungan anak |
-| 👥 CRM | `Client` `FollowUp` | Master klien, pipeline, follow-up dengan flag telat otomatis |
-| 🤝 Relasi | `Relation` `PoliticalActivity` | Ledger kepercayaan, aktivitas politik strategis |
+| 👥 CRM & Bisnis | `Client` `FollowUp` `Customer` `Company` `Consultation` `PermitApplication` `ServiceCatalog` | Master klien, pipeline, pelanggan 25 field, perusahaan & legalitas, konsultasi, tracker izin ISO 5 tahap, katalog 46 layanan |
+| 🤝 Relasi & Disiplin | `Relation` `PoliticalActivity` `BacklogItem` `DecisionLog` | Ledger kepercayaan, aktivitas strategis, penjara ide, sejarah keputusan |
 | 📚 Pertumbuhan | `LearningJournal` `WinLog` `CaseStudy` | Jurnal belajar (mesin ganda), kemenangan, studi kasus |
-| 🏃 Disiplin | `DailyLog` `WeeklyReview` `BacklogItem` `DecisionLog` | Ritual harian, review mingguan, penjara ide, sejarah keputusan |
-| 🛡️ Arsenal | `Domain` `Agent` | 43 domain portfolio, 15 AI agents + prompt role-activation |
-| 💼 Bisnis Hub | `AppUser` `Customer` `Company` `SocialAccount` `VaultEntry` `PermitApplication` `ServiceCatalog` | Pengguna & role, pelanggan 25 field, perusahaan & legalitas, sosmed, brankas 11 kategori, tracker izin 5 tahap, katalog 46 layanan |
+| 🛡️ Arsenal | `Domain` `Agent` `AppUser` `SocialAccount` `VaultEntry` | 49 domain money engine, 15 AI agents + prompt, pengguna & role, sosmed, brankas 11 kategori |
+| ⚔️ Kecerdasan | `Debate` `SageChat` | Arena debat Dewan 46, konsol Sage |
+| 🔍 SEO (9) | `SeoProject` `SeoAudit` `KeywordRank` `KeywordIdea` `ContentPlan` `Backlink` `CompetitorReport` `MetaPreset` `SeoProposal` | Mesin SEO lengkap: proyek, audit, ranking, ide, konten, backlink, kompetitor, meta, proposal |
+| 🏭 UsahaSiap | `UsaDocument` | Register 45 controlled documents (USA-01..45) |
 
 <details>
 <summary>🔍 <b>Buka: sorotan field kunci Bisnis Hub (klik)</b></summary>
@@ -251,7 +244,7 @@ Doktrin rekayasa: ** hydration-safe by design** (semua data waktu dirender clien
 
 ```bash
 # 1️⃣ Kloning & masuk
-git clone https://github.com/prabudanling/doc-gunaracorp.git gunara-os
+git clone https://github.com/gunaracorp/gunaraos.git gunara-os
 cd gunara-os
 
 # 2️⃣ Instal dependensi
@@ -289,8 +282,16 @@ bun run dev
 | `bun run db:push` | Sinkronisasi schema Prisma → SQLite |
 | `bun run db:generate` | Generate Prisma Client |
 | `bun run db:migrate` / `db:reset` | Migrasi formal & reset database |
+| `bun run test` | Unit test (vitest) + cakupan ≥ 70% modul murni |
+| `bun run version:patch\|minor\|major` | Naikkan versi + sinkron 7 titik (scripts/version.ts) |
+| `bun run version:check` | Validasi konsistensi versi — wajib SEMUA OK sebelum rilis |
+| `bash scripts/release-check.sh` | Gerbang mutu satu perintah: tsc → lint → test → version → build |
+| `bash scripts/backup.sh` | Cadangan 3-2-1: snapshot SQLite + export JSON + tar.gz + sha256 |
+| `node scripts/restore-drill.mjs <snapshot.db>` | Latihan pemulihan: verifikasi integritas + kecocokan 44 tabel |
+| `bash scripts/db-migrate-cloud.sh` | Migrasi data otomatis SQLite → Prisma Postgres |
 | `bun scripts/seed.ts` | Seed OS (settings, 43 domain, 15 agents, win logs) |
 | `bun scripts/seed-bisnis.ts` | Seed Bisnis Hub (46 layanan, perusahaan, OWNER, brankas, sosmed, pelanggan, pengurusan) |
+| `bun scripts/seed-domains-money.ts` | Seed 49 domain + blueprint penghasilan |
 
 <div align="right"><a href="#top">⬆</a></div>
 
@@ -368,26 +369,24 @@ scripts/
 | **v3.0** | *Bisnis Hub* | **Metadata terlengkap**: +7 model (AppUser, Customer, Company, SocialAccount, VaultEntry, PermitApplication, ServiceCatalog), audit dua situs perusahaan, Kanban ISO 5 tahap, Pencari Izin, brankas AES-256-GCM, tutorial 18 panduan |
 | **v6.0** | *Dewan 46* | 46 dewan pakar lintas bidang (12 domain, 10.368 tahun kolektif), Ultimate Solver AI berpersona Master Polymath · Sage Universal · Ultimate Problem Solver, putusan terstruktur + arsip |
 | **v7.0** | *God Mode* | **Arena Debat Dewan** (2–4 dewan saling berdebat 2 ronde → arbitrase) + **Sage Console** (ngobrol 3 wajah kebijaksanaan) — dialektika nyata, bukan pujian |
+| **v10.0** | *OMNISCIENT* | Six cognitive engines: Second Brain, Idea Matrix, Habit Streaks, Analytics Engine, AI Briefing, Kalkulator Bisnis |
+| **v10.1** | *USAHASIAP* | UsahaSiap OS — register 45 dokumen controlled + Register Explorer interaktif |
+| **v10.2** | *PUSAT-DATA* | Prisma 7.10.1 + database dual-mode LOKAL ⇄ CLOUD prisma.io + pipeline migrasi otomatis |
+| **v10.2.1** | *GERBANG-MUTU* | 17 error TypeScript dituntaskan 0, bug data cashflow diperbaiki, gerbang mutu penuh |
+| **v11.0** | *TANAH-SUCI* | Konstitusi & tata kelola: Piagam, ARCHITECTURE.md, CONTRIBUTING + ADR, RELEASE-PROCESS, SECURITY + audit dependensi, cadangan 3-2-1 teruji, dokumentasi hidup, CI + uji unit cakupan 70% |
 
 <div align="right"><a href="#top">⬆</a></div>
 
 <a name="id-roadmap"></a>
-### 🗺️ 14. Roadmap
+### 🗺️ 14. Roadmap — 99 Langkah Menuju Acuan Dunia
 
-- [x] **v1.0** — OS pribadi lengkap
-- [x] **v2.0** — Animasi penuh + fitur standar internasional
-- [x] **v2.1** — Hardening hydration & aksesibilitas
-- [x] **v3.0** — Bisnis Hub + metadata terlengkap + tools konsultan
-- [ ] **v4.0 — *Konvergensi*** *(dirancang)*
-  - 🔑 Login Google OAuth (next-auth sudah disiapkan di dependensi)
-  - 🤖 AI Copilot in-app (z-ai-web-dev-sdk): ringkasan mingguan otomatis, drafting follow-up klien
-  - 📲 PWA + mode offline, push reminder ritual harian
-  - ☁️ Sinkronisasi multi-device — migrasi SQLite → PostgreSQL
-- [ ] **v5.0 — *Skala Gunara Group***
-  - 📱 Aplikasi mobile (React Native) berbagi API
-  - 🏢 Multi-tenant untuk tim — role granular per divisi
-  - 📊 BI dashboard: tren pipeline, omzet per instansi, konversi lead
-  - 💬 Integrasi WhatsApp API untuk follow-up otomatis klien
+Roadmap resmi: **[ROADMAP.md](./ROADMAP.md)** — sebelas fase · 99 langkah · ditutup satu rilis mayor bertag per fase (`v11.0.0` → `v100.0.0`).
+
+- [x] **Fase 1 — TANAH-SUCI** (`v11.0.0`): fondasi & tata kelola — piagam, arsitektur, standar kode, pipeline rilis, keamanan, cadangan 3-2-1, dokumentasi hidup, CI + uji unit
+- [ ] **Fase 2 — PUSAT-DATA-MAX** (`v12.0.0`): cloud aktif, enkripsi at-rest, kamus data, pemulihan bulanan
+- [ ] **Fase 3 — DEWAN-MAX** (`v13.0.0`): Dewan 46 institusional, RAG bukti, guardrail etika
+- [ ] **Fase 4 — USAHASIAP-MAX** (`v14.0.0`): panduan interaktif, generator dokumen, 10 klien pertama
+- [ ] … dst. hingga **Fase 11 — ACUAN-DUNIA** (`v100.0.0`): federasi, summit, buku, deklarasi
 
 <div align="right"><a href="#top">⬆</a></div>
 
@@ -487,31 +486,22 @@ flowchart TB
 <div align="right"><a href="#top">⬆</a></div>
 
 <a name="en-map"></a>
-### 🧭 3. The Complete Map: 19 Sections
+### 🧭 3. The Complete Map: 44 Sections
 
-One route (`/`), nineteen state-based sections — every one of them reachable through the **Command Palette (⌘K / Ctrl+K)**.
+One route (`/`), forty-four state-based sections — every one of them reachable through the **Command Palette (⌘K / Ctrl+K)**. Full per-section map + module contracts: **[ARCHITECTURE.md](./ARCHITECTURE.md)**.
 
-| # | Section | Group | Purpose |
-|---|---------|-------|---------|
-| 0 | 🏠 **Command Center** | Home | Daily cockpit: greeting, live WIB clock, 3 MITs, energy, stats, active phase |
-| 1 | 🌊 **Charter · Vision · OKR** | UPSTREAM | The source of everything — filled once |
-| 2 | 💰 **Finance** | ENGINES | Debts + auto installments, receivables, cashflow, child savings |
-| 3 | 👥 **Clients / CRM** | ENGINES | Client master + follow-up pipeline with auto LATE flag |
-| 4 | 🤝 **Relations & Politics** | ENGINES | Trust ledger & strategic activities |
-| 5 | 📚 **Learning** | ENGINES | Learning journal — the double engine |
-| 6 | 🏆 **Documentation** | ENGINES | Win Log + Case Studies |
-| 7 | ☀️ **Daily Ritual** | DOWNSTREAM | 3 morning MITs + evening reflection + history |
-| 8 | 📅 **Weekly Review** | DOWNSTREAM | 30 minutes every weekend |
-| 9 | 📥 **Backlog** | DOWNSTREAM | The idea prison — so focus never leaks |
-| 10 | ⚖️ **Decisions Log** | DOWNSTREAM | Decision history & rationale |
-| 11 | 🌐 **43 Domains** | ARSENAL | Domain portfolio + per-domain mission |
-| 12 | 🤖 **15 AI Agents** | ARSENAL | Role-activation prompts, copy-ready |
-| 13 | 🛡️ **System** | ARSENAL | 10 absolute rules, weekly pattern, bad-day protocol, master prompt, stack |
-| 14 | 🎯 **90-Day Roadmap** | ARSENAL | Grand Build Phases 0–5 with gates |
-| 15 | 💼 **Business Database** | BUSINESS HUB | 360° customers (25 fields) + companies & legal entities |
-| 16 | 📜 **Permits** | BUSINESS HUB | 5-stage ISO kanban, 46-service catalog, License Finder |
-| 17 | 🔐 **Digital Assets** | BUSINESS HUB | Social media, encrypted credential vault, users & roles |
-| 18 | 📚 **Full Tutorial** | GUIDE | 18 step-by-step guides covering every feature |
+| Group | Sections | Purpose |
+|---|---------|---------|
+| 🏠 Home | Command Center | Daily cockpit: greeting, live WIB clock, 3 MITs, energy, stats |
+| 🚀 **SEO MASTERY** (11) | seo-hub, audit, keywords, ranks, content, calendar, backlinks, competitor, forge, clients, academy | The #1 SEO consultancy engine |
+| 👑 **BRAND** (1) | Brand & Social Hub | World identity + socials + vault |
+| 🏭 **USAHASIAP** (1) | UsahaSiap OS | Compliance-to-revenue: interactive 45-document register |
+| 🧠 **OMNISCIENT** (6) | Second Brain, Idea Matrix, Habit Streaks, Analytics, AI Briefing, Calculator | Six cognitive engines on real data |
+| 🌊 **UPSTREAM** (1) | Charter · Vision · OKR | The source of everything — filled once |
+| ⚙️ **ENGINES** (5) | Finance, Clients/CRM, Relations & Politics, Learning, Documentation | Five value generators — serviced weekly |
+| 🏃 **DOWNSTREAM** (4) | Daily Ritual, Weekly Review, Backlog, Decisions Log | Executed daily without rethinking |
+| 🛡️ **ARSENAL** (3) | 49-Domain Engine, 15 AI Agents, System | Strategic weapons |
+| 🧰 **Others** (12) | Vault, Release Center, Debate Arena, Sage, Ultimate Solver, Council 46, Business, Permits, Digital Assets, Tutorial, Roadmap, 99-Step Roadmap | The system's special tools |
 
 <div align="right"><a href="#top">⬆</a></div>
 
@@ -563,20 +553,22 @@ One route (`/`), nineteen state-based sections — every one of them reachable t
 <div align="right"><a href="#top">⬆</a></div>
 
 <a name="en-database"></a>
-### 🗄️ 6. Database — The Most Complete Metadata: 26 Models
+### 🗄️ 6. Database — 44 Models, Dual-Mode LOKAL ⇄ CLOUD
 
-A single `prisma/schema.prisma` governs **26 models** on **SQLite** (PostgreSQL-ready for multi-device). Every resource is served through a **generic API** at `/api/data/[resource]` driven by one configuration map — adding a new resource requires zero new endpoints.
+A single `prisma/schema.prisma` governs **44 models** on local **SQLite** (adapter `better-sqlite3`) that can switch to **Prisma Postgres prisma.io** (adapter `pg`) just by setting `PRISMA_POSTGRES_URL` — zero code changes (`SETUP-DATABASE.md`). Every resource is served through a **generic API** at `/api/data/[resource]`; adding a new resource requires zero new endpoints.
 
 | Domain | Models | Role |
 |---|---|---|
 | ⚙️ System Core | `Setting` | Charter, 10-year vision, OKRs, curriculum, master prompt, bad-day protocol, active phase |
+| 🧠 Cognitive | `DailyLog` `WeeklyReview` `Habit` `HabitLog` `BrainNote` `IdeaItem` `Briefing` | Daily ritual, weekly review, habits & streaks, second brain, idea matrix, AI briefing |
 | 💰 Finance | `Debt` `DebtPayment` `Receivable` `Cashflow` `ChildSaving` | Debts + installment history, receivables, cashflow, child savings |
-| 👥 CRM | `Client` `FollowUp` | Client master, pipeline, follow-ups with auto LATE flag |
-| 🤝 Relations | `Relation` `PoliticalActivity` | Trust ledger, strategic political activity |
+| 👥 CRM & Business | `Client` `FollowUp` `Customer` `Company` `Consultation` `PermitApplication` `ServiceCatalog` | Client master, pipeline, 25-field customers, companies & legalities, consultations, 5-stage ISO permit tracker, 46-service catalog |
+| 🤝 Relations & Discipline | `Relation` `PoliticalActivity` `BacklogItem` `DecisionLog` | Trust ledger, strategic activity, idea prison, decision history |
 | 📚 Growth | `LearningJournal` `WinLog` `CaseStudy` | Learning journal (double engine), wins, case studies |
-| 🏃 Discipline | `DailyLog` `WeeklyReview` `BacklogItem` `DecisionLog` | Daily ritual, weekly review, idea prison, decision history |
-| 🛡️ Arsenal | `Domain` `Agent` | 43-domain portfolio, 15 AI agents + role-activation prompts |
-| 💼 Business Hub | `AppUser` `Customer` `Company` `SocialAccount` `VaultEntry` `PermitApplication` `ServiceCatalog` | Users & roles, 25-field customers, companies & legalities, social accounts, 11-category vault, 5-stage permit tracker, 46-service catalog |
+| 🛡️ Arsenal | `Domain` `Agent` `AppUser` `SocialAccount` `VaultEntry` | 49-domain money engine, 15 AI agents + prompts, users & roles, socials, 11-category vault |
+| ⚔️ Intelligence | `Debate` `SageChat` | Council 46 debate arena, Sage console |
+| 🔍 SEO (9) | `SeoProject` `SeoAudit` `KeywordRank` `KeywordIdea` `ContentPlan` `Backlink` `CompetitorReport` `MetaPreset` `SeoProposal` | Full SEO engine: projects, audits, rankings, ideas, content, backlinks, competitors, meta, proposals |
+| 🏭 UsahaSiap | `UsaDocument` | Register of 45 controlled documents (USA-01..45) |
 
 <details>
 <summary>🔍 <b>Open: Business Hub key-field highlights (click)</b></summary>
@@ -649,7 +641,7 @@ Engineering doctrine: **hydration-safe by design** (all time-based data renders 
 
 ```bash
 # 1️⃣ Clone & enter
-git clone https://github.com/prabudanling/doc-gunaracorp.git gunara-os
+git clone https://github.com/gunaracorp/gunaraos.git gunara-os
 cd gunara-os
 
 # 2️⃣ Install dependencies
@@ -687,8 +679,16 @@ bun run dev
 | `bun run db:push` | Sync Prisma schema → SQLite |
 | `bun run db:generate` | Generate Prisma Client |
 | `bun run db:migrate` / `db:reset` | Formal migrations & database reset |
+| `bun run test` | Unit tests (vitest) + ≥ 70% coverage on pure modules |
+| `bun run version:patch\|minor\|major` | Bump version + sync 7 points (scripts/version.ts) |
+| `bun run version:check` | Version consistency gate — must be SEMUA OK before release |
+| `bash scripts/release-check.sh` | One-command quality gate: tsc → lint → test → version → build |
+| `bash scripts/backup.sh` | 3-2-1 backup: SQLite snapshot + JSON export + tar.gz + sha256 |
+| `node scripts/restore-drill.mjs <snapshot.db>` | Restore drill: verify integrity + match across 44 tables |
+| `bash scripts/db-migrate-cloud.sh` | Automated data migration SQLite → Prisma Postgres |
 | `bun scripts/seed.ts` | Seed OS (settings, 43 domains, 15 agents, win logs) |
 | `bun scripts/seed-bisnis.ts` | Seed Business Hub (46 services, companies, OWNER, vault, socials, customers, permits) |
+| `bun scripts/seed-domains-money.ts` | Seed 49 domains + revenue blueprints |
 
 <div align="right"><a href="#top">⬆</a></div>
 
@@ -766,26 +766,24 @@ scripts/
 | **v3.0** | *Business Hub* | **The most complete metadata**: +7 models (AppUser, Customer, Company, SocialAccount, VaultEntry, PermitApplication, ServiceCatalog), two-company site audit, 5-stage ISO kanban, License Finder, AES-256-GCM vault, 18 in-app tutorials |
 | **v6.0** | *Council 46* | 46 cross-field councils of experts (12 domains, 10,368 collective years), AI Ultimate Solver personified as Master Polymath · Sage Universal · Ultimate Problem Solver, structured verdicts + archive |
 | **v7.0** | *God Mode* | **Council Debate Arena** (2–4 councils debate for 2 rounds → arbitration) + **Sage Console** (converse with 3 faces of wisdom) — real dialectic, not flattery |
+| **v10.0** | *OMNISCIENT* | Six cognitive engines: Second Brain, Idea Matrix, Habit Streaks, Analytics Engine, AI Briefing, Business Calculator |
+| **v10.1** | *USAHASIAP* | UsahaSiap OS — 45 controlled-document register + interactive Register Explorer |
+| **v10.2** | *PUSAT-DATA* | Prisma 7.10.1 + dual-mode database LOKAL ⇄ CLOUD prisma.io + automated migration pipeline |
+| **v10.2.1** | *GERBANG-MUTU* | 17 TypeScript errors reduced to zero, cashflow data bugs fixed, full quality gate |
+| **v11.0** | *TANAH-SUCI* | Constitution & governance: Charter, ARCHITECTURE.md, CONTRIBUTING + ADRs, RELEASE-PROCESS, SECURITY + dependency audit, tested 3-2-1 backups, living documentation, CI + 70% unit-test coverage |
 
 <div align="right"><a href="#top">⬆</a></div>
 
 <a name="en-roadmap"></a>
-### 🗺️ 14. Roadmap
+### 🗺️ 14. Roadmap — 99 Steps Toward a World Reference
 
-- [x] **v1.0** — Complete personal OS
-- [x] **v2.0** — Full animation + international-standard features
-- [x] **v2.1** — Hydration & accessibility hardening
-- [x] **v3.0** — Business Hub + most-complete metadata + consultant tools
-- [ ] **v4.0 — *Convergence*** *(designed)*
-  - 🔑 Google OAuth login (next-auth already prepared in dependencies)
-  - 🤖 In-app AI Copilot (z-ai-web-dev-sdk): automatic weekly summaries, client follow-up drafting
-  - 📲 PWA + offline mode, push reminders for the daily ritual
-  - ☁️ Multi-device sync — SQLite → PostgreSQL migration
-- [ ] **v5.0 — *Gunara Group Scale***
-  - 📱 Mobile app (React Native) sharing the same API
-  - 🏢 Multi-tenant for teams — granular per-division roles
-  - 📊 BI dashboard: pipeline trends, revenue per agency, lead conversion
-  - 💬 WhatsApp API integration for automated client follow-ups
+Official roadmap: **[ROADMAP.md](./ROADMAP.md)** — eleven phases · ninety-nine steps · each phase closed by one tagged major release (`v11.0.0` → `v100.0.0`).
+
+- [x] **Phase 1 — TANAH-SUCI** (`v11.0.0`): foundation & governance — charter, architecture, code standards, release pipeline, security, tested 3-2-1 backups, living documentation, CI + unit tests
+- [ ] **Phase 2 — PUSAT-DATA-MAX** (`v12.0.0`): active cloud, encryption at-rest, data dictionary, monthly recovery drills
+- [ ] **Phase 3 — DEWAN-MAX** (`v13.0.0`): institutional Council 46, evidence-based RAG, ethics guardrails
+- [ ] **Phase 4 — USAHASIAP-MAX** (`v14.0.0`): interactive guides, document generator, first 10 clients
+- [ ] … through **Phase 11 — ACUAN-DUNIA** (`v100.0.0`): federation, summit, book, declaration
 
 <div align="right"><a href="#top">⬆</a></div>
 
@@ -846,7 +844,7 @@ Add a model to `schema.prisma` → `bun run db:push` → register it in `MODELS`
 |---|---|
 | 🧠 **Engineered doctrine** | Master Polymath · Sage Universal · Ultimate Problem Solver |
 | 🏛️ **Council** | 46 cross-domain expert councils, distilled into software |
-| 🛠️ **Stack** | Next.js 16 · React 19 · TypeScript 5 · Tailwind 4 · Prisma 6 · Framer Motion 12 |
+| 🛠️ **Stack** | Next.js 16 · React 19 · TypeScript 5 · Tailwind 4 · Prisma 7 · Framer Motion 12 |
 | 🌏 **Origin** | Dibangun dengan ❤️ + ☕ di Indonesia — Built with love & coffee in Indonesia |
 
 <br/>
@@ -855,7 +853,7 @@ Add a model to `schema.prisma` → `bun run db:push` → register it in `MODELS`
 
 <br/>
 
-**© 2026 Gunara Corp™ · v7.0 "God Mode" · All rights reserved**
+**© 2026 Gunara Corp™ · v11.0.0 "TANAH-SUCI" · All rights reserved**
 
 </div>
 

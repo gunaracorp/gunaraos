@@ -1,25 +1,25 @@
 {
   "name": "GUNARA OS",
-  "version": "10.2.1",
-  "versionShort": "v10.2",
-  "codename": "PUSAT-DATA",
+  "version": "11.0.0",
+  "versionShort": "v11.0",
+  "codename": "GERBANG-MUTU",
   "channel": "stable",
   "releaseDate": "2026-11-17",
-  "generatedAt": "2026-11-16T17:53:18.107Z",
+  "generatedAt": "2026-11-16T18:16:49.714Z",
   "semver": {
-    "major": 10,
-    "minor": 2,
-    "patch": 1,
+    "major": 11,
+    "minor": 0,
+    "patch": 0,
     "prerelease": null,
     "build": null
   },
-  "releaseCount": 9,
+  "releaseCount": 10,
   "latestRelease": {
-    "version": "10.2.0",
-    "date": "2026-11-01",
-    "codename": "PUSAT-DATA",
-    "title": "Prisma 7.10.1 · Database Dual-Mode LOKAL ⇄ CLOUD prisma.io · Restorasi Penuh",
-    "summary": "Fondasi PUSAT-DATA: upgrade Prisma 6.11.1 → 7.10.1 (generasi rust-free, standar Prisma 7/8) dengan driver adapter resmi, arsitektur database dual-mode — SQLite lokal untuk sekarang, Prisma Postgres prisma.io (free tier: 2 GB · 200.000 operations/bulan · 50 database · tanpa kartu kredit) untuk nanti — plus script migrasi data otomatis SQLite → cloud (export JSON → push tabel → import + verifikasi). Sekaligus restorasi penuh seluruh fitur v9.4.0–v10.1.0 (Brand & Social Hub, 6 mesin OMNISCIENT, UsahaSiap OS 45 dokumen) di atas riwayat git v9.3.0 setelah lingkungan kerja ter-reset."
+    "version": "10.2.1",
+    "date": "2026-11-16",
+    "codename": "GERBANG-MUTU",
+    "title": "Gerbang Mutu Penuh · 17 Error TypeScript Dihilangkan · Bug Data Cashflow Diperbaiki",
+    "summary": "Rilis patch disiplin gerbang mutu: seluruh 17 error TypeScript dituntaskan sampai nol (import PrismaClient Prisma 7 pada 3 skrip seed + adapter, tuple WINS, ReleaseEntry.verified), dua bug data arus kas diperbaiki (field jumlah → nilai) yang membuat statistik Analytics Engine selalu nol dan ringkasan briefing bocor, plus tsconfig mengeluarkan folder skills/examples/src/generated dari type-check."
   },
   "notesComplete": false,
   "standards": [

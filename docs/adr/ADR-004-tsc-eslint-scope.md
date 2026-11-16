@@ -1,0 +1,6 @@
+# ADR-004 — Ruang Lingkup Type-Check & Lint (Exclude skills, examples, generated)
+
+- **Status:** Diterima · 2026-11-16
+- **Konteks:** `tsconfig.json` awal menyapu `**/*.ts` seluruh repo sehingga type-check ikut mengaudit: folder `skills/` (skrip harness lingkungan kerja, bukan kode aplikasi), `examples/websocket/` (demo yang butuh dependensi socket.io yang tidak terpasang), dan `src/generated/` (hasil generate Prisma). Akibatnya hasil `tsc` dipenuhi kebisingan yang bukan tanggung jawab aplikasi, sementara `eslint.config.mjs` sudah mengabaikan ketiganya.
+- **Keputusan:** `tsconfig.json` exclude `skills`, `examples`, `src/generated` (dan `node_modules`) — selaras 100% dengan `eslint.config.mjs`. Standar mutu aplikasi diukur pada kode aplikasi: `src/`, `scripts/` (skrip seed & versi tetap diaudit penuh), plus config root.
+- **Konsekuensi:** Kode di `skills/` dan `examples/` tidak dijamin lolos tipe oleh gerbang mutu — tidak boleh diimpor oleh kode aplikasi. Bila suatu saat file `examples/` akan dipromosikan menjadi fitur, ia harus pindah ke `src/` dan lulus gerbang mutu penuh. Kesalahan tipe yang tersisa setelah keputusan ini adalah bug aplikasi sungguhan (terbukti: 17 error → 0 error pada hari yang sama).

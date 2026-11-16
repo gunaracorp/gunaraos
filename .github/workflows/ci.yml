@@ -1,0 +1,48 @@
+# ═══════════════════════════════════════════════════════════════
+# GUNARA OS — CI Gerbang Mutu (Langkah 8 · Fase 1 TANAH-SUCI)
+# Wajib hijau di setiap push ke main dan setiap pull request.
+# Tahapan = RELEASE-PROCESS.md §1 (mutu kode → uji unit → keamanan → build)
+# ═══════════════════════════════════════════════════════════════
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  quality-gate:
+    name: Gerbang Mutu (tsc · lint · uji · keamanan · build)
+    runs-on: ubuntu-latest
+    env:
+      DATABASE_URL: "file:./db/custom.db"
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+
+      - name: Pasang dependensi (lockfile terkunci)
+        run: npm ci
+
+      - name: Generate Prisma Client (Prisma 7)
+        run: npx prisma generate
+
+      - name: Pemeriksaan tipe (tsc --noEmit — 0 error)
+        run: npx tsc --noEmit
+
+      - name: Lint (0 pelanggaran)
+        run: npm run lint
+
+      - name: Keamanan — nol kredensial di kode sumber (SECURITY.md §3)
+        run: |
+          ! grep -rInE "ghp_[A-Za-z0-9]{20,}|github_pat_|sk-[A-Za-z0-9]{20,}|AKIA[0-9A-Z]{16}|-----BEGIN [A-Z ]*PRIVATE KEY" \
+            --exclude-dir=node_modules --exclude-dir=.next --exclude-dir=src/generated --exclude-dir=skills .
+
+      - name: Uji unit (vitest — cakupan ≥ 70% modul murni)
+        run: npm test
+
+      - name: Build produksi (next build)
+        run: npm run build

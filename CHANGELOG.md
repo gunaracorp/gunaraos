@@ -12,6 +12,29 @@ Kategori: **Added** (ditambah) · **Changed** (disempurnakan) · **Deprecated** 
 
 ## [Unreleased]
 
+## [11.0.0] - 2026-11-16 — TANAH-SUCI
+
+> Penutup Fase 1 (Langkah 1–9) Roadmap 99 Langkah: konstitusi, arsitektur, standar mutu, keamanan, cadangan, dokumentasi, dan CI — fondasi yang tak tergoyahkan sebelum fase apa pun yang lebih besar.
+
+### Added
+- **Konstitusi ratifikasi** (`PIAGAM.md`): visi menjadi acuan dunia, lima misi, lima nilai amanah (Amanah · Tertib · Transparan · Berjeak · Berbuah), tata kelola gerbang mutu yang tidak bisa dinegosiasikan, dan ratifikasi tertanda — mengikat seluruh modul & rilis mulai v11.0.0.
+- **Peta arsitektur v1** (`ARCHITECTURE.md`): 100% modul terpetakan dari data nyata — 44 model Prisma per domain, 16 API route, 44 seksi navigasi (8 grup), 33 komponen, 15 AI Agents bernama, Dewan 46, 49 domain engine, UsahaSiap 45 dokumen, 46 layanan — plus **8 kontrak antarmodul** (Data Layer, API Generik, API Khusus, Registri Versi, Navigasi & i18n, Kriptografi, CRUD Klien) dan batasan konstitusi (Node produksi, server-only crypto, WIB).
+- **Standar kode & keputusan arsitektur** (`CONTRIBUTING.md` + `docs/adr/ADR-001..005`): 7 aturan kode wajib (field = skema Prisma, satu sumber kebenaran, kontrak Prisma 7 + adapter, server-only, tanggal WIB), Conventional Commits, pola uji, gerbang mutu; lima ADR: generator prisma-client Prisma 7, database dual-mode adapter, SemVer + nama sandi rilis, lingkup tsc/eslint (skills/examples/generated excluded), lingkup cakupan uji (9 modul murni).
+- **Pipeline rilis terpadu** (`RELEASE-PROCESS.md` + `scripts/release-check.sh`): 9 tahap dengan titik gagal eksplisit (tsc → lint → uji → version:check → build → naik versi → catatan → tag → verifikasi runtime), aturan codename KAPITAL-SAMBUNG-GARIS sejak ADR-003, aturan bertag, prosedur rollback.
+- **Kebijakan keamanan** (`SECURITY.md`): rahasia hanya di `.env` + vault AES-256-GCM; rotasi token wajib; **bukti scan nol kredensial di kode sumber**; audit dependensi `npm audit` **27 → 13 kerentanan** (2 critical & 12 high bertasih via `audit fix` non-breaking); sisa 2 high (`js-yaml` 4.x tanpa backport, `sharp` menunggu rilis tetap libvips) dicatat sebagai **accepted risk** dengan alasan & rencana.
+- **Cadangan 3-2-1 teruji** (`scripts/db-snapshot.mjs`, `scripts/backup.sh`, `scripts/restore-drill.mjs`, `BACKUP.md`): snapshot SQLite online-safe (`db.backup()` + `integrity_check` ganda), export JSON 44 tabel, bundel tar.gz + sha256, retensi 14 arsip, salinan offsite via git push/perintah eksternal; **latihan pemulihan #1 LULUS — 220/220 baris cocok di 44/44 tabel**; jadwal harian + sebelum setiap rilis/migrasi.
+- **Uji unit invarian sistem** (vitest + `@vitest/coverage-v8`, 53 tes di `src/lib/__tests__/`): Dewan 46 tepat 46 anggota bernomor 1–46, UsahaSiap USA-01..45 unik berstatus sah, 46 layanan + rules engine 10 sektor, versi sinkron 7 titik (parse/compare/bump/manifest), kripto AES-256-GCM roundtrip + kunci salah ditolak + scrypt + strength NIST + strip/reveal secrets, i18n dua bahasa lengkap. **Cakupan ≥70% dipaksakan** (threshold global): stmts **87,3%** · branch **71,9%** · funcs **95,7%** · lines **89,0%** (`vitest.config.ts` + ADR-005).
+- **CI GitHub Actions** (`.github/workflows/ci.yml`): gerbang mutu otomatis di setiap push/PR — npm ci → prisma generate → tsc → lint → **scan nol kredensial** → vitest cakupan → next build. Indikator Langkah 3 & 8 (CI hijau) aktif.
+- `package-lock.json` + devDependencies vitest/@vitest/coverage-v8 — lockfile terkunci untuk `npm ci` & audit.
+
+### Fixed
+- `scripts/restore-drill.mjs`: `path.join` menelan path absolut argumen → `path.resolve` — latihan pemulihan kini bisa dijalankan dari lokasi mana pun.
+
+### Verified
+- `npx tsc --noEmit` 0 error · `bun run lint` 0 error 0 warning · `bun run version:check` SEMUA OK · `npm run build` sukses (20 route) 🚀
+- `npm test` — 53/53 lulus, cakupan 4 dimensi ≥ 70% · scan kredensial nol kecocokan · `npm audit` 27→13
+- Latihan pemulihan 3-2-1 LULUS (220/220 baris · 44 tabel) · runtime: `/api/health` ok+dbOk, `POST /api/briefing` menghasilkan briefing WIB nyata, homepage 200
+
 ## [10.2.1] - 2026-11-16 — GERBANG-MUTU
 
 ### Fixed
